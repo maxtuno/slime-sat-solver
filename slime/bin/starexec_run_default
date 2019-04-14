@@ -1,0 +1,2 @@
+#!/bin/bash
+./slime_static $1 -drup-file=$2/proof.out

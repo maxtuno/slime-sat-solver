@@ -1,0 +1,4 @@
+#!/bin/sh
+make rs 2>&1
+mv slime_static bin
+
