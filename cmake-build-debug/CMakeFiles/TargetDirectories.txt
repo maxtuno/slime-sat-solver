@@ -1,5 +1,0 @@
-/Users/maxtuno/Desktop/Release/slime-sat-solver/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/Users/maxtuno/Desktop/Release/slime-sat-solver/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/maxtuno/Desktop/Release/slime-sat-solver/cmake-build-debug/slime/CMakeFiles/rebuild_cache.dir
-/Users/maxtuno/Desktop/Release/slime-sat-solver/cmake-build-debug/slime/CMakeFiles/edit_cache.dir
-/Users/maxtuno/Desktop/Release/slime-sat-solver/cmake-build-debug/slime/CMakeFiles/slime_static.dir
