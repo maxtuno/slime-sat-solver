@@ -18,8 +18,8 @@ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **************************************************************************************************/
 
-#ifndef Minisat_System_h
-#define Minisat_System_h
+#ifndef SLIME_System_h
+#define SLIME_System_h
 
 #if defined(__linux__)
 #include <fpu_control.h>
@@ -29,13 +29,13 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 
 //-------------------------------------------------------------------------------------------------
 
-namespace Minisat {
+namespace SLIME {
 
 static inline double cpuTime(void); // CPU-time in seconds.
 extern double memUsed();            // Memory in mega bytes (returns 0 for unsupported architectures).
 extern double memUsedPeak();        // Peak-memory in mega bytes (returns 0 for unsupported architectures).
 
-} // namespace Minisat
+} // namespace SLIME
 
 //-------------------------------------------------------------------------------------------------
 // Implementation of inline functions:
@@ -43,14 +43,14 @@ extern double memUsedPeak();        // Peak-memory in mega bytes (returns 0 for 
 #if defined(_MSC_VER) || defined(__MINGW32__)
 #include <time.h>
 
-static inline double Minisat::cpuTime(void) { return (double)clock() / CLOCKS_PER_SEC; }
+static inline double SLIME::cpuTime(void) { return (double)clock() / CLOCKS_PER_SEC; }
 
 #else
 #include <sys/resource.h>
 #include <sys/time.h>
 #include <unistd.h>
 
-static inline double Minisat::cpuTime(void) {
+static inline double SLIME::cpuTime(void) {
     struct rusage ru;
     getrusage(RUSAGE_SELF, &ru);
     return (double)ru.ru_utime.tv_sec + (double)ru.ru_utime.tv_usec / 1000000;

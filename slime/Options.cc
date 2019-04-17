@@ -21,9 +21,9 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #include "mtl/Sort.h"
 #include "ParseUtils.h"
 
-using namespace Minisat;
+using namespace SLIME;
 
-void Minisat::parseOptions(int &argc, char **argv, bool strict) {
+void SLIME::parseOptions(int &argc, char **argv, bool strict) {
     int i, j;
     for (i = j = 1; i < argc; i++) {
         const char *str = argv[i];
@@ -54,9 +54,9 @@ void Minisat::parseOptions(int &argc, char **argv, bool strict) {
     argc -= (i - j);
 }
 
-void Minisat::setUsageHelp(const char *str) { Option::getUsageString() = str; }
-void Minisat::setHelpPrefixStr(const char *str) { Option::getHelpPrefixString() = str; }
-void Minisat::printUsageAndExit(int argc, char **argv, bool verbose) {
+void SLIME::setUsageHelp(const char *str) { Option::getUsageString() = str; }
+void SLIME::setHelpPrefixStr(const char *str) { Option::getHelpPrefixString() = str; }
+void SLIME::printUsageAndExit(int argc, char **argv, bool verbose) {
     const char *usage = Option::getUsageString();
     if (usage != NULL)
         fprintf(stderr, usage, argv[0]);

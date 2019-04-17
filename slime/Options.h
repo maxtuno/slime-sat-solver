@@ -17,8 +17,8 @@ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **************************************************************************************************/
 
-#ifndef Minisat_Options_h
-#define Minisat_Options_h
+#ifndef SLIME_Options_h
+#define SLIME_Options_h
 
 #include <math.h>
 #include <stdio.h>
@@ -29,7 +29,7 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #include "mtl/Vec.h"
 #include "ParseUtils.h"
 
-namespace Minisat {
+namespace SLIME {
 
 //==================================================================================================
 // Top-level option parse/help functions:
@@ -370,6 +370,6 @@ class BoolOption : public Option {
 };
 
 //=================================================================================================
-} // namespace Minisat
+} // namespace SLIME
 
 #endif

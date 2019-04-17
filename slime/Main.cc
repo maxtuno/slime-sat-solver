@@ -40,7 +40,7 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #include "ParseUtils.h"
 #include "System.h"
 
-using namespace Minisat;
+using namespace SLIME;
 
 //=================================================================================================
 
@@ -100,7 +100,6 @@ int main(int argc, char **argv) {
     printHeader();
     try {
         setUsageHelp("USAGE: %s [options] <input-file> <result-output-file>\n\n  where input may be either in plain or gzipped DIMACS.\n");
-        // printf("c This is MapleLCMDistChronoBT.\n");
 
 #if defined(__linux__)
         fpu_control_t oldcw, newcw;

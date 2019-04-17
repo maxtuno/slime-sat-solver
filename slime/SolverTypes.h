@@ -29,8 +29,8 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 **************************************************************************************************/
 
 
-#ifndef Minisat_SolverTypes_h
-#define Minisat_SolverTypes_h
+#ifndef SLIME_SolverTypes_h
+#define SLIME_SolverTypes_h
 
 #include <assert.h>
 
@@ -41,7 +41,7 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #include "mtl/Alloc.h"
 #include <iostream>
 
-namespace Minisat {
+namespace SLIME {
 
 //=================================================================================================
 // Variables, literals, lifted booleans, clauses:

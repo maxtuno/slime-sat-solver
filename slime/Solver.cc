@@ -35,8 +35,9 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 
 #include "Solver.h"
 #include "mtl/Sort.h"
+#include "SimpSolver.h"
 
-using namespace Minisat;
+using namespace SLIME;
 
 //#define PRINT_OUT
 
@@ -69,6 +70,8 @@ static IntOption opt_conf_to_chrono(_cat, "confl-to-chrono", "Controls number of
 
 //=================================================================================================
 // Constructor/Destructor:
+
+static bool switch_mode = false;
 
 Solver::Solver()
     :
@@ -1997,13 +2000,14 @@ static double luby(double y, int x) {
     return pow(y, seq);
 }
 
-static bool switch_mode = false;
 static void SIGALRM_switch(int signum) { switch_mode = true; }
 
 // NOTE: assumptions passed in member-variable 'assumptions'.
 lbool Solver::solve_() {
+    unsigned int timer = (unsigned int) pow((double)nClauses() / nVars(), 3);
     signal(SIGALRM, SIGALRM_switch);
-    alarm(pow((double)nClauses() / nVars(), 3));
+    alarm(timer);
+    printf("c It will change to VSIDS in %u seconds.\n", timer);
 
     model.clear();
     conflict.clear();

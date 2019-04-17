@@ -7,4 +7,5 @@ On the other hand, in the selection of the current variable it is necessary to a
 which in most implementations is a predefined value.
 
 SLIME implement a simple heuristic with minimal complexity, that correlated the trail size and the polarity of the current variable to assign.
+
 The selection of variable is not related to trail size, this decouple the both concepts.

@@ -28,8 +28,8 @@ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **************************************************************************************************/
 
-#ifndef Minisat_Solver_h
-#define Minisat_Solver_h
+#ifndef SLIME_Solver_h
+#define SLIME_Solver_h
 
 #define ANTI_EXPLORATION
 #define BIN_DRUP
@@ -54,7 +54,7 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #define TIER2 2
 #define CORE 3
 
-namespace Minisat {
+namespace SLIME {
 
 //=================================================================================================
 // Solver -- the main class:
@@ -492,7 +492,7 @@ class Solver {
     vec<Lit> involved_lits;
     double my_var_decay;
     bool DISTANCE;
-};
+    };
 
 //=================================================================================================
 // Implementation of inline methods:
@@ -671,6 +671,6 @@ inline void Solver::toDimacs(const char *file, Lit p, Lit q, Lit r) {
 // Debug etc:
 
 //=================================================================================================
-} // namespace Minisat
+} // namespace SLIME
 
 #endif

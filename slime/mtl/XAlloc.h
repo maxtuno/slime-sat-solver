@@ -18,13 +18,13 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 **************************************************************************************************/
 
 
-#ifndef Minisat_XAlloc_h
-#define Minisat_XAlloc_h
+#ifndef SLIME_XAlloc_h
+#define SLIME_XAlloc_h
 
 #include <errno.h>
 #include <stdlib.h>
 
-namespace Minisat {
+namespace SLIME {
 
 //=================================================================================================
 // Simple layer on top of malloc/realloc to catch out-of-memory situtaions and provide some typing:
