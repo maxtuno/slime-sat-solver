@@ -28,7 +28,7 @@ LFLAGS    ?= -Wall
 
 COPTIMIZE ?= -O3
 
-CFLAGS    += -I$(MROOT) -I$(DEPDIR) -mtune=native -D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS -Wno-unused-variable -Wno-unused-label -Wno-reorder -Wno-unused-value -D LOG # delete this for no log
+CFLAGS    += -I$(MROOT) -I$(DEPDIR) -mtune=native -D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS -Wno-unused-variable -Wno-unused-label -Wno-reorder -Wno-unused-value -D LOG # delete this (LOG) for no log
 LFLAGS    += -lz
 
 .PHONY : s p d r rs clean 
@@ -55,7 +55,7 @@ $(EXEC):		LFLAGS += -g
 $(EXEC)_profile:	LFLAGS += -g -pg
 $(EXEC)_debug:		LFLAGS += -g
 #$(EXEC)_release:	LFLAGS += ...
-$(EXEC)_static:		LFLAGS += # --static
+$(EXEC)_static:		LFLAGS += # --static # for static compilation
 
 ## Dependencies
 $(EXEC):		$(COBJS)
