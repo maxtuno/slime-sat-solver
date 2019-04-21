@@ -3,8 +3,7 @@ SLIME: A Minimal Heuristic to Boost SAT Solving (PEQNP - http://www.peqnp.scienc
 On CDCL Based SAT Solvers the trail size is strictly related to progress or to the total conflicts on the current assignment,
 such that if the trail size is the same that the number of variables, then current assignment is valid.
 
-On the other hand, in the selection of the current variable it is necessary to assign a predetermined polarity to the resulting literal,
-which in most implementations is a predefined value.
+On the other hand, in the selection of the current variable it is necessary to assign a predetermined polarity to the resulting literal, which in most implementations is a predefined value.
 
 SLIME implement a simple heuristic with minimal complexity, that correlated the trail size and the polarity of the current variable to assign.
 
