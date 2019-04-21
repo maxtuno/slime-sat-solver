@@ -28,7 +28,7 @@ LFLAGS    ?= -Wall
 
 COPTIMIZE ?= -O3
 
-CFLAGS    += -I$(MROOT) -I$(DEPDIR) -D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS -Wno-unused-variable -Wno-unused-label -Wno-reorder -Wno-unused-value -D LOG # delete this for no log
+CFLAGS    += -I$(MROOT) -I$(DEPDIR) -mtune=native -D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS -Wno-unused-variable -Wno-unused-label -Wno-reorder -Wno-unused-value -D LOG # delete this for no log
 LFLAGS    += -lz
 
 .PHONY : s p d r rs clean 

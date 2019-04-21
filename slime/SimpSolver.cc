@@ -29,8 +29,8 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 **************************************************************************************************/
 
 #include "SimpSolver.h"
-#include "mtl/Sort.h"
 #include "System.h"
+#include "mtl/Sort.h"
 
 using namespace SLIME;
 

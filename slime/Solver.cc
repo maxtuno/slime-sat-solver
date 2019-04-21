@@ -33,9 +33,9 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #include <signal.h>
 #include <unistd.h>
 
+#include "SimpSolver.h"
 #include "Solver.h"
 #include "mtl/Sort.h"
-#include "SimpSolver.h"
 
 using namespace SLIME;
 
@@ -2010,7 +2010,7 @@ static void SIGALRM_switch(int signum) { switch_mode = true; }
 
 // NOTE: assumptions passed in member-variable 'assumptions'.
 lbool Solver::solve_() {
-    unsigned int timer = (unsigned int) pow((double)nClauses() / nVars(), 3);
+    unsigned int timer = (unsigned int)pow((double)nClauses() / nVars(), 2);
     signal(SIGALRM, SIGALRM_switch);
     alarm(timer);
     printf("c It will change to VSIDS in %u seconds.\n", timer);
