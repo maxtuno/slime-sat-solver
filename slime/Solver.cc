@@ -1943,9 +1943,15 @@ lbool Solver::search(int &nof_conflicts) {
                 decisions++;
                 next = pickBranchLit();
 
-                if (next == lit_Undef)
+                if (next == lit_Undef) {
                     // Model found:
+                    for (int i = 0; i < nClauses(); i++) {
+                        if (!satisfied(ca[clauses[i]])) {
+                            return l_False;
+                        }
+                    }
                     return l_True;
+                }
             }
 
             // Increase decision level and enqueue 'next'
