@@ -40,6 +40,8 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #include "ParseUtils.h"
 #include "System.h"
 
+// #define SAT_RACE /* Use signal handlers that forcibly quit until the solver will be able to respond. */
+
 using namespace SLIME;
 
 //=================================================================================================
@@ -49,16 +51,18 @@ void printStats(Solver &solver) {
     double mem_used = memUsedPeak();
     printf("c restarts              : %" PRIu64 "\n", solver.starts);
     printf("c conflicts             : %-12" PRIu64 "   (%.0f /sec)\n", solver.conflicts, solver.conflicts / cpu_time);
-    printf("c decisions             : %-12" PRIu64 "   (%4.2f %% random) (%.0f /sec)\n", solver.decisions, (float)solver.rnd_decisions * 100 / (float)solver.decisions, solver.decisions / cpu_time);
+    printf("c decisions             : %-12" PRIu64 "   (%4.2f %% random) (%.0f /sec)\n", solver.decisions, (float) solver.rnd_decisions * 100 / (float) solver.decisions, solver.decisions / cpu_time);
     printf("c propagations          : %-12" PRIu64 "   (%.0f /sec)\n", solver.propagations, solver.propagations / cpu_time);
-    printf("c conflict literals     : %-12" PRIu64 "   (%4.2f %% deleted)\n", solver.tot_literals, (solver.max_literals - solver.tot_literals) * 100 / (double)solver.max_literals);
-    printf("c backtracks            : %-12" PRIu64 "   (NCB %0.f%% , CB %0.f%%)\n", solver.non_chrono_backtrack + solver.chrono_backtrack, (solver.non_chrono_backtrack * 100) / (double)(solver.non_chrono_backtrack + solver.chrono_backtrack), (solver.chrono_backtrack * 100) / (double)(solver.non_chrono_backtrack + solver.chrono_backtrack));
+    printf("c conflict literals     : %-12" PRIu64 "   (%4.2f %% deleted)\n", solver.tot_literals, (solver.max_literals - solver.tot_literals) * 100 / (double) solver.max_literals);
+    printf("c backtracks            : %-12" PRIu64 "   (NCB %0.f%% , CB %0.f%%)\n", solver.non_chrono_backtrack + solver.chrono_backtrack, (solver.non_chrono_backtrack * 100) / (double) (solver.non_chrono_backtrack + solver.chrono_backtrack), (solver.chrono_backtrack * 100) / (double) (solver.non_chrono_backtrack + solver.chrono_backtrack));
     if (mem_used != 0)
         printf("c Memory used           : %.2f MB\n", mem_used);
     printf("c CPU time              : %g s\n", cpu_time);
 }
 
 static Solver *solver;
+
+#ifdef SAT_RACE
 // Terminate by notifying the solver and back out gracefully. This is mainly to have a test-case
 // for this feature of the Solver as it may take longer than an immediate call to '_exit()'.
 static void SIGINT_interrupt(int signum) { solver->interrupt(); }
@@ -76,6 +80,7 @@ static void SIGINT_exit(int signum) {
     }
     _exit(1);
 }
+#endif
 
 void printHeader() {
     printf("c                                         \n");
@@ -101,12 +106,14 @@ int main(int argc, char **argv) {
     try {
         setUsageHelp("USAGE: %s [options] <input-file> <result-output-file>\n\n  where input may be either in plain or gzipped DIMACS.\n");
 
+#ifdef SAT_RACE
 #if defined(__linux__)
         fpu_control_t oldcw, newcw;
         _FPU_GETCW(oldcw);
         newcw = (oldcw & ~_FPU_EXTENDED) | _FPU_DOUBLE;
         _FPU_SETCW(newcw);
         printf("c WARNING: for repeatability, setting FPU to use double precision\n");
+#endif
 #endif
         // Extra options:
         //
@@ -133,22 +140,24 @@ int main(int argc, char **argv) {
             S.drup_file = strlen(drup_file) ? fopen(drup_file, "wb") : stdout;
             if (S.drup_file == NULL) {
                 S.drup_file = stdout;
-                printf("c Error opening %s for write.\n", (const char *)drup_file);
+                printf("c Error opening %s for write.\n", (const char *) drup_file);
             }
             printf("c DRUP proof generation: %s\n", S.drup_file == stdout ? "stdout" : drup_file);
         }
 
         solver = &S;
+#ifdef SAT_RACE
         // Use signal handlers that forcibly quit until the solver will be able to respond to
         // interrupts:
         signal(SIGINT, SIGINT_exit);
         signal(SIGXCPU, SIGINT_exit);
+#endif
 
         // Set limit on CPU-time:
         if (cpu_lim != INT32_MAX) {
             rlimit rl;
             getrlimit(RLIMIT_CPU, &rl);
-            if (rl.rlim_max == RLIM_INFINITY || (rlim_t)cpu_lim < rl.rlim_max) {
+            if (rl.rlim_max == RLIM_INFINITY || (rlim_t) cpu_lim < rl.rlim_max) {
                 rl.rlim_cur = cpu_lim;
                 if (setrlimit(RLIMIT_CPU, &rl) == -1)
                     printf("c WARNING! Could not set resource limit: CPU-time.\n");
@@ -157,7 +166,7 @@ int main(int argc, char **argv) {
 
         // Set limit on virtual memory:
         if (mem_lim != INT32_MAX) {
-            rlim_t new_mem_lim = (rlim_t)mem_lim * 1024 * 1024;
+            rlim_t new_mem_lim = (rlim_t) mem_lim * 1024 * 1024;
             rlimit rl;
             getrlimit(RLIMIT_AS, &rl);
             if (rl.rlim_max == RLIM_INFINITY || new_mem_lim < rl.rlim_max) {
@@ -192,10 +201,12 @@ int main(int argc, char **argv) {
         if (S.verbosity > 0)
             printf("c |  Parse time:           %12.2f s                                       |\n", parsed_time - initial_time);
 
+#ifdef SAT_RACE
         // Change to signal-handlers that will only notify the solver and allow it to terminate
         // voluntarily:
         signal(SIGINT, SIGINT_interrupt);
         signal(SIGXCPU, SIGINT_interrupt);
+#endif
 
         S.parsing = false;
         S.eliminate(true);
@@ -231,7 +242,7 @@ int main(int argc, char **argv) {
         if (dimacs) {
             if (S.verbosity > 0)
                 printf("c ==============================[ Writing DIMACS ]===============================\n");
-            S.toDimacs((const char *)dimacs);
+            S.toDimacs((const char *) dimacs);
             if (S.verbosity > 0)
                 printStats(S);
             exit(0);

@@ -11,10 +11,11 @@ MROOT     = ..
 
 PWD        = $(shell pwd)
 EXEC      ?= $(notdir $(PWD))
+LIB        = slime
 
-CSRCS      = $(wildcard $(PWD)/*.cc) 
+CSRCS      = $(wildcard $(PWD)/src/*.cc)
 DSRCS      = $(foreach dir, $(DEPDIR), $(filter-out $(MROOT)/Main.cc, $(wildcard $(MROOT)/*.cc)))
-CHDRS      = $(wildcard $(PWD)/*.h)
+CHDRS      = $(wildcard $(PWD)/src/*.h)
 COBJS      = $(CSRCS:.cc=.o) $(DSRCS:.cc=.o)
 
 PCOBJS     = $(addsuffix p,  $(COBJS))
@@ -28,10 +29,10 @@ LFLAGS    ?= -Wall
 
 COPTIMIZE ?= -O3
 
-CFLAGS    += -I$(MROOT) -I$(DEPDIR) -mtune=native -D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS -Wno-unused-variable -Wno-unused-label -Wno-reorder -Wno-unused-value -D LOG # delete this (LOG) for no log
+CFLAGS    += -I$(MROOT) -I$(DEPDIR)/include -I$(DEPDIR) -mtune=native -D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS -Wno-unused-variable -Wno-unused-label -Wno-reorder -Wno-unused-value -D LOG # delete this (LOG) for no log
 LFLAGS    += -lz
 
-.PHONY : s p d r rs clean 
+.PHONY : s p d r rs clean
 
 s:	$(EXEC)
 p:	$(EXEC)_profile
@@ -84,11 +85,6 @@ $(EXEC) $(EXEC)_profile $(EXEC)_debug $(EXEC)_release $(EXEC)_static:
 lib$(LIB)_standard.a lib$(LIB)_profile.a lib$(LIB)_release.a lib$(LIB)_debug.a:
 	@echo Making library: "$@ ( $(foreach f,$^,$(subst $(MROOT)/,,$f)) )"
 	@$(AR) -rcsv $@ $^
-
-## Library Soft Link rule:
-libs libp libd libr:
-	@echo "Making Soft Link: $^ -> lib$(LIB).a"
-	@ln -sf $^ lib$(LIB).a
 
 ## Clean rule
 clean:
