@@ -2,6 +2,8 @@
 echo
 echo "Welcome to compilation and local installation of SLIME SAT Solver and SLIME SDK by http://www.peqnp.science"
 echo
+echo "(in some UNIX Based Systems need sudo)"
+echo
 read -s -r -p "Press any key to continue"
 echo
 echo
@@ -15,8 +17,6 @@ echo
 echo "Installing..."
 rm /usr/local/bin/slime
 cp bin/slime_cli /usr/local/bin/slime
-rm -r /tmp/test
-cp -r ../test /tmp/test
 rm -r ../sdk
 mkdir sdk
 mkdir sdk/slime
@@ -28,7 +28,8 @@ mv sdk ../sdk
 echo
 echo "Testing..."
 echo
-time slime /tmp/test/test.cnf
+time slime ../test/test.cnf ../test/test.mod
+time python3 ../slime/bin/slimes.py ../test/unsat.cnf ../test/proof.out
 echo
 echo "SLIME Help:"
 echo "usage: slime <cnf-file> [-drup-file=<unsat-proof-file>] [<sat-model-file>]"

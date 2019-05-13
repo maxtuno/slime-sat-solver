@@ -1,4 +1,4 @@
-SLIME: A Minimal Heuristic to Boost SAT Solving (PEQNP - http://www.peqnp.science)
+SLIME: A Minimal Heuristic to Boost SAT Solving (PEQNP - http://www.peqnp.science) https://github.com/maxtuno/slime-sat-solver
 
 On CDCL Based SAT Solvers the trail size is strictly related to progress or to the total conflicts on the current assignment,
 such that if the trail size is the same that the number of variables, then current assignment is valid.
