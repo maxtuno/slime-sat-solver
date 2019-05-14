@@ -1994,8 +1994,7 @@ static double luby(double y, int x) {
     // Find the finite subsequence that contains index 'x', and the
     // size of that subsequence:
     int size, seq;
-    for (size = 1, seq = 0; size < x + 1; seq++, size = 2 * size + 1)
-        ;
+    for (size = 1, seq = 0; size < x + 1; seq++, size = 2 * size + 1);
 
     while (size - 1 != x) {
         size = (size - 1) >> 1;
@@ -2010,10 +2009,11 @@ static void SIGALRM_switch(int signum) { switch_mode = true; }
 
 // NOTE: assumptions passed in member-variable 'assumptions'.
 lbool Solver::solve_() {
-    unsigned int timer = (unsigned int)pow((double)nClauses() / nVars(), 2);
+    unsigned int wall = (unsigned int)pow((double)nClauses() / nVars(), M_PI);
+    unsigned int timer = std::min(wall, 1000u);
     signal(SIGALRM, SIGALRM_switch);
     alarm(timer);
-    printf("c It will change to VSIDS in %u seconds.\n", timer);
+    printf("c Activating VSIDS in %u seconds.\n", timer);
 
     model.clear();
     conflict.clear();
@@ -2037,7 +2037,7 @@ lbool Solver::solve_() {
     add_tmp.clear();
 
     VSIDS = true;
-    int init = 10000;
+    int init = 0;
     while (status == l_Undef && init > 0 /*&& withinBudget()*/)
         status = search(init);
     VSIDS = false;

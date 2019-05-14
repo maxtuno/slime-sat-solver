@@ -6,7 +6,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
 include_directories(. include)
-link_directories(lib)
+link_directories(${PROJECT_SOURCE_DIR}/lib)
 
 set(CMAKE_CXX_FLAGS "-std=c++98 -O3 -mtune=native -Wno-unused-value -D NDEBUG -D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS -D LOG") # -static
 

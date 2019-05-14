@@ -32,3 +32,6 @@ cmake-build-release-gcc/slime/CMakeFiles/slime_static.dir/flags.make
 cmake-build-release-gcc/slime/CMakeFiles/slime_static.dir/depend.make
 cmake-build-release-gcc/slime/CMakeFiles/slime_static.dir/depend.internal
 cmake-build-release-gcc/slime/CMakeFiles/slime_static.dir/CXX.includecache
+*.a
+slime/bin/slime_cli
+sdk/slime/example/CMakeLists.txt

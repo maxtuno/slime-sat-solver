@@ -1,3 +1,16 @@
+SLIME 2.0: A Free World Class High Performance SAT Solver
+
+SAT Race 2015
+
+v1.0 PAR-2 605079.2646
+v2.0 PAR-2 591812.0663
+
+(The solvers will ranked using the PAR-2 scheme: The score of a solver is defined as the sum of all runtimes for solved instances + 2*timeout for unsolved instances, lowest score wins.) 
+
+https://maxtuno.github.io/slime-sat-solver
+
+----------------------------------------------------------------------------------------------------
+
 SLIME: A Minimal Heuristic to Boost SAT Solving (PEQNP - http://www.peqnp.science) https://github.com/maxtuno/slime-sat-solver
 
 On CDCL Based SAT Solvers the trail size is strictly related to progress or to the total conflicts on the current assignment,
