@@ -17,11 +17,12 @@ echo
 echo "Installing..."
 rm /usr/local/bin/slime
 cp bin/slime_cli /usr/local/bin/slime
-# rm -r ../sdk
-# mkdir sdk
-# mkdir sdk/slime
+rm -r ../sdk
+mkdir sdk
+mkdir sdk/slime
 cp -r include sdk/slime/include
 cp -r mtl sdk/slime/include/mtl
+cp -r example sdk/slime/example
 mkdir sdk/slime/lib
 cp lib/libslime.a sdk/slime/lib/libslime.a
 mv sdk ../sdk
