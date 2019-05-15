@@ -17,9 +17,9 @@ echo
 echo "Installing..."
 rm /usr/local/bin/slime
 cp bin/slime_cli /usr/local/bin/slime
-rm -r ../sdk
-mkdir sdk
-mkdir sdk/slime
+# rm -r ../sdk
+# mkdir sdk
+# mkdir sdk/slime
 cp -r include sdk/slime/include
 cp -r mtl sdk/slime/include/mtl
 mkdir sdk/slime/lib
