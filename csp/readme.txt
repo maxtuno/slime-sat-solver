@@ -4,8 +4,8 @@ http://bach.istc.kobe-u.ac.jp/sugar/
 
 example for use SUGAR with SLIME SAT Solver (/usr/local/bin/slime):
 
-perl slime-sugar.pl /Users/maxtuno/Documents/GitHub/slime-sat-solver/csp/n-Queens-Completion-Problem/problem_32_16.csp 
-
+perl slime-sugar.pl problem_32_16.csp 
+https://github.com/maxtuno/slime-sat-solver/tree/master/csp
 Instances used in paper: "meSAT: Multiple Encodings of CSP to SAT".
 http://jason.matf.bg.ac.rs/~mirkos/Constraints_2014.html
 
