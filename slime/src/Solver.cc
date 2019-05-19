@@ -1831,8 +1831,6 @@ static double luby(double y, int x) {
 
 // NOTE: assumptions passed in member-variable 'assumptions'.
 lbool Solver::solve_() {
-    int wall = (int)pow((double)nClauses() / nVars(), 2);
-
     model.clear();
     conflict.clear();
     if (!ok)
@@ -1858,7 +1856,7 @@ lbool Solver::solve_() {
     int curr_restarts = 0;
     status = l_Undef;
     while (status == l_Undef /*&& withinBudget()*/) {
-        if (curr_restarts > wall) {
+        if (!switch_mode && global > 2 * nVars() / 3) {
             switch_mode = true;
         }
         if (VSIDS) {
@@ -1871,6 +1869,8 @@ lbool Solver::solve_() {
         }
         if (!VSIDS && switch_mode) {
             VSIDS = true;
+            printf("c Switched to VSIDS.\n");
+            fflush(stdout);
             picked.clear();
             conflicted.clear();
             almost_conflicted.clear();
