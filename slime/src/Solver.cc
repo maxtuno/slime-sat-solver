@@ -1833,7 +1833,7 @@ lbool Solver::solve_() {
     unsigned int wall = (unsigned int)pow((double)nClauses() / nVars(), M_PI);
     unsigned int timer = std::min(wall, 1000u);
 
-    int msec = 0, trigger = 10; /* 10ms */
+    int msec = 0, trigger = timer; /* 10ms */
     clock_t before = clock();
 
     printf("c Activating VSIDS in %u seconds.\n", timer);
