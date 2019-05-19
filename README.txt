@@ -1,4 +1,5 @@
 SLIME 2.1:
+
 - Extreme Simplification of Unecesarily Components
 - Remove ZLIB dependency now full "-ansi" C++ code.
 - 2.0 Performance
