@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
 #endif
 
     FILE *in = fopen(argv[1], "r");
-    if (in == nullptr) {
+    if (in == NULL) {
         std::cout << "c ERROR! Could not open file: " << argv[1] << std::endl;
         return EXIT_FAILURE;
     }
