@@ -1,0 +1,5 @@
+SLIME 2.1
+- Extreme Simplification of Unnecessarily Components
+- Remove ZLIB dependency, now full "-ansi" C++ code.
+- Improve compatibility with all OS.
+- Remove MP4 tutorials on anexos.

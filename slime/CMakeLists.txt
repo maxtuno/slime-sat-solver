@@ -18,4 +18,4 @@ add_library(slime
         )
 
 add_executable(slime_cli src/Main.cc)
-target_link_libraries(slime_cli z slime)
+target_link_libraries(slime_cli slime)

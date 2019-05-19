@@ -4,7 +4,7 @@ echo "Welcome to compilation and local installation of SLIME SAT Solver and SLIM
 echo
 echo "(in some UNIX Based Systems need sudo)"
 echo
-read -s -r -p "Press any key to continue"
+read -p "Press any key to continue"
 echo
 echo
 echo "Building..."
@@ -29,11 +29,11 @@ mv sdk ../sdk
 echo
 echo "Testing..."
 echo
-time slime ../test/test.cnf ../test/test.mod
-time python3 ../slime/bin/slimes.py ../test/unsat.cnf ../test/proof.out
+time slime ../test/test.cnf
+time slime ../test/unsat.cnf -drup-file=proof.out
 echo
 echo "SLIME Help:"
-echo "usage: slime <cnf-file> [-drup-file=<unsat-proof-file>] [<sat-model-file>]"
+echo "usage: slime <cnf-file> [-drup-file=<unsat-proof-file>] (> [<sat-model-file>])"
 echo
 echo "DONE..."
 echo

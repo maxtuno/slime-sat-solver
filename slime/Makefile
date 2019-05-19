@@ -24,13 +24,13 @@ RCOBJS     = $(addsuffix r,  $(COBJS))
 
 
 CXX       ?= g++
-CFLAGS    ?= -Wall -Wno-parentheses
-LFLAGS    ?= -Wall
+CFLAGS    ?= -Wno-parentheses
+LFLAGS    ?= 
 
 COPTIMIZE ?= -O3
 
 CFLAGS    += -I$(MROOT) -I$(DEPDIR)/include -I$(DEPDIR) -g0 -mtune=native -D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS -Wno-unused-variable -Wno-unused-label -Wno-reorder -Wno-unused-value -D LOG # delete this (LOG) for no log
-LFLAGS    += -lz
+LFLAGS    += 
 
 .PHONY : s p d r rs clean
 

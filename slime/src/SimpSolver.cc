@@ -29,7 +29,6 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 **************************************************************************************************/
 
 #include "SimpSolver.h"
-#include "System.h"
 #include "mtl/Sort.h"
 
 using namespace SLIME;
@@ -39,13 +38,13 @@ using namespace SLIME;
 
 static const char *_cat = "SIMP";
 
-static BoolOption opt_use_asymm(_cat, "asymm", "Shrink clauses by asymmetric branching.", false);
-static BoolOption opt_use_rcheck(_cat, "rcheck", "Check if a clause is already implied. (costly)", false);
-static BoolOption opt_use_elim(_cat, "elim", "Perform variable elimination.", true);
-static IntOption opt_grow(_cat, "grow", "Allow a variable elimination step to grow by a number of clauses.", 0);
-static IntOption opt_clause_lim(_cat, "cl-lim", "Variables are not eliminated if it produces a resolvent with a length above this limit. -1 means no limit", -1, IntRange(-1, INT32_MAX));
-static IntOption opt_subsumption_lim(_cat, "sub-lim", "Do not check if subsumption against a clause larger than this. -1 means no limit.", 1000, IntRange(-1, INT32_MAX));
-static DoubleOption opt_simp_garbage_frac(_cat, "simp-gc-frac", "The fraction of wasted memory allowed before a garbage collection is triggered during simplification.", 0.5, DoubleRange(0, false, HUGE_VAL, false));
+static bool opt_use_asymm = false;
+static bool opt_use_rcheck = false;
+static bool opt_use_elim = true;
+static int opt_grow = 0;
+static int opt_clause_lim = -1;
+static int opt_subsumption_lim = 1000;
+static double opt_simp_garbage_frac = 0.5;
 
 //=================================================================================================
 // Constructor/Destructor:
@@ -101,8 +100,6 @@ lbool SimpSolver::solve_(bool do_simp, bool turn_off_simp) {
 
     if (result == l_True)
         result = Solver::solve_();
-    else if (verbosity >= 1)
-        printf("c ===============================================================================\n");
 
     if (result == l_True)
         extendModel();
@@ -182,7 +179,6 @@ bool SimpSolver::strengthenClause(CRef cr, Lit l) {
     assert(use_simplification);
 
     // FIX: this is too inefficient but would be nice to have (properly implemented)
-    // if (!find(subsumption_queue, &c))
     subsumption_queue.insert(cr);
 
     if (drup_file) {
@@ -329,7 +325,7 @@ bool SimpSolver::implied(const vec<Lit> &c) {
 }
 
 // Backward subsumption + backward subsumption resolution
-bool SimpSolver::backwardSubsumptionCheck(bool verbose) {
+bool SimpSolver::backwardSubsumptionCheck() {
     int cnt = 0;
     int subsumed = 0;
     int deleted_literals = 0;
@@ -358,9 +354,6 @@ bool SimpSolver::backwardSubsumptionCheck(bool verbose) {
 
         if (c.mark())
             continue;
-
-        if (verbose && verbosity >= 2 && cnt++ % 1000 == 0)
-            printf("c subsumption left: %10d (%10d subsumed, %10d deleted literals)\r", subsumption_queue.size(), subsumed, deleted_literals);
 
         assert(c.size() > 1 || value(c[0]) == l_True); // Unit-clauses should have been propagated before this point.
 
@@ -646,13 +639,9 @@ bool SimpSolver::eliminate(bool turn_off_elim) {
         double cl_inc_rate = (double)n_cls_now / n_cls_last;
         double var_dec_rate = (double)n_vars_last / n_vars_now;
 
-        printf("c Reduced to %d vars, %d cls (grow=%d)\n", n_vars_now, n_cls_now, grow);
-        printf("c cl_inc_rate=%.3f, var_dec_rate=%.3f\n", cl_inc_rate, var_dec_rate);
-
         if (n_cls_now > n_cls_init || cl_inc_rate > var_dec_rate)
             break;
     }
-    printf("c No. effective iterative eliminations: %d\n", iter);
 
 cleanup:
     touched.clear(true);
@@ -686,7 +675,7 @@ bool SimpSolver::eliminate_() {
 
         gatherTouchedClauses();
         // printf("  ## (time = %6.2f s) BWD-SUB: queue = %d, trail = %d\n", cpuTime(), subsumption_queue.size(), trail.size() - bwdsub_assigns);
-        if ((subsumption_queue.size() > 0 || bwdsub_assigns < trail.size()) && !backwardSubsumptionCheck(true)) {
+        if ((subsumption_queue.size() > 0 || bwdsub_assigns < trail.size()) && !backwardSubsumptionCheck()) {
             ok = false;
             goto cleanup;
         }
@@ -709,9 +698,6 @@ bool SimpSolver::eliminate_() {
 
             if (isEliminated(elim) || value(elim) != l_Undef)
                 continue;
-
-            if (verbosity >= 2 && cnt % 100 == 0)
-                printf("c elimination left: %10d\r", elim_heap.size());
 
             if (use_asymm) {
                 // Temporarily freeze variable. Otherwise, it would immediately end up on the queue again:
@@ -748,9 +734,6 @@ cleanup:
         clauses.shrink(i - j);
     }
     checkGarbage();
-
-    if (verbosity >= 1 && elimclauses.size() > 0)
-        printf("c |  Eliminated clauses:     %10.2f Mb                                      |\n", double(elimclauses.size() * sizeof(uint32_t)) / (1024 * 1024));
 
     return ok;
 }
@@ -789,7 +772,5 @@ void SimpSolver::garbageCollect() {
     to.extra_clause_field = ca.extra_clause_field; // NOTE: this is important to keep (or lose) the extra fields.
     relocAll(to);
     Solver::relocAll(to);
-    if (verbosity >= 2)
-        printf("c |  Garbage collection:   %12d bytes => %12d bytes             |\n", ca.size() * ClauseAllocator::Unit_Size, to.size() * ClauseAllocator::Unit_Size);
     to.moveTo(ca);
 }

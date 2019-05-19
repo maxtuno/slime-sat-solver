@@ -3,7 +3,7 @@ Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
 Copyright (c) 2007-2010, Niklas Sorensson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
-associated documentation files (the "Software"), to deal in the Software without restriction,
+associated documentation FILE *s (the "Software"), to deal in the Software without restriction,
 including without limitation the rights to use, copy, modify, merge, publish, distribute,
 sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
@@ -24,8 +24,6 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <zlib.h>
-
 namespace SLIME {
 
 //-------------------------------------------------------------------------------------------------
@@ -34,7 +32,7 @@ namespace SLIME {
 static const int buffer_size = 1048576;
 
 class StreamBuffer {
-    gzFile in;
+    FILE *in;
     unsigned char buf[buffer_size];
     int pos;
     int size;
@@ -42,12 +40,12 @@ class StreamBuffer {
     void assureLookahead() {
         if (pos >= size) {
             pos = 0;
-            size = gzread(in, buf, sizeof(buf));
+            size = fread(buf, 1, sizeof(buf), in);
         }
     }
 
   public:
-    explicit StreamBuffer(gzFile i) : in(i), pos(0), size(0) { assureLookahead(); }
+    explicit StreamBuffer(FILE *i) : in(i), pos(0), size(0) { assureLookahead(); }
 
     int operator*() const { return (pos >= size) ? EOF : buf[pos]; }
     void operator++() {
@@ -58,7 +56,7 @@ class StreamBuffer {
 };
 
 //-------------------------------------------------------------------------------------------------
-// End-of-file detection functions for StreamBuffer and char*:
+// End-of-FILE * detection functions for StreamBuffer and char*:
 
 static inline bool isEof(StreamBuffer &in) { return *in == EOF; }
 static inline bool isEof(const char *in) { return *in == '\0'; }

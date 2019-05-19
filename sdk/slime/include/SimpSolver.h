@@ -159,7 +159,7 @@ class SimpSolver : public Solver {
     void gatherTouchedClauses();
     bool merge(const Clause &_ps, const Clause &_qs, Var v, vec<Lit> &out_clause);
     bool merge(const Clause &_ps, const Clause &_qs, Var v, int &size);
-    bool backwardSubsumptionCheck(bool verbose = false);
+    bool backwardSubsumptionCheck();
     bool eliminateVar(Var v);
     void extendModel();
 

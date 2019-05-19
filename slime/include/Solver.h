@@ -47,7 +47,6 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #include "mtl/Alg.h"
 #include "mtl/Heap.h"
 #include "mtl/Vec.h"
-#include "Options.h"
 
 // Don't change the actual numbers.
 #define LOCAL 0
@@ -63,7 +62,6 @@ class Solver {
   protected:
     int local;
     int global;
-    int top;
 
   private:
     template <typename T> class MyQueue {
@@ -185,7 +183,6 @@ class Solver {
     // Mode of operation:
     //
     FILE *drup_file;
-    int verbosity;
     double step_size;
     double step_size_dec;
     double min_step_size;
@@ -221,6 +218,27 @@ class Solver {
 #ifdef ANTI_EXPLORATION
     vec<uint32_t> canceled;
 #endif
+
+    // HACK to expose propagation for Open-WBO
+    bool propagateLit(Lit l, vec<Lit> &implied) {
+        cancelUntil(0);
+
+        // literal is an unit clause
+        if (value(l) != l_Undef) {
+            return value(l) == l_False;
+        }
+        assert(value(l) == l_Undef);
+
+        newDecisionLevel();
+        uncheckedEnqueue(l);
+        int a = trail.size();
+        CRef cr = propagate();
+        for (int i = a; i < trail.size(); i++) {
+            implied.push(trail[i]);
+        }
+        cancelUntil(0);
+        return (cr != CRef_Undef);
+    }
 
   protected:
     // Helper structures:
@@ -492,7 +510,7 @@ class Solver {
     vec<Lit> involved_lits;
     double my_var_decay;
     bool DISTANCE;
-    };
+};
 
 //=================================================================================================
 // Implementation of inline methods:
