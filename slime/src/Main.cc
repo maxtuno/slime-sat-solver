@@ -63,10 +63,13 @@ int main(int argc, char *argv[]) {
     vec<Lit> assumptions;
     lbool result = S.solveLimited(assumptions);
 
-    printf(result == l_True ? "s SATISFIABLE\n" : result == l_False ? "s UNSATISFIABLE\n" : "s UNKNOWN\n");
+#ifdef RACE
+    printf(result == l_True ? "s SATISFIABLE\nv " : result == l_False ? "s UNSATISFIABLE\n" : "s UNKNOWN\n");
+#else
+    printf(result == l_True ? "SAT\n" : result == l_False ? "UNSAT\n" : "UNKNOWN\n");
+#endif
 
     if (result == l_True) {
-        printf("v ");
         for (int i = 0; i < S.nVars(); i++)
             if (S.model[i] != l_Undef)
                 printf("%s%s%d", (i == 0) ? "" : " ", (S.model[i] == l_True) ? "" : "-", i + 1);
