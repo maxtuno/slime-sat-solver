@@ -1831,7 +1831,7 @@ static double luby(double y, int x) {
 
 // NOTE: assumptions passed in member-variable 'assumptions'.
 lbool Solver::solve_() {
-    int wall = (int)pow((double)nClauses() / nVars(), M_PI);
+    int wall = (int)pow((double)nClauses() / nVars(), 2);
 
     model.clear();
     conflict.clear();
@@ -1871,8 +1871,6 @@ lbool Solver::solve_() {
         }
         if (!VSIDS && switch_mode) {
             VSIDS = true;
-            printf("c Switched to VSIDS.\n");
-            fflush(stdout);
             picked.clear();
             conflicted.clear();
             almost_conflicted.clear();
