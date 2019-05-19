@@ -11,7 +11,7 @@ sh build.sh
 build on windows with MinGW-w64:
 cd slime
 x86_64-w64-mingw32-g++ -std=c++98 -mtune=native -O3 -I./include -I./ src/*.cc -o bin/slime_cli-w64 -D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS -D LOG -static 
-(slime_cli-w64.exe.zip contains an windows wxwcutable compiled on macOS with MinGW-w64 and tested with Wine)
+(slime_cli-w64.exe.zip contains an windows executable compiled on macOS with MinGW-w64 and tested with Wine)
 
 ----------------------------------------------------------------------------------------------------
 
