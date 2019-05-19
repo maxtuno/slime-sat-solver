@@ -13,8 +13,6 @@ set(CMAKE_CXX_FLAGS "-std=c++98 -O3 -mtune=native -Wno-unused-value -D NDEBUG -D
 add_library(slime
         src/Solver.cc
         src/SimpSolver.cc
-        src/Options.cc
-        src/System.cc
         )
 
 add_executable(slime_cli src/Main.cc)
