@@ -1879,6 +1879,8 @@ lbool Solver::solve_() {
             curr_restarts++;
         }
         if (!VSIDS && switch_mode) {
+            printf("c Switched to VSIDS.\n");
+            fflush(stdout);
             VSIDS = true;
             picked.clear();
             conflicted.clear();
