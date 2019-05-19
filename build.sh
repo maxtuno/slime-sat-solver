@@ -11,8 +11,8 @@ sh starexec_clean
 echo "Testing..."
 echo
 cd bin
-./slime_cli ../test/test.cnf
-./slime_cli ../test/unsat.cnf -drup-file=../test/proof.out
+./slime_cli test.cnf
+./slime_cli unsat.cnf -drup-file=proof.out
 echo
 echo "SLIME Help:"
 echo "usage: slime_cli <cnf-file> [-drup-file=<unsat-proof-file>] (> [<sat-model-file>])"
