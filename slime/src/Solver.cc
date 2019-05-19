@@ -31,6 +31,7 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #include <algorithm>
 #include <math.h>
 #include <signal.h>
+#include <stdio.h>
 #include <unistd.h>
 
 #include "SimpSolver.h"
