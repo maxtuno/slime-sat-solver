@@ -1,7 +1,0 @@
-{
-	"cmd": ["/usr/local/bin/slime-sugar $file"],
-	"shell":true,
-	"file_regex": "^(.+):([0-9]+)()?: error: (.*)$",
-	"working_dir": "${file_path}",
-	"selector": "source.csp"
-}
