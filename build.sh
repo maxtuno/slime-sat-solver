@@ -17,20 +17,11 @@ echo
 echo "Installing..."
 rm /usr/local/bin/slime
 cp bin/slime_cli /usr/local/bin/slime
-rm -r ../sdk
-mkdir sdk
-mkdir sdk/slime
-cp -r include sdk/slime/include
-cp -r mtl sdk/slime/include/mtl
-cp -r example sdk/slime/example
-mkdir sdk/slime/lib
-cp lib/libslime.a sdk/slime/lib/libslime.a
-mv sdk ../sdk
 echo
 echo "Testing..."
 echo
 time slime ../test/test.cnf
-time slime ../test/unsat.cnf -drup-file=proof.out
+time slime ../test/unsat.cnf -drup-file=../test/proof.out
 echo
 echo "SLIME Help:"
 echo "usage: slime <cnf-file> [-drup-file=<unsat-proof-file>] (> [<sat-model-file>])"
