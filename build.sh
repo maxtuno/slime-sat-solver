@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 echo
-echo "Welcome to compilation and local installation of SLIME 2.1 SAT Solver"
-echo
-echo "(in some UNIX Based Systems need sudo)"
+echo "Welcome to compilation of SLIME 2.1 SAT Solver"
 echo
 echo "Building..."
 echo
@@ -13,8 +11,8 @@ sh starexec_clean
 echo "Testing..."
 echo
 cd bin
-time slime_cli ../test/test.cnf
-time slime_cli ../test/unsat.cnf -drup-file=../test/proof.out
+./slime_cli ../test/test.cnf
+./slime_cli ../test/unsat.cnf -drup-file=../test/proof.out
 echo
 echo "SLIME Help:"
 echo "usage: slime_cli <cnf-file> [-drup-file=<unsat-proof-file>] (> [<sat-model-file>])"
