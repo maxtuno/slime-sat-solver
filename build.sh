@@ -4,9 +4,6 @@ echo "Welcome to compilation and local installation of SLIME SAT Solver and SLIM
 echo
 echo "(in some UNIX Based Systems need sudo)"
 echo
-read -p "Press any key to continue"
-echo
-echo
 echo "Building..."
 echo
 cd slime
