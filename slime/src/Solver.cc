@@ -1869,8 +1869,6 @@ lbool Solver::solve_() {
         }
         if (!VSIDS && switch_mode) {
             VSIDS = true;
-            printf("c Switched to VSIDS.\n");
-            fflush(stdout);
             picked.clear();
             conflicted.clear();
             almost_conflicted.clear();
