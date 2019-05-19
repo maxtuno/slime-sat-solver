@@ -5,7 +5,7 @@ SLIME 2.1:
 - 2.0 Performance
 - Full Raspbian Compatibility
 
-build on windows with macOS and Linux:
+build on macOS and Linux:
 sh build.sh
 
 build on windows with MinGW-w64:
