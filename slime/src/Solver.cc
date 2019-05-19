@@ -28,6 +28,8 @@ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **************************************************************************************************/
 
+#define _USE_MATH_DEFINES
+
 #include <algorithm>
 #include <math.h>
 #include <signal.h>
@@ -1827,17 +1829,9 @@ static double luby(double y, int x) {
     return pow(y, seq);
 }
 
-static void SIGALRM_switch(int signum) { switch_mode = true; }
-
 // NOTE: assumptions passed in member-variable 'assumptions'.
 lbool Solver::solve_() {
-    unsigned int wall = (unsigned int)pow((double)nClauses() / nVars(), M_PI);
-    unsigned int timer = std::min(wall, 1000u);
-    signal(SIGALRM, SIGALRM_switch);
-    alarm(timer);
-#ifdef LOG
-    printf("c Activating VSIDS in %u seconds.\n", timer);
-#endif
+    int wall = (int)pow((double)nClauses() / nVars(), M_PI);
 
     model.clear();
     conflict.clear();
@@ -1864,6 +1858,9 @@ lbool Solver::solve_() {
     int curr_restarts = 0;
     status = l_Undef;
     while (status == l_Undef /*&& withinBudget()*/) {
+        if (curr_restarts > wall) {
+            switch_mode = true;
+        }
         if (VSIDS) {
             int weighted = INT32_MAX;
             status = search(weighted);

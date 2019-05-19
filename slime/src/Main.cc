@@ -26,6 +26,13 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 
 using namespace SLIME;
 
+#if _WIN32 || _WIN64
+void printHeader() {
+    printf("c                                             \n");
+    printf("c SLIME SAT Solver by http://www.peqnp.science\n");
+    printf("c                                             \n");
+}
+#else
 void printHeader() {
     printf("c                                         \n");
     printf("c   ██████  ██▓     ██▓ ███▄ ▄███▓▓█████  \n");
@@ -41,9 +48,9 @@ void printHeader() {
     printf("c        http://www.peqnp.science         \n");
     printf("c                                         \n");
 }
+#endif
 
 int main(int argc, char *argv[]) {
-
     printHeader();
 
     SimpSolver S;
