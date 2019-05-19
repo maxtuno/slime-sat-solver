@@ -32,9 +32,8 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 
 #include <algorithm>
 #include <math.h>
-#include <signal.h>
 #include <stdio.h>
-#include <unistd.h>
+#include <time.h>
 
 #include "SimpSolver.h"
 #include "Solver.h"
@@ -1831,6 +1830,14 @@ static double luby(double y, int x) {
 
 // NOTE: assumptions passed in member-variable 'assumptions'.
 lbool Solver::solve_() {
+    unsigned int wall = (unsigned int)pow((double)nClauses() / nVars(), M_PI);
+    unsigned int timer = std::min(wall, 1000u);
+
+    int msec = 0, trigger = 10; /* 10ms */
+    clock_t before = clock();
+
+    printf("c Activating VSIDS in %u seconds.\n", timer);
+
     model.clear();
     conflict.clear();
     if (!ok)
@@ -1856,8 +1863,12 @@ lbool Solver::solve_() {
     int curr_restarts = 0;
     status = l_Undef;
     while (status == l_Undef /*&& withinBudget()*/) {
-        if (!switch_mode && global > 2 * nVars() / 3) {
-            switch_mode = true;
+        if (!switch_mode) {
+            clock_t difference = clock() - before;
+            msec = difference * 1000 / CLOCKS_PER_SEC;
+            if (msec > trigger) {
+                switch_mode = true;
+            }
         }
         if (VSIDS) {
             int weighted = INT32_MAX;
