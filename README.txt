@@ -1,3 +1,10 @@
+SLIME 2.1:
+- Extreme Simplification of Unecesarily Components
+- Remove ZLIB dependency now full "-ansi" C++ code.
+- 2.0 Performance
+
+----------------------------------------------------------------------------------------------------
+
 SLIME 2.0: A Free World Class High Performance SAT Solver
 
 SAT Race 2015
