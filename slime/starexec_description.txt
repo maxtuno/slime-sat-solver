@@ -1,1 +1,1 @@
-SLIME: A Minimal Heuristic to Boost SAT Solving
+SLIME 2.1: A Free World Class High Performance SAT Solver
