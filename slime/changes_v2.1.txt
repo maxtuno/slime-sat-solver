@@ -3,3 +3,8 @@ SLIME 2.1
 - Remove ZLIB dependency, now full "-ansi" C++ code.
 - Improve compatibility with all OS.
 - Remove MP4 tutorials on anexos.
+
+NOTE: To ON or OFF (on the Main.cc file):
+#define DRAT // Generate unsat proof.
+#define RACE // SAT <-> s SATIAFIABLE | UNSAT <-> s UNSATISFIABLE | UNKNOWN <-> s UNKNOWN.
+#define LOG // Show progress. 
