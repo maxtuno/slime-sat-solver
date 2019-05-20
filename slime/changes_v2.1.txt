@@ -4,7 +4,11 @@ SLIME 2.1
 - Improve compatibility with all OS.
 - Remove MP4 tutorials on anexos.
 
-NOTE: To ON or OFF (on the Main.cc file):
+NOTE: 
+
+To ON or OFF (on the Main.cc file):
 #define DRAT // Generate unsat proof.
 #define RACE // SAT <-> s SATIAFIABLE | UNSAT <-> s UNSATISFIABLE | UNKNOWN <-> s UNKNOWN.
+
+To ON or OFF (on the Solver.cc file):
 #define LOG // Show progress. 

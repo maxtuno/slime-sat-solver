@@ -24,7 +24,6 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 
 // #define DRAT // Generate unsat proof.
 // #define RACE // SAT <-> s SATIAFIABLE | UNSAT <-> s UNSATISFIABLE | UNKNOWN <-> s UNKNOWN.
-#define LOG // Show progress.
 
 using namespace SLIME;
 
