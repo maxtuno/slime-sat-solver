@@ -23,7 +23,7 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #include <iostream>
 
 // #define DRAT // Generate unsat proof.
-// #define RACE // SAT <-> s SATIAFIABLE | UNSAT <-> s UNSATISFIABLE | UNKNOWN <-> s UNKNOWN.
+#define RACE // SAT <-> s SATIAFIABLE | UNSAT <-> s UNSATISFIABLE | UNKNOWN <-> s UNKNOWN.
 
 using namespace SLIME;
 
