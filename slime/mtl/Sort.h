@@ -29,7 +29,7 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 namespace SLIME {
 
 template <class T> struct LessThan_default {
-    bool operator()(T x, T y) { return y < x; }
+    bool operator()(T x, T y) { return x < y; }
 };
 
 template <class T, class LessThan> void selectionSort(T *array, int size, LessThan lt) {

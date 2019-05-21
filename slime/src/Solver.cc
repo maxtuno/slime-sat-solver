@@ -99,7 +99,7 @@ Solver::Solver()
       solves(0), starts(0), decisions(0), rnd_decisions(0), propagations(0), conflicts(0), conflicts_VSIDS(0), dec_vars(0), clauses_literals(0), learnts_literals(0), max_literals(0), tot_literals(0), chrono_backtrack(0), non_chrono_backtrack(0)
 
       ,
-      ok(true), cla_inc(1), var_inc(1), watches_bin(WatcherDeleted(ca)), watches(WatcherDeleted(ca)), qhead(0), simpDB_assigns(-1), simpDB_props(0), order_heap_CHB(VarOrderLt(activity_CHB)), order_heap_VSIDS(VarOrderLt(activity_VSIDS)), progress_estimate(0), remove_satisfied(true)
+      ok(true), cla_inc(1), var_inc(1), watches_bin(WatcherDeleted(ca)), watches(WatcherDeleted(ca)), qhead(0), simpDB_assigns(-1), simpDB_props(0), order_heap_CHB(VarOrderLt(activity_CHB)), order_heap_VSIDS(VarOrderLt(activity_VSIDS)), remove_satisfied(true)
 
       ,
       core_lbd_cut(3), global_lbd_sum(0), lbd_queue(50), next_T2_reduce(10000), next_L_reduce(15000), confl_to_chrono(opt_conf_to_chrono), chrono(opt_chrono)
@@ -1744,7 +1744,6 @@ lbool Solver::search(int &nof_conflicts) {
                 lbd_queue.clear();
                 cached = false;
                 // Reached bound on number of conflicts:
-                progress_estimate = progressEstimate();
                 cancelUntil(0);
                 return l_Undef;
             }
@@ -1785,19 +1784,6 @@ lbool Solver::search(int &nof_conflicts) {
 #endif
         }
     }
-}
-
-double Solver::progressEstimate() const {
-    double progress = 0;
-    double F = 1.0 / nVars();
-
-    for (int i = 0; i <= decisionLevel(); i++) {
-        int beg = i == 0 ? 0 : trail_lim[i - 1];
-        int end = i == decisionLevel() ? trail.size() : trail_lim[i];
-        progress += pow(F, i) * (end - beg);
-    }
-
-    return progress / nVars();
 }
 
 /*

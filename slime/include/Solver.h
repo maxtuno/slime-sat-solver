@@ -303,8 +303,7 @@ class Solver {
     vec<Lit> assumptions;                                    // Current set of assumptions provided to solve by the user.
     Heap<VarOrderLt> order_heap_CHB,                         // A priority queue of variables ordered with respect to the variable activity.
         order_heap_VSIDS, order_heap_distance;
-    double progress_estimate; // Set by 'search()'.
-    bool remove_satisfied;    // Indicates whether possibly inefficient linear scan for satisfied clauses should be performed in 'simplify'.
+    bool remove_satisfied; // Indicates whether possibly inefficient linear scan for satisfied clauses should be performed in 'simplify'.
 
     int core_lbd_cut;
     float global_lbd_sum;
