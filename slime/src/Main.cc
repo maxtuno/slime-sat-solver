@@ -22,8 +22,7 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #include <SolverTypes.h>
 #include <iostream>
 
-// #define DRAT // Generate unsat proof.
-#define RACE // SAT <-> s SATIAFIABLE | UNSAT <-> s UNSATISFIABLE | UNKNOWN <-> s UNKNOWN.
+#define DRAT // Generate unsat proof.
 
 using namespace SLIME;
 
@@ -57,7 +56,9 @@ int main(int argc, char *argv[]) {
     SimpSolver S;
 
 #ifdef DRAT
-    S.drup_file = fopen("proof.out", "wb");
+    if (argc > 2) {
+        S.drup_file = fopen(argv[3], "wb");
+    }
 #endif
 
     FILE *in = fopen(argv[1], "r");
@@ -71,16 +72,24 @@ int main(int argc, char *argv[]) {
     vec<Lit> assumptions;
     lbool result = S.solveLimited(assumptions);
 
-#ifdef RACE
-    printf(result == l_True ? "s SATISFIABLE\nv " : result == l_False ? "s UNSATISFIABLE\n" : "s UNKNOWN\n");
-#else
-    printf(result == l_True ? "SAT\n" : result == l_False ? "UNSAT\n" : "UNKNOWN\n");
-#endif
+    if (argc > 1) {
+        if (result == l_True) {
+            FILE *model = fopen(argv[2], "w");
+            fprintf(model, result == l_True ? "SAT\nv " : result == l_False ? "UNSAT\n" : "UNKNOWN\n");
+            for (int i = 0; i < S.nVars(); i++)
+                if (S.model[i] != l_Undef) {
+                    fprintf(model, "%s%s%d", (i == 0) ? "" : " ", (S.model[i] == l_True) ? "" : "-", i + 1);
+                }
+            fprintf(model, " 0\n");
+        }
+    }
 
+    printf(result == l_True ? "s SATISFIABLE\nv " : result == l_False ? "s UNSATISFIABLE\n" : "s UNKNOWN\n");
     if (result == l_True) {
         for (int i = 0; i < S.nVars(); i++)
-            if (S.model[i] != l_Undef)
+            if (S.model[i] != l_Undef) {
                 printf("%s%s%d", (i == 0) ? "" : " ", (S.model[i] == l_True) ? "" : "-", i + 1);
+            }
         printf(" 0\n");
     } else {
 #ifdef DRAT

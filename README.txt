@@ -13,6 +13,8 @@ cd slime
 x86_64-w64-mingw32-g++ -std=c++98 -O3 -I./include -I./ src/*.cc -o bin/slime_cli-w64 -D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS -static 
 (slime_cli-w64.exe.zip contains an windows executable compiled on macOS with MinGW-w64 and tested with Wine)
 
+"usage: slime_cli <cnf-file> [<sat-model-file>] [<unsat-proof-file>]
+
 ----------------------------------------------------------------------------------------------------
 
 SLIME 2.0: A Free World Class High Performance SAT Solver
