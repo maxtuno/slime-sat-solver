@@ -81,9 +81,11 @@ int main(int argc, char *argv[]) {
         printf(" 0\n");
     } else {
 #ifdef DRAT
-        fputc('a', S.drup_file);
-        fputc(0, S.drup_file);
-        fclose(S.drup_file);
+        if (argc > 3) {
+            fputc('a', S.drup_file);
+            fputc(0, S.drup_file);
+            fclose(S.drup_file);
+        }
 #endif
     }
 
