@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
     SimpSolver S;
 
 #ifdef DRAT
-    if (argc > 2) {
+    if (argc > 3) {
         S.drup_file = fopen(argv[3], "wb");
     }
 #endif
@@ -72,18 +72,6 @@ int main(int argc, char *argv[]) {
     vec<Lit> assumptions;
     lbool result = S.solveLimited(assumptions);
 
-    if (argc > 1) {
-        if (result == l_True) {
-            FILE *model = fopen(argv[2], "w");
-            fprintf(model, result == l_True ? "SAT\nv " : result == l_False ? "UNSAT\n" : "UNKNOWN\n");
-            for (int i = 0; i < S.nVars(); i++)
-                if (S.model[i] != l_Undef) {
-                    fprintf(model, "%s%s%d", (i == 0) ? "" : " ", (S.model[i] == l_True) ? "" : "-", i + 1);
-                }
-            fprintf(model, " 0\n");
-        }
-    }
-
     printf(result == l_True ? "s SATISFIABLE\nv " : result == l_False ? "s UNSATISFIABLE\n" : "s UNKNOWN\n");
     if (result == l_True) {
         for (int i = 0; i < S.nVars(); i++)
@@ -97,6 +85,18 @@ int main(int argc, char *argv[]) {
         fputc(0, S.drup_file);
         fclose(S.drup_file);
 #endif
+    }
+
+    if (argc > 2) {
+        if (result == l_True) {
+            FILE *model = fopen(argv[2], "w");
+            fprintf(model, result == l_True ? "SAT\nv " : result == l_False ? "UNSAT\n" : "UNKNOWN\n");
+            for (int i = 0; i < S.nVars(); i++)
+                if (S.model[i] != l_Undef) {
+                    fprintf(model, "%s%s%d", (i == 0) ? "" : " ", (S.model[i] == l_True) ? "" : "-", i + 1);
+                }
+            fprintf(model, " 0\n");
+        }
     }
 
     exit(result == l_True ? 10 : result == l_False ? 20 : 0);
