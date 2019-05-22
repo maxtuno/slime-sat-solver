@@ -1,6 +1,8 @@
 SLIME 2.2:
 
-usage: slime_cli <cnf-file> [<sat-model-file>] [<unsat-proof-file>]
+- Windows support - include a precompiled executable
+- 2.0 performance 
+- usage: slime_cli <cnf-file> [<sat-model-file>] [<unsat-proof-file>]
 
 SLIME 2.1:
 
