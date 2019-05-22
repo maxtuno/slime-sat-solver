@@ -49,3 +49,5 @@ sdk/slime/example/build/CMakeFiles/Progress/2
 sdk/slime/example/build/CMakeFiles/Progress/count.txt
 sdk/slime/example/build/CMakeFiles/TargetDirectories.txt
 sdk/slime/example/build/Makefile
+slime/bin/test.model
+slime/bin/test.proof

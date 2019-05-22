@@ -1,19 +1,5 @@
 #!/usr/bin/env bash
 echo
-echo "c                                         "
-echo "c   ██████  ██▓     ██▓ ███▄ ▄███▓▓█████  "
-echo "c ▒██    ▒ ▓██▒    ▓██▒▓██▒▀█▀ ██▒▓█   ▀  "
-echo "c ░ ▓██▄   ▒██░    ▒██▒▓██    ▓██░▒███    "
-echo "c   ▒   ██▒▒██░    ░██░▒██    ▒██ ▒▓█  ▄  "
-echo "c ▒██████▒▒░██████▒░██░▒██▒   ░██▒░▒████▒ "
-echo "c ▒ ▒▓▒ ▒ ░░ ▒░▓  ░░▓  ░ ▒░   ░  ░░░ ▒░ ░ "
-echo "c ░ ░▒  ░ ░░ ░ ▒  ░ ▒ ░░  ░      ░ ░ ░  ░ "
-echo "c ░  ░  ░    ░ ░    ▒ ░░      ░      ░    "
-echo "c       ░      ░  ░ ░         ░      ░  ░ "
-echo "c                                         "
-echo "c        http://www.peqnp.science         "
-echo "c                                         "
-echo
 echo "Welcome to compilation of SLIME 2.2 SAT Solver"
 echo
 echo "Building..."
