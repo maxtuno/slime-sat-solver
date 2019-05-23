@@ -69,6 +69,8 @@ int main(int argc, char *argv[]) {
     parse_DIMACS(in, S);
     fclose(in);
 
+    S.eliminate();
+
     vec<Lit> assumptions;
     lbool result = S.solveLimited(assumptions);
 
