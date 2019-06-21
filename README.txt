@@ -1,3 +1,7 @@
+SLIME 3.0
+- Implementation of Alternating Dual BOOST Heuristic
+- The State of The Art Performance.
+
 NOTE: Use SLIME 2.0 for Full Performance (https://github.com/maxtuno/slime-sat-solver/releases)
 
 SLIME 2.2:

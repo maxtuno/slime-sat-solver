@@ -28,7 +28,6 @@ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **************************************************************************************************/
 
-#define LOG // Show progress.
 #define _USE_MATH_DEFINES
 
 #include <algorithm>
@@ -888,16 +887,20 @@ Lit Solver::pickBranchLit() {
             next = order_heap.removeMin();
         }
 
-    if (next != var_Undef) {
-        polarity[next] = !polarity[next];
-        local = trail.size();
-        if (local > global) {
-            global = local;
+    /* SLIME -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver */
+    /* SLIME SAT Solver and The BOOST Heuristic and Variations cannot be used on any contest without express permissions of Oscar Riveros. */
+    if (!VSIDS) {
+        if (next != var_Undef) {
+            polarity[trail.size()] = !polarity[trail.size()];
+            local = trail.size();
+            if (local > global) {
+                global = local;
 #ifdef LOG
-            printf("c %i\n", nVars() - global);
+                printf("c %i\n", nVars() - global);
 #endif
-        } else if (local < global) {
-            polarity[next] = !polarity[next];
+            } else if (local < global) {
+                polarity[trail.size()] = !polarity[trail.size()];
+            }
         }
     }
 
@@ -1647,7 +1650,6 @@ lbool Solver::search(int &nof_conflicts) {
 
     for (;;) {
         CRef confl = propagate();
-
         if (confl != CRef_Undef) {
             // CONFLICT
             if (VSIDS) {
@@ -1731,6 +1733,20 @@ lbool Solver::search(int &nof_conflicts) {
             if (VSIDS)
                 varDecayActivity();
             claDecayActivity();
+            /* SLIME -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver */
+            /* SLIME SAT Solver and The BOOST Heuristic and Variations cannot be used on any contest without express permissions of Oscar Riveros. */
+            if (VSIDS) {
+                polarity[trail.size()] = !polarity[trail.size()];
+                local = trail.size();
+                if (local > global) {
+                    global = local;
+#ifdef LOG
+                    printf("c %i\n", nVars() - global);
+#endif
+                } else if (local < global) {
+                    polarity[trail.size()] = !polarity[trail.size()];
+                }
+            }
         } else {
             // NO CONFLICT
             bool restart = false;
@@ -1817,13 +1833,12 @@ static double luby(double y, int x) {
 
 // NOTE: assumptions passed in member-variable 'assumptions'.
 lbool Solver::solve_() {
-    unsigned int wall = (unsigned int)pow((double)nClauses() / nVars(), M_PI);
-    unsigned int timer = std::min(wall, 1000u);
+    unsigned int timer = 1u;
 
     int msec = 0, trigger = 1000 * timer; /* 10ms */
     clock_t before = clock();
 
-    printf("c Activating VSIDS in %u seconds.\n", timer);
+    printf("c Alternating VSIDS each +%u seconds.\n", timer);
 
     model.clear();
     conflict.clear();
@@ -1855,6 +1870,20 @@ lbool Solver::solve_() {
             msec = difference * 1000 / CLOCKS_PER_SEC;
             if (msec > trigger) {
                 switch_mode = true;
+                trigger = 2 * msec + 1;
+                VSIDS = switch_mode;
+                printf("c VSIDS %s.\n", (switch_mode ? "on" : "off"));
+                fflush(stdout);
+            }
+        } else {
+            clock_t difference = clock() - before;
+            msec = difference * 1000 / CLOCKS_PER_SEC;
+            if (msec > trigger) {
+                switch_mode = false;
+                trigger = 2 * msec + 1;
+                VSIDS = switch_mode;
+                printf("c VSIDS %s.\n", (switch_mode ? "on" : "off"));
+                fflush(stdout);
             }
         }
         if (VSIDS) {
@@ -1866,8 +1895,6 @@ lbool Solver::solve_() {
             curr_restarts++;
         }
         if (!VSIDS && switch_mode) {
-            printf("c Switched to VSIDS.\n");
-            fflush(stdout);
             VSIDS = true;
             picked.clear();
             conflicted.clear();

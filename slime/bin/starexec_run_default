@@ -1,2 +1,2 @@
 #!/bin/bash
-./slime_cli $1 -drup-file=$2/proof.out
+./slime_cli $1

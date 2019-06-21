@@ -1,1 +1,1 @@
-SLIME 2.2: A Free World Class High Performance SAT Solver
+SLIME 3.0: The Unofficial state of The Art.

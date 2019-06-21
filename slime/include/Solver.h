@@ -62,6 +62,8 @@ class Solver {
   protected:
     int local;
     int global;
+    int cursor;
+    vec<lbool> aux;
 
   private:
     template <typename T> class MyQueue {

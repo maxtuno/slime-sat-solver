@@ -29,7 +29,7 @@ LFLAGS    ?=
 
 COPTIMIZE ?= -O3
 
-CFLAGS    += -I$(MROOT) -I$(DEPDIR)/include -I$(DEPDIR) -g0 -mtune=native -D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS -Wno-unused-variable -Wno-unused-label -Wno-reorder -Wno-unused-value 
+CFLAGS    += -I$(MROOT) -I$(DEPDIR)/include -I$(DEPDIR) -g0 -mtune=native -D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS -Wno-unused-variable -Wno-unused-label -Wno-reorder -Wno-unused-value -D LOG
 LFLAGS    += 
 
 .PHONY : s p d r rs clean
