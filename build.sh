@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 echo
-echo "Welcome to compilation of SLIME 2.2 SAT Solver"
+echo "Welcome to compilation of SLIME 3.0 SAT Solver"
 echo
 echo "Building..."
 echo
