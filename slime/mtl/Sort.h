@@ -32,8 +32,8 @@ template <class T> struct LessThan_default {
     bool operator()(T x, T y) { return x < y; }
 };
 
-template <class T, class LessThan> void selectionSort(T *array, int size, LessThan lt) {
-    int i, j, best_i;
+template <class T, class LessThan> void selectionSort(T *array, long size, LessThan lt) {
+    long i, j, best_i;
     T tmp;
 
     for (i = 0; i < size - 1; i++) {
@@ -48,17 +48,17 @@ template <class T, class LessThan> void selectionSort(T *array, int size, LessTh
     }
 }
 
-template <class T> static inline void selectionSort(T *array, int size) { selectionSort(array, size, LessThan_default<T>()); }
+template <class T> static inline void selectionSort(T *array, long size) { selectionSort(array, size, LessThan_default<T>()); }
 
-template <class T, class LessThan> void sort(T *array, int size, LessThan lt) {
+template <class T, class LessThan> void sort(T *array, long size, LessThan lt) {
     if (size <= 15)
         selectionSort(array, size, lt);
 
     else {
         T pivot = array[size / 2];
         T tmp;
-        int i = -1;
-        int j = size;
+        long i = -1;
+        long j = size;
 
         for (;;) {
             do
@@ -81,7 +81,7 @@ template <class T, class LessThan> void sort(T *array, int size, LessThan lt) {
     }
 }
 
-template <class T> static inline void sort(T *array, int size) { sort(array, size, LessThan_default<T>()); }
+template <class T> static inline void sort(T *array, long size) { sort(array, size, LessThan_default<T>()); }
 
 //=================================================================================================
 // For 'vec's:

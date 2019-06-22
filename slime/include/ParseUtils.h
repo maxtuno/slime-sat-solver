@@ -29,13 +29,13 @@ namespace SLIME {
 //-------------------------------------------------------------------------------------------------
 // A simple buffered character stream class:
 
-static const int buffer_size = 1048576;
+static const long buffer_size = 1048576;
 
 class StreamBuffer {
     FILE *in;
     unsigned char buf[buffer_size];
-    int pos;
-    int size;
+    long pos;
+    long size;
 
     void assureLookahead() {
         if (pos >= size) {
@@ -47,12 +47,12 @@ class StreamBuffer {
   public:
     explicit StreamBuffer(FILE *i) : in(i), pos(0), size(0) { assureLookahead(); }
 
-    int operator*() const { return (pos >= size) ? EOF : buf[pos]; }
+    long operator*() const { return (pos >= size) ? EOF : buf[pos]; }
     void operator++() {
         pos++;
         assureLookahead();
     }
-    int position() const { return pos; }
+    long position() const { return pos; }
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -81,8 +81,8 @@ template <class B> static void skipLine(B &in) {
     }
 }
 
-template <class B> static int parseInt(B &in) {
-    int val = 0;
+template <class B> static long parseInt(B &in) {
+    long val = 0;
     bool neg = false;
     skipWhitespace(in);
     if (*in == '-')
@@ -90,7 +90,7 @@ template <class B> static int parseInt(B &in) {
     else if (*in == '+')
         ++in;
     if (*in < '0' || *in > '9')
-        fprintf(stderr, "PARSE ERROR! Unexpected char: %c\n", *in), exit(3);
+        fprintf(stderr, "PARSE ERROR! Unexpected char: %li\n", *in), exit(3);
     while (*in >= '0' && *in <= '9')
         val = val * 10 + (*in - '0'), ++in;
     return neg ? -val : val;
@@ -99,7 +99,7 @@ template <class B> static int parseInt(B &in) {
 // String matching: in case of a match the input iterator will be advanced the corresponding
 // number of characters.
 template <class B> static bool match(B &in, const char *str) {
-    int i;
+    long i;
     for (i = 0; str[i] != '\0'; i++)
         if (in[i] != str[i])
             return false;

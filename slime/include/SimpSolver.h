@@ -90,10 +90,10 @@ class SimpSolver : public Solver {
     // Mode of operation:
     //
     bool parsing;
-    int grow;                 // Allow a variable elimination step to grow by a number of clauses (default to zero).
-    int clause_lim;           // Variables are not eliminated if it produces a resolvent with a length above this limit.
+    long grow;                 // Allow a variable elimination step to grow by a number of clauses (default to zero).
+    long clause_lim;           // Variables are not eliminated if it produces a resolvent with a length above this limit.
                               // -1 means no limit.
-    int subsumption_lim;      // Do not check if subsumption against a clause larger than this. -1 means no limit.
+    long subsumption_lim;      // Do not check if subsumption against a clause larger than this. -1 means no limit.
     double simp_garbage_frac; // A different limit for when to issue a GC during simplification (Also see 'garbage_frac').
 
     bool use_asymm;  // Shrink clauses by asymmetric branching.
@@ -102,16 +102,16 @@ class SimpSolver : public Solver {
 
     // Statistics:
     //
-    int merges;
-    int asymm_lits;
-    int eliminated_vars;
+    long merges;
+    long asymm_lits;
+    long eliminated_vars;
 
   protected:
     // Helper structures:
     //
     struct ElimLt {
-        const vec<int> &n_occ;
-        explicit ElimLt(const vec<int> &no) : n_occ(no) {}
+        const vec<long> &n_occ;
+        explicit ElimLt(const vec<long> &no) : n_occ(no) {}
 
         // TODO: are 64-bit operations here noticably bad on 32-bit platforms? Could use a saturating
         // 32-bit implementation instead then, but this will have to do for now.
@@ -120,8 +120,8 @@ class SimpSolver : public Solver {
 
         // TODO: investigate this order alternative more.
         // bool operator()(Var x, Var y) const {
-        //     int c_x = cost(x);
-        //     int c_y = cost(y);
+        //     long c_x = cost(x);
+        //     long c_y = cost(y);
         //     return c_x < c_y || c_x == c_y && x < y; }
     };
 
@@ -133,18 +133,18 @@ class SimpSolver : public Solver {
 
     // Solver state:
     //
-    int elimorder;
+    long elimorder;
     bool use_simplification;
     vec<uint32_t> elimclauses;
     vec<char> touched;
     OccLists<Var, vec<CRef>, ClauseDeleted> occurs;
-    vec<int> n_occ;
+    vec<long> n_occ;
     Heap<ElimLt> elim_heap;
     Queue<CRef> subsumption_queue;
     vec<char> frozen;
     vec<char> eliminated;
-    int bwdsub_assigns;
-    int n_touched;
+    long bwdsub_assigns;
+    long n_touched;
 
     // Temporaries:
     //
@@ -158,7 +158,7 @@ class SimpSolver : public Solver {
     void updateElimHeap(Var v);
     void gatherTouchedClauses();
     bool merge(const Clause &_ps, const Clause &_qs, Var v, vec<Lit> &out_clause);
-    bool merge(const Clause &_ps, const Clause &_qs, Var v, int &size);
+    bool merge(const Clause &_ps, const Clause &_qs, Var v, long &size);
     bool backwardSubsumptionCheck();
     bool eliminateVar(Var v);
     void extendModel();

@@ -78,9 +78,9 @@ int main(int argc, char *argv[]) {
 
     printf(result == l_True ? "s SATISFIABLE\nv " : result == l_False ? "s UNSATISFIABLE\n" : "s UNKNOWN\n");
     if (result == l_True) {
-        for (int i = 0; i < S.nVars(); i++)
+        for (long i = 0; i < S.nVars(); i++)
             if (S.model[i] != l_Undef) {
-                printf("%s%s%d", (i == 0) ? "" : " ", (S.model[i] == l_True) ? "" : "-", i + 1);
+                printf("%s%s%li", (i == 0) ? "" : " ", (S.model[i] == l_True) ? "" : "-", i + 1);
             }
         printf(" 0\n");
     } else {
@@ -97,9 +97,9 @@ int main(int argc, char *argv[]) {
         if (result == l_True) {
             FILE *model = fopen(argv[2], "w");
             fprintf(model, result == l_True ? "SAT\n" : result == l_False ? "UNSAT\n" : "UNKNOWN\n");
-            for (int i = 0; i < S.nVars(); i++)
+            for (long i = 0; i < S.nVars(); i++)
                 if (S.model[i] != l_Undef) {
-                    fprintf(model, "%s%s%d", (i == 0) ? "" : " ", (S.model[i] == l_True) ? "" : "-", i + 1);
+                    fprintf(model, "%s%s%li", (i == 0) ? "" : " ", (S.model[i] == l_True) ? "" : "-", i + 1);
                 }
             fprintf(model, " 0\n");
         }

@@ -32,20 +32,20 @@ namespace SLIME {
     template<class Comp>
     class Heap {
         Comp lt;       // The heap is a minimum-heap with respect to this comparator
-        vec<int> heap;     // Heap of integers
-        vec<int> indices;  // Each integers position (index) in the Heap
+        vec<long> heap;     // Heap of integers
+        vec<long> indices;  // Each integers position (index) in the Heap
 
         // Index "traversal" functions
-        static inline int left(int i) { return i * 2 + 1; }
+        static inline long left(long i) { return i * 2 + 1; }
 
-        static inline int right(int i) { return (i + 1) * 2; }
+        static inline long right(long i) { return (i + 1) * 2; }
 
-        static inline int parent(int i) { return (i - 1) >> 1; }
+        static inline long parent(long i) { return (i - 1) >> 1; }
 
 
-        void percolateUp(int i) {
-            int x = heap[i];
-            int p = parent(i);
+        void percolateUp(long i) {
+            long x = heap[i];
+            long p = parent(i);
 
             while (i != 0 && lt(x, heap[p])) {
                 heap[i] = heap[p];
@@ -58,10 +58,10 @@ namespace SLIME {
         }
 
 
-        void percolateDown(int i) {
-            int x = heap[i];
+        void percolateDown(long i) {
+            long x = heap[i];
             while (left(i) < heap.size()) {
-                int child = right(i) < heap.size() && lt(heap[right(i)], heap[left(i)]) ? right(i) : left(i);
+                long child = right(i) < heap.size() && lt(heap[right(i)], heap[left(i)]) ? right(i) : left(i);
                 if (!lt(heap[child], x)) break;
                 heap[i] = heap[child];
                 indices[heap[i]] = i;
@@ -75,31 +75,31 @@ namespace SLIME {
     public:
         Heap(const Comp &c) : lt(c) {}
 
-        int size() const { return heap.size(); }
+        long size() const { return heap.size(); }
 
         bool empty() const { return heap.size() == 0; }
 
-        bool inHeap(int n) const { return n < indices.size() && indices[n] >= 0; }
+        bool inHeap(long n) const { return n < indices.size() && indices[n] >= 0; }
 
-        int operator[](int index) const {
+        long operator[](long index) const {
             assert(index < heap.size());
             return heap[index];
         }
 
 
-        void decrease(int n) {
+        void decrease(long n) {
             assert(inHeap(n));
             percolateUp(indices[n]);
         }
 
-        void increase(int n) {
+        void increase(long n) {
             assert(inHeap(n));
             percolateDown(indices[n]);
         }
 
 
         // Safe variant of insert/decrease/increase:
-        void update(int n) {
+        void update(long n) {
             if (!inHeap(n))
                 insert(n);
             else {
@@ -109,7 +109,7 @@ namespace SLIME {
         }
 
 
-        void insert(int n) {
+        void insert(long n) {
             indices.growTo(n + 1, -1);
             assert(!inHeap(n));
 
@@ -119,8 +119,8 @@ namespace SLIME {
         }
 
 
-        int removeMin() {
-            int x = heap[0];
+        long removeMin() {
+            long x = heap[0];
             heap[0] = heap.last();
             indices[heap[0]] = 0;
             indices[x] = -1;
@@ -131,22 +131,22 @@ namespace SLIME {
 
 
         // Rebuild the heap from scratch, using the elements in 'ns':
-        void build(const vec<int> &ns) {
-            for (int i = 0; i < heap.size(); i++)
+        void build(const vec<long> &ns) {
+            for (long i = 0; i < heap.size(); i++)
                 indices[heap[i]] = -1;
             heap.clear();
 
-            for (int i = 0; i < ns.size(); i++) {
+            for (long i = 0; i < ns.size(); i++) {
                 indices[ns[i]] = i;
                 heap.push(ns[i]);
             }
 
-            for (int i = heap.size() / 2 - 1; i >= 0; i--)
+            for (long i = heap.size() / 2 - 1; i >= 0; i--)
                 percolateDown(i);
         }
 
         void clear(bool dealloc = false) {
-            for (int i = 0; i < heap.size(); i++)
+            for (long i = 0; i < heap.size(); i++)
                 indices[heap[i]] = -1;
             heap.clear(dealloc);
         }
