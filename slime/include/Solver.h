@@ -477,12 +477,12 @@ class Solver {
   public:
     bool simplifyAll();
     void simplifyLearnt(Clause &c);
-    bool simplifyLearnt_x(vec<CRef> &learnts_x);
-    bool simplifyLearnt_core();
+
+        bool simplifyLearnt_core();
     bool simplifyLearnt_tier2();
     int trailRecord;
-    void litsEnqueue(int cutP, Clause &c);
-    void cancelUntilTrailRecord();
+
+        void cancelUntilTrailRecord();
     void simpleUncheckEnqueue(Lit p, CRef from = CRef_Undef);
     CRef simplePropagate();
     uint64_t nbSimplifyAll;
@@ -505,8 +505,7 @@ class Solver {
     uint64_t nbcollectfirstuip, nblearntclause, nbDoubleConflicts, nbTripleConflicts;
     int uip1, uip2;
     vec<int> pathCs;
-    CRef propagateLits(vec<Lit> &lits);
-    uint64_t previousStarts;
+        uint64_t previousStarts;
     double var_iLevel_inc;
     vec<Lit> involved_lits;
     double my_var_decay;

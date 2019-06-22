@@ -39,8 +39,6 @@ using namespace SLIME;
 //=================================================================================================
 // Options:
 
-static const char *_cat = "SIMP";
-
 static bool opt_use_asymm = false;
 static bool opt_use_rcheck = false;
 static bool opt_use_elim = true;
@@ -116,10 +114,6 @@ lbool SimpSolver::solve_(bool do_simp, bool turn_off_simp) {
 }
 
 bool SimpSolver::addClause_(vec<Lit> &ps) {
-#ifndef NDEBUG
-    for (int i = 0; i < ps.size(); i++)
-        assert(!isEliminated(var(ps[i])));
-#endif
 
     int nclauses = clauses.size();
 

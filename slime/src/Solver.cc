@@ -28,8 +28,6 @@ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **************************************************************************************************/
 
-#define _USE_MATH_DEFINES
-
 #include <algorithm>
 #include <math.h>
 #include <stdio.h>
@@ -41,8 +39,6 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 
 using namespace SLIME;
 
-//#define PRINT_OUT
-
 #ifdef BIN_DRUP
 int Solver::buf_len = 0;
 unsigned char Solver::drup_buf[2 * 1024 * 1024];
@@ -51,8 +47,6 @@ unsigned char *Solver::buf_ptr = drup_buf;
 
 //=================================================================================================
 // Options:
-
-static const char *_cat = "CORE";
 
 static double opt_step_size = 0.40;
 static double opt_step_size_dec = 0.000001;
@@ -237,12 +231,6 @@ void Solver::cancelUntilTrailRecord() {
     trail.shrink(trail.size() - trailRecord);
 }
 
-void Solver::litsEnqueue(int cutP, Clause &c) {
-    for (int i = cutP; i < c.size(); i++) {
-        simpleUncheckEnqueue(~c[i]);
-    }
-}
-
 bool Solver::removed(CRef cr) { return ca[cr].mark() == 1; }
 
 void Solver::simpleAnalyze(CRef confl, vec<Lit> &out_learnt, vec<CRef> &reason_clause, bool True_confl) {
@@ -301,10 +289,8 @@ void Solver::simplifyLearnt(Clause &c) {
     falseLit.clear();
 
     bool True_confl = false;
-    int beforeSize, afterSize;
-    beforeSize = c.size();
     int i, j;
-    CRef confl;
+    CRef confl = 0;
 
     for (i = 0, j = 0; i < c.size(); i++) {
         if (value(c[i]) == l_Undef) {
@@ -327,12 +313,11 @@ void Solver::simplifyLearnt(Clause &c) {
         }
     }
     c.shrink(c.size() - j);
-    afterSize = c.size();
 
-    if (confl != CRef_Undef || True_confl == true) {
+    if (confl != CRef_Undef || True_confl) {
         simp_learnt_clause.clear();
         simp_reason_clause.clear();
-        if (True_confl == true) {
+        if (True_confl) {
             simp_learnt_clause.push(c.last());
         }
         simpleAnalyze(confl, simp_learnt_clause, simp_reason_clause, True_confl);
@@ -350,101 +335,7 @@ void Solver::simplifyLearnt(Clause &c) {
     simplified_length_record += c.size();
 }
 
-bool Solver::simplifyLearnt_x(vec<CRef> &learnts_x) {
-    int beforeSize, afterSize;
-    int learnts_x_size_before = learnts_x.size();
-
-    int ci, cj, li, lj;
-    bool sat, false_lit;
-    unsigned int nblevels;
-
-    int nbSimplified = 0;
-    int nbSimplifing = 0;
-
-    for (ci = 0, cj = 0; ci < learnts_x.size(); ci++) {
-        CRef cr = learnts_x[ci];
-        Clause &c = ca[cr];
-
-        if (removed(cr))
-            continue;
-        else if (c.simplified()) {
-            learnts_x[cj++] = learnts_x[ci];
-            nbSimplified++;
-        } else {
-            nbSimplifing++;
-            sat = false_lit = false;
-            for (int i = 0; i < c.size(); i++) {
-                if (value(c[i]) == l_True) {
-                    sat = true;
-                    break;
-                } else if (value(c[i]) == l_False) {
-                    false_lit = true;
-                }
-            }
-            if (sat) {
-                removeClause(cr);
-            } else {
-                detachClause(cr, true);
-
-                if (false_lit) {
-                    for (li = lj = 0; li < c.size(); li++) {
-                        if (value(c[li]) != l_False) {
-                            c[lj++] = c[li];
-                        }
-                    }
-                    c.shrink(li - lj);
-                }
-
-                beforeSize = c.size();
-                assert(c.size() > 1);
-                // simplify a learnt clause c
-                simplifyLearnt(c);
-                assert(c.size() > 0);
-                afterSize = c.size();
-
-                if (c.size() == 1) {
-                    // when unit clause occur, enqueue and propagate
-                    uncheckedEnqueue(c[0]);
-                    if (propagate() != CRef_Undef) {
-                        ok = false;
-                        return false;
-                    }
-                    // delete the clause memory in logic
-                    c.mark(1);
-                    ca.free(cr);
-                } else {
-                    attachClause(cr);
-                    learnts_x[cj++] = learnts_x[ci];
-
-                    nblevels = computeLBD(c);
-                    if (nblevels < c.lbd()) {
-                        c.set_lbd(nblevels);
-                    }
-                    if (c.mark() != CORE) {
-                        if (c.lbd() <= core_lbd_cut) {
-                            cj--;
-                            learnts_core.push(cr);
-                            c.mark(CORE);
-                        } else if (c.mark() == LOCAL && c.lbd() <= 6) {
-                            cj--;
-                            learnts_tier2.push(cr);
-                            c.mark(TIER2);
-                        }
-                    }
-
-                    c.setSimplified(true);
-                }
-            }
-        }
-    }
-    learnts_x.shrink(ci - cj);
-    return true;
-}
-
 bool Solver::simplifyLearnt_core() {
-    int beforeSize, afterSize;
-    int learnts_core_size_before = learnts_core.size();
-
     int ci, cj, li, lj;
     bool sat, false_lit;
     unsigned int nblevels;
@@ -488,12 +379,10 @@ bool Solver::simplifyLearnt_core() {
                     c.shrink(li - lj);
                 }
 
-                beforeSize = c.size();
                 assert(c.size() > 1);
                 // simplify a learnt clause c
                 simplifyLearnt(c);
                 assert(c.size() > 0);
-                afterSize = c.size();
 
                 if (drup_file && saved_size != c.size()) {
 #ifdef BIN_DRUP
@@ -534,9 +423,6 @@ bool Solver::simplifyLearnt_core() {
 }
 
 bool Solver::simplifyLearnt_tier2() {
-    int beforeSize, afterSize;
-    int learnts_tier2_size_before = learnts_tier2.size();
-
     int ci, cj, li, lj;
     bool sat, false_lit;
     unsigned int nblevels;
@@ -579,12 +465,10 @@ bool Solver::simplifyLearnt_tier2() {
                     c.shrink(li - lj);
                 }
 
-                beforeSize = c.size();
                 assert(c.size() > 1);
                 // simplify a learnt clause c
                 simplifyLearnt(c);
                 assert(c.size() > 0);
-                afterSize = c.size();
 
                 if (drup_file && saved_size != c.size()) {
 
@@ -808,9 +692,6 @@ bool Solver::satisfied(const Clause &c) const {
 void Solver::cancelUntil(int bLevel) {
 
     if (decisionLevel() > bLevel) {
-#ifdef PRINT_OUT
-        std::cout << "bt " << bLevel << "\n";
-#endif
         add_tmp.clear();
         for (int c = trail.size() - 1; c >= trail_lim[bLevel]; c--) {
             Var x = var(trail[c]);
@@ -837,9 +718,7 @@ void Solver::cancelUntil(int bLevel) {
                 }
 
                 assigns[x] = l_Undef;
-#ifdef PRINT_OUT
-                std::cout << "undo " << x << "\n";
-#endif
+
                 if ((phase_saving > 1) || ((phase_saving == 1) && c > trail_lim.last())) {
                     polarity[x] = sign(trail[c]);
                 }
@@ -1082,14 +961,14 @@ void Solver::analyze(CRef confl, vec<Lit> &out_learnt, int &out_btlevel, int &ou
     else {
         int max_i = 1;
         // Find the first literal assigned at the next-highest level:
-        for (int i = 2; i < out_learnt.size(); i++)
-            if (level(var(out_learnt[i])) > level(var(out_learnt[max_i])))
-                max_i = i;
+        for (int k = 2; k < out_learnt.size(); k++)
+            if (level(var(out_learnt[k])) > level(var(out_learnt[max_i])))
+                max_i = k;
         // Swap-in this literal at index 1:
-        Lit p = out_learnt[max_i];
+        Lit q = out_learnt[max_i];
         out_learnt[max_i] = out_learnt[1];
-        out_learnt[1] = p;
-        out_btlevel = level(var(p));
+        out_learnt[1] = q;
+        out_btlevel = level(var(q));
     }
 
     if (VSIDS) {
@@ -1287,9 +1166,6 @@ CRef Solver::propagate() {
 #endif
             } else if (value(the_other) == l_Undef) {
                 uncheckedEnqueue(the_other, currLevel, ws_bin[k].cref);
-#ifdef PRINT_OUT
-                std::cout << "i " << the_other << " l " << currLevel << "\n";
-#endif
             }
         }
 
@@ -1338,9 +1214,6 @@ CRef Solver::propagate() {
             } else {
                 if (currLevel == decisionLevel()) {
                     uncheckedEnqueue(first, currLevel, cr);
-#ifdef PRINT_OUT
-                    std::cout << "i " << first << " l " << currLevel << "\n";
-#endif
                 } else {
                     int nMaxLevel = currLevel;
                     int nMaxInd = 1;
@@ -1360,9 +1233,6 @@ CRef Solver::propagate() {
                     }
 
                     uncheckedEnqueue(first, nMaxLevel, cr);
-#ifdef PRINT_OUT
-                    std::cout << "i " << first << " l " << nMaxLevel << "\n";
-#endif
                 }
             }
 
@@ -1371,7 +1241,6 @@ CRef Solver::propagate() {
         ws.shrink(i - j);
     }
 
-ExitProp:;
     propagations += num_props;
     simpDB_props -= num_props;
 
@@ -1593,30 +1462,6 @@ bool Solver::collectFirstUIP(CRef confl) {
     return true;
 }
 
-struct UIPOrderByILevel_Lt {
-    Solver &solver;
-    const vec<double> &var_iLevel;
-    bool operator()(Lit x, Lit y) const { return var_iLevel[var(x)] < var_iLevel[var(y)] || (var_iLevel[var(x)] == var_iLevel[var(y)] && solver.level(var(x)) > solver.level(var(y))); }
-    UIPOrderByILevel_Lt(const vec<double> &iLevel, Solver &para_solver) : solver(para_solver), var_iLevel(iLevel) {}
-};
-
-CRef Solver::propagateLits(vec<Lit> &lits) {
-    Lit lit;
-    int i;
-
-    for (i = lits.size() - 1; i >= 0; i--) {
-        lit = lits[i];
-        if (value(lit) == l_Undef) {
-            newDecisionLevel();
-            uncheckedEnqueue(lit);
-            CRef confl = propagate();
-            if (confl != CRef_Undef) {
-                return confl;
-            }
-        }
-    }
-    return CRef_Undef;
-}
 /*_________________________________________________________________________________________________
 |
 |  search : (nof_conflicts : int) (params : const SearchParams&)  ->  [lbool]
@@ -1715,10 +1560,6 @@ lbool Solver::search(int &nof_conflicts) {
                 }
                 attachClause(cr);
                 uncheckedEnqueue(learnt_clause[0], backtrack_level, cr);
-#ifdef PRINT_OUT
-                std::cout << "new " << ca[cr] << "\n";
-                std::cout << "ci " << learnt_clause[0] << " l " << backtrack_level << "\n";
-#endif
             }
             if (drup_file) {
 #ifdef BIN_DRUP
@@ -1795,9 +1636,6 @@ lbool Solver::search(int &nof_conflicts) {
             // Increase decision level and enqueue 'next'
             newDecisionLevel();
             uncheckedEnqueue(next, decisionLevel());
-#ifdef PRINT_OUT
-            std::cout << "d " << next << " l " << decisionLevel() << "\n";
-#endif
         }
     }
 }
