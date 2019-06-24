@@ -1641,12 +1641,9 @@ static double luby(double y, long x) {
 
 // NOTE: assumptions passed in member-variable 'assumptions'.
 lbool Solver::solve_() {
-    long timer = 1u;
 
-    long msec = 0, trigger = 1000 * timer; /* 10ms */
+    long msec = 0, trigger = 1000; /* 10ms */
     clock_t before = clock();
-
-    printf("c Alternating VSIDS each +%ld seconds.\n", timer);
 
     model.clear();
     conflict.clear();
@@ -1678,8 +1675,6 @@ lbool Solver::solve_() {
                 switch_mode = true;
                 trigger = 2 * msec + 1;
                 VSIDS = switch_mode;
-                printf("c VSIDS %s.\n", (switch_mode ? "on" : "off"));
-                fflush(stdout);
             }
         } else {
             clock_t difference = clock() - before;
@@ -1688,8 +1683,6 @@ lbool Solver::solve_() {
                 switch_mode = false;
                 trigger = 2 * msec + 1;
                 VSIDS = switch_mode;
-                printf("c VSIDS %s.\n", (switch_mode ? "on" : "off"));
-                fflush(stdout);
             }
         }
         if (VSIDS) {
