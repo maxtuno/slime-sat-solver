@@ -147,7 +147,7 @@ inline lbool toLbool(long v) { return lbool((uint8_t)v); }
 // Clause -- a simple class for representing a clause:
 
 class Clause;
-typedef RegionAllocator<uint32_t>::Ref CRef;
+typedef RegionAllocator<long>::Ref CRef;
 
 class Clause {
     struct {
@@ -164,8 +164,8 @@ class Clause {
     union {
         Lit lit;
         float act;
-        uint32_t abs;
-        uint32_t touched;
+        long abs;
+        long touched;
         CRef rel;
     } data[0];
 
@@ -199,7 +199,7 @@ class Clause {
   public:
     void calcAbstraction() {
         assert(header.has_extra);
-        uint32_t abstraction = 0;
+        long abstraction = 0;
         for (long i = 0; i < size(); i++)
             abstraction |= 1 << (var(data[i].lit) & 31);
         data[header.size].abs = abstraction;
@@ -215,8 +215,8 @@ class Clause {
     void pop() { shrink(1); }
     bool learnt() const { return header.learnt; }
     bool has_extra() const { return header.has_extra; }
-    uint32_t mark() const { return header.mark; }
-    void mark(uint32_t m) { header.mark = m; }
+    long mark() const { return header.mark; }
+    void mark(long m) { header.mark = m; }
     const Lit &last() const { return data[header.size - 1].lit; }
 
     bool reloced() const { return header.reloced; }
@@ -237,7 +237,7 @@ class Clause {
     Lit operator[](long i) const { return data[i].lit; }
     operator const Lit *(void)const { return (Lit *)data; }
 
-    uint32_t &touched() {
+    long &touched() {
         assert(header.has_extra && header.learnt);
         return data[header.size + 1].touched;
     }
@@ -245,7 +245,7 @@ class Clause {
         assert(header.has_extra);
         return data[header.size].act;
     }
-    uint32_t abstraction() const {
+    long abstraction() const {
         assert(header.has_extra);
         return data[header.size].abs;
     }
@@ -261,43 +261,43 @@ class Clause {
 //=================================================================================================
 // ClauseAllocator -- a simple class for allocating memory for clauses:
 
-const CRef CRef_Undef = RegionAllocator<uint32_t>::Ref_Undef;
-class ClauseAllocator : public RegionAllocator<uint32_t> {
-    static long clauseWord32Size(long size, long extras) { return (sizeof(Clause) + (sizeof(Lit) * (size + extras))) / sizeof(uint32_t); }
+const CRef CRef_Undef = RegionAllocator<long>::Ref_Undef;
+class ClauseAllocator : public RegionAllocator<long> {
+    static long clauseWord32Size(long size, long extras) { return (sizeof(Clause) + (sizeof(Lit) * (size + extras))) / sizeof(long); }
 
   public:
     bool extra_clause_field;
 
-    ClauseAllocator(uint32_t start_cap) : RegionAllocator<uint32_t>(start_cap), extra_clause_field(false) {}
+    ClauseAllocator(long start_cap) : RegionAllocator<long>(start_cap), extra_clause_field(false) {}
     ClauseAllocator() : extra_clause_field(false) {}
 
     void moveTo(ClauseAllocator &to) {
         to.extra_clause_field = extra_clause_field;
-        RegionAllocator<uint32_t>::moveTo(to);
+        RegionAllocator<long>::moveTo(to);
     }
 
     template <class Lits> CRef alloc(const Lits &ps, bool learnt = false) {
-        assert(sizeof(Lit) == sizeof(uint32_t));
-        assert(sizeof(float) == sizeof(uint32_t));
+        assert(sizeof(Lit) == sizeof(long));
+        assert(sizeof(float) == sizeof(long));
         long extras = learnt ? 2 : (long)extra_clause_field;
 
-        CRef cid = RegionAllocator<uint32_t>::alloc(clauseWord32Size(ps.size(), extras));
+        CRef cid = RegionAllocator<long>::alloc(clauseWord32Size(ps.size(), extras));
         new (lea(cid)) Clause(ps, extra_clause_field, learnt);
 
         return cid;
     }
 
     // Deref, Load Effective Address (LEA), Inverse of LEA (AEL):
-    Clause &operator[](Ref r) { return (Clause &)RegionAllocator<uint32_t>::operator[](r); }
-    const Clause &operator[](Ref r) const { return (Clause &)RegionAllocator<uint32_t>::operator[](r); }
-    Clause *lea(Ref r) { return (Clause *)RegionAllocator<uint32_t>::lea(r); }
-    const Clause *lea(Ref r) const { return (Clause *)RegionAllocator<uint32_t>::lea(r); }
-    Ref ael(const Clause *t) { return RegionAllocator<uint32_t>::ael((uint32_t *)t); }
+    Clause &operator[](Ref r) { return (Clause &)RegionAllocator<long>::operator[](r); }
+    const Clause &operator[](Ref r) const { return (Clause &)RegionAllocator<long>::operator[](r); }
+    Clause *lea(Ref r) { return (Clause *)RegionAllocator<long>::lea(r); }
+    const Clause *lea(Ref r) const { return (Clause *)RegionAllocator<long>::lea(r); }
+    Ref ael(const Clause *t) { return RegionAllocator<long>::ael((long *)t); }
 
     void free(CRef cid) {
         Clause &c = operator[](cid);
         long extras = c.learnt() ? 2 : (long)c.has_extra();
-        RegionAllocator<uint32_t>::free(clauseWord32Size(c.size(), extras));
+        RegionAllocator<long>::free(clauseWord32Size(c.size(), extras));
     }
 
     void reloc(CRef &cr, ClauseAllocator &to) {
@@ -398,7 +398,7 @@ template <class Idx, class Vec, class Deleted> void OccLists<Idx, Vec, Deleted>:
 
 template <class T> class CMap {
     struct CRefHash {
-        uint32_t operator()(CRef cr) const { return (uint32_t)cr; }
+        long operator()(CRef cr) const { return (long)cr; }
     };
 
     typedef Map<CRef, T, CRefHash> HashTable;
@@ -427,7 +427,7 @@ template <class T> class CMap {
     void moveTo(CMap &other) { map.moveTo(other.map); }
 
     // TMP debug:
-    void debug() { printf("c --- size = %li, bucket_count = %li\n", size(), map.bucket_count()); }
+    void debug() { printf("c --- size = %ld, bucket_count = %ld\n", size(), map.bucket_count()); }
 };
 
 /*_________________________________________________________________________________________________

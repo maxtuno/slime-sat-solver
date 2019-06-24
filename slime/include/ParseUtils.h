@@ -90,7 +90,7 @@ template <class B> static long parseInt(B &in) {
     else if (*in == '+')
         ++in;
     if (*in < '0' || *in > '9')
-        fprintf(stderr, "PARSE ERROR! Unexpected char: %li\n", *in), exit(3);
+        fprintf(stderr, "PARSE ERROR! Unexpected char: %ld\n", *in), exit(3);
     while (*in >= '0' && *in <= '9')
         val = val * 10 + (*in - '0'), ++in;
     return neg ? -val : val;

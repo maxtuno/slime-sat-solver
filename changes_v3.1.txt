@@ -1,6 +1,2 @@
-SLIME 3.0
-- Implementation of Alternating Dual BOOST Heuristic
-- The State of The Art Performance.
-
 SLIME 3.1
 - Change the integers types by long types for support large executions (days)

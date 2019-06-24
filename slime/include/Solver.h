@@ -69,7 +69,7 @@ class Solver {
     template <typename T> class MyQueue {
         long max_sz, q_sz;
         long ptr;
-        int64_t sum;
+        long sum;
         vec<T> q;
 
       public:
@@ -164,8 +164,8 @@ class Solver {
 
     // Resource contraints:
     //
-    void setConfBudget(int64_t x);
-    void setPropBudget(int64_t x);
+    void setConfBudget(long x);
+    void setPropBudget(long x);
     void budgetOff();
     void interrupt();      // Trigger a (potentially asynchronous) interruption of the solver.
     void clearInterrupt(); // Clear interrupt indicator flag.
@@ -210,15 +210,15 @@ class Solver {
 
     // Statistics: (read-only member variable)
     //
-    uint64_t solves, starts, decisions, rnd_decisions, propagations, conflicts, conflicts_VSIDS;
-    uint64_t dec_vars, clauses_literals, learnts_literals, max_literals, tot_literals;
-    uint64_t chrono_backtrack, non_chrono_backtrack;
+    long solves, starts, decisions, rnd_decisions, propagations, conflicts, conflicts_VSIDS;
+    long dec_vars, clauses_literals, learnts_literals, max_literals, tot_literals;
+    long chrono_backtrack, non_chrono_backtrack;
 
-    vec<uint32_t> picked;
-    vec<uint32_t> conflicted;
-    vec<uint32_t> almost_conflicted;
+    vec<long> picked;
+    vec<long> conflicted;
+    vec<long> almost_conflicted;
 #ifdef ANTI_EXPLORATION
-    vec<uint32_t> canceled;
+    vec<long> canceled;
 #endif
 
     // HACK to expose propagation for Open-WBO
@@ -301,7 +301,7 @@ class Solver {
     vec<VarData> vardata;                                    // Stores reason and level for each variable.
     long qhead;                                               // Head of queue (as index into the trail -- no more explicit propagation queue in MiniSat).
     long simpDB_assigns;                                      // Number of top-level assignments since last execution of 'simplify()'.
-    int64_t simpDB_props;                                    // Remaining number of propagations that must be made before next execution of 'simplify()'.
+    long simpDB_props;                                    // Remaining number of propagations that must be made before next execution of 'simplify()'.
     vec<Lit> assumptions;                                    // Current set of assumptions provided to solve by the user.
     Heap<VarOrderLt> order_heap_CHB,                         // A priority queue of variables ordered with respect to the variable activity.
         order_heap_VSIDS, order_heap_distance;
@@ -311,7 +311,7 @@ class Solver {
     float global_lbd_sum;
     MyQueue<long> lbd_queue; // For computing moving averages of recent LBD values.
 
-    uint64_t next_T2_reduce, next_L_reduce;
+    long next_T2_reduce, next_L_reduce;
 
     ClauseAllocator ca;
 
@@ -327,8 +327,8 @@ class Solver {
     vec<Lit> add_tmp;
     vec<Lit> add_oc;
 
-    vec<uint64_t> seen2; // Mostly for efficient LBD computation. 'seen2[i]' will indicate if decision level or variable 'i' has been seen.
-    uint64_t counter;    // Simple counter for marking purpose with 'seen2'.
+    vec<long> seen2; // Mostly for efficient LBD computation. 'seen2[i]' will indicate if decision level or variable 'i' has been seen.
+    long counter;    // Simple counter for marking purpose with 'seen2'.
 
     double max_learnts;
     double learntsize_adjust_confl;
@@ -336,8 +336,8 @@ class Solver {
 
     // Resource contraints:
     //
-    int64_t conflict_budget;    // -1 means no budget.
-    int64_t propagation_budget; // -1 means no budget.
+    long conflict_budget;    // -1 means no budget.
+    long propagation_budget; // -1 means no budget.
     bool asynch_interrupt;
 
     // Main internal methods:
@@ -350,8 +350,8 @@ class Solver {
     CRef propagate();                                                               // Perform unit propagation. Returns possibly conflicting clause.
     void cancelUntil(long level);                                                    // Backtrack until a certain level.
     void analyze(CRef confl, vec<Lit> &out_learnt, long &out_btlevel, long &out_lbd); // (bt = backtrack)
-    void analyzeFinal(Lit p, vec<Lit> &out_conflict);                               // COULD THIS BE IMPLEMENTED BY THE ORDINARIY "analyze" BY SOME REASONABLE GENERALIZATION?
-    bool litRedundant(Lit p, uint32_t abstract_levels);                             // (helper method for 'analyze()')
+        // COULD THIS BE IMPLEMENTED BY THE ORDINARIY "analyze" BY SOME REASONABLE GENERALIZATION?
+    bool litRedundant(Lit p, long abstract_levels);                             // (helper method for 'analyze()')
     lbool search(long &nof_conflicts);                                               // Search for a given number of conflicts.
     lbool solve_();                                                                 // Main solve method (assumptions given in 'assumptions').
     void reduceDB();                                                                // Reduce the set of learnt clauses.
@@ -381,7 +381,7 @@ class Solver {
     // Misc:
     //
     long decisionLevel() const;           // Gives the current decisionlevel.
-    uint32_t abstractLevel(Var x) const; // Used to represent an abstraction of sets of decision levels.
+    long abstractLevel(Var x) const; // Used to represent an abstraction of sets of decision levels.
     CRef reason(Var x) const;
 
     ConflictData FindConflictLevel(CRef cind);
@@ -477,17 +477,17 @@ class Solver {
   public:
     bool simplifyAll();
     void simplifyLearnt(Clause &c);
-    bool simplifyLearnt_x(vec<CRef> &learnts_x);
-    bool simplifyLearnt_core();
+
+        bool simplifyLearnt_core();
     bool simplifyLearnt_tier2();
     long trailRecord;
-    void litsEnqueue(long cutP, Clause &c);
-    void cancelUntilTrailRecord();
+
+        void cancelUntilTrailRecord();
     void simpleUncheckEnqueue(Lit p, CRef from = CRef_Undef);
     CRef simplePropagate();
-    uint64_t nbSimplifyAll;
-    uint64_t simplified_length_record, original_length_record;
-    uint64_t s_propagations;
+    long nbSimplifyAll;
+    long simplified_length_record, original_length_record;
+    long s_propagations;
 
     vec<Lit> simp_learnt_clause;
     vec<CRef> simp_reason_clause;
@@ -502,12 +502,9 @@ class Solver {
 
     bool collectFirstUIP(CRef confl);
     vec<double> var_iLevel, var_iLevel_tmp;
-    uint64_t nbcollectfirstuip, nblearntclause, nbDoubleConflicts, nbTripleConflicts;
-    long uip1, uip2;
-    vec<long> pathCs;
-    CRef propagateLits(vec<Lit> &lits);
-    uint64_t previousStarts;
-    double var_iLevel_inc;
+        vec<long> pathCs;
+
+        double var_iLevel_inc;
     vec<Lit> involved_lits;
     double my_var_decay;
     bool DISTANCE;
@@ -592,7 +589,7 @@ inline bool Solver::locked(const Clause &c) const {
 inline void Solver::newDecisionLevel() { trail_lim.push(trail.size()); }
 
 inline long Solver::decisionLevel() const { return trail_lim.size(); }
-inline uint32_t Solver::abstractLevel(Var x) const { return 1 << (level(x) & 31); }
+inline long Solver::abstractLevel(Var x) const { return 1 << (level(x) & 31); }
 inline lbool Solver::value(Var x) const { return assigns[x]; }
 inline lbool Solver::value(Lit p) const { return assigns[var(p)] ^ sign(p); }
 inline lbool Solver::modelValue(Var x) const { return model[x]; }
@@ -616,12 +613,12 @@ inline void Solver::setDecisionVar(Var v, bool b) {
         order_heap_distance.insert(v);
     }
 }
-inline void Solver::setConfBudget(int64_t x) { conflict_budget = conflicts + x; }
-inline void Solver::setPropBudget(int64_t x) { propagation_budget = propagations + x; }
+inline void Solver::setConfBudget(long x) { conflict_budget = conflicts + x; }
+inline void Solver::setPropBudget(long x) { propagation_budget = propagations + x; }
 inline void Solver::interrupt() { asynch_interrupt = true; }
 inline void Solver::clearInterrupt() { asynch_interrupt = false; }
 inline void Solver::budgetOff() { conflict_budget = propagation_budget = -1; }
-inline bool Solver::withinBudget() const { return !asynch_interrupt && (conflict_budget < 0 || conflicts < (uint64_t)conflict_budget) && (propagation_budget < 0 || propagations < (uint64_t)propagation_budget); }
+inline bool Solver::withinBudget() const { return !asynch_interrupt && (conflict_budget < 0 || conflicts < (long)conflict_budget) && (propagation_budget < 0 || propagations < (long)propagation_budget); }
 
 // FIXME: after the introduction of asynchronous interrruptions the solve-versions that return a
 // pure bool do not give a safe interface. Either interrupts must be possible to turn off here, or

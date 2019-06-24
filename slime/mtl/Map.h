@@ -31,7 +31,7 @@ namespace SLIME {
 
     template<class K>
     struct Hash {
-        uint32_t operator()(const K &k) const { return hash(k); }
+        long operator()(const K &k) const { return hash(k); }
     };
 
     template<class K>
@@ -41,7 +41,7 @@ namespace SLIME {
 
     template<class K>
     struct DeepHash {
-        uint32_t operator()(const K *k) const { return hash(*k); }
+        long operator()(const K *k) const { return hash(*k); }
     };
 
     template<class K>
@@ -49,13 +49,7 @@ namespace SLIME {
         bool operator()(const K *k1, const K *k2) const { return *k1 == *k2; }
     };
 
-    static inline uint32_t hash(uint32_t x) { return x; }
-
-    static inline uint32_t hash(uint64_t x) { return (uint32_t) x; }
-
-    static inline uint32_t hash(int32_t x) { return (uint32_t) x; }
-
-    static inline uint32_t hash(int64_t x) { return (uint32_t) x; }
+    static inline long hash(long x) { return x; }
 
 
 //=================================================================================================
@@ -92,7 +86,7 @@ namespace SLIME {
 
         bool checkCap(long new_size) const { return new_size > cap; }
 
-        int32_t index(const K &k) const { return hash(k) % cap; }
+        long index(const K &k) const { return hash(k) % cap; }
 
         void _insert(const K &k, const D &d) {
             vec<Pair> &ps = table[index(k)];
@@ -120,7 +114,7 @@ namespace SLIME {
 
             delete[] old;
 
-            // printf(" --- rehashing, old-cap=%d, new-cap=%d\n", cap, newsize);
+            // printf(" --- rehashing, old-cap=%ld, new-cap=%ld\n", cap, newsize);
         }
 
 

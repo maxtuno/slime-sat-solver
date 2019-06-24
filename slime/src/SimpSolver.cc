@@ -39,8 +39,6 @@ using namespace SLIME;
 //=================================================================================================
 // Options:
 
-static const char *_cat = "SIMP";
-
 static bool opt_use_asymm = false;
 static bool opt_use_rcheck = false;
 static bool opt_use_elim = true;
@@ -134,7 +132,7 @@ bool SimpSolver::addClause_(vec<Lit> &ps) {
         binDRUP('a', ps, drup_file);
 #else
         for (long i = 0; i < ps.size(); i++)
-            fprintf(drup_file, "%li ", (var(ps[i]) + 1) * (-2 * sign(ps[i]) + 1));
+            fprintf(drup_file, "%i ", (var(ps[i]) + 1) * (-2 * sign(ps[i]) + 1));
         fprintf(drup_file, "0\n");
 #endif
     }
@@ -190,7 +188,7 @@ bool SimpSolver::strengthenClause(CRef cr, Lit l) {
 #else
         for (long i = 0; i < c.size(); i++)
             if (c[i] != l)
-                fprintf(drup_file, "%li ", (var(c[i]) + 1) * (-2 * sign(c[i]) + 1));
+                fprintf(drup_file, "%i ", (var(c[i]) + 1) * (-2 * sign(c[i]) + 1));
         fprintf(drup_file, "0\n");
 #endif
     }
@@ -205,7 +203,7 @@ bool SimpSolver::strengthenClause(CRef cr, Lit l) {
 #else
             fprintf(drup_file, "d ");
             for (long i = 0; i < c.size(); i++)
-                fprintf(drup_file, "%li ", (var(c[i]) + 1) * (-2 * sign(c[i]) + 1));
+                fprintf(drup_file, "%i ", (var(c[i]) + 1) * (-2 * sign(c[i]) + 1));
             fprintf(drup_file, "0\n");
 #endif
         }
@@ -329,7 +327,6 @@ bool SimpSolver::implied(const vec<Lit> &c) {
 
 // Backward subsumption + backward subsumption resolution
 bool SimpSolver::backwardSubsumptionCheck() {
-    long cnt = 0;
     long subsumed = 0;
     long deleted_literals = 0;
     assert(decisionLevel() == 0);
@@ -436,12 +433,12 @@ bool SimpSolver::asymmVar(Var v) {
     return backwardSubsumptionCheck();
 }
 
-static void mkElimClause(vec<uint32_t> &elimclauses, Lit x) {
+static void mkElimClause(vec<long> &elimclauses, Lit x) {
     elimclauses.push(toInt(x));
     elimclauses.push(1);
 }
 
-static void mkElimClause(vec<uint32_t> &elimclauses, Var v, Clause &c) {
+static void mkElimClause(vec<long> &elimclauses, Var v, Clause &c) {
     long first = elimclauses.size();
     long v_pos = -1;
 
@@ -456,7 +453,7 @@ static void mkElimClause(vec<uint32_t> &elimclauses, Var v, Clause &c) {
 
     // Swap the first literal with the 'v' literal, so that the literal
     // containing 'v' will occur first in the clause:
-    uint32_t tmp = elimclauses[v_pos];
+    long tmp = elimclauses[v_pos];
     elimclauses[v_pos] = elimclauses[first];
     elimclauses[first] = tmp;
 
@@ -609,10 +606,10 @@ bool SimpSolver::eliminate(bool turn_off_elim) {
     n_cls = nClauses();
     n_vars = nFreeVars();
 
-    printf("c Reduced to %li vars, %li cls (grow=%li)\n", n_vars, n_cls, grow);
+    printf("c Reduced to %ld vars, %ld cls (grow=%ld)\n", n_vars, n_cls, grow);
 
     if ((double)n_cls / n_vars >= 10 || n_vars < 1000 || trail.size() == 0) {
-        printf("c No iterative elimination performed. (vars=%li, c/v ratio=%.1f)\n", n_vars, (double)n_cls / n_vars);
+        printf("c No iterative elimination performed. (vars=%ld, c/v ratio=%.1f)\n", n_vars, (double)n_cls / n_vars);
         goto cleanup;
     }
 
@@ -677,7 +674,7 @@ bool SimpSolver::eliminate_() {
     while (n_touched > 0 || bwdsub_assigns < trail.size() || elim_heap.size() > 0) {
 
         gatherTouchedClauses();
-        // printf("  ## (time = %6.2f s) BWD-SUB: queue = %li, trail = %li\n", cpuTime(), subsumption_queue.size(), trail.size() - bwdsub_assigns);
+        // printf("  ## (time = %6.2f s) BWD-SUB: queue = %ld, trail = %ld\n", cpuTime(), subsumption_queue.size(), trail.size() - bwdsub_assigns);
         if ((subsumption_queue.size() > 0 || bwdsub_assigns < trail.size()) && !backwardSubsumptionCheck()) {
             ok = false;
             goto cleanup;
@@ -692,7 +689,7 @@ bool SimpSolver::eliminate_() {
             goto cleanup;
         }
 
-        // printf("  ## (time = %6.2f s) ELIM: vars = %li\n", cpuTime(), elim_heap.size());
+        // printf("  ## (time = %6.2f s) ELIM: vars = %ld\n", cpuTime(), elim_heap.size());
         for (long cnt = 0; !elim_heap.empty(); cnt++) {
             Var elim = elim_heap.removeMin();
 
