@@ -1,5 +1,6 @@
 SLIME 3.1
-- Change the integers types by long types for support large executions (days)
+- Support long term executions without overflow on counters and variables.
+- The State of The Art Performance.
 
 SLIME 3.0
 - Implementation of Alternating Dual BOOST Heuristic
