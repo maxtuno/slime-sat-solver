@@ -25,6 +25,7 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #include <SimpSolver.h>
 #include <SolverTypes.h>
 #include <iostream>
+#include <cstring>
 
 #define DRAT // Generate unsat proof.
 
@@ -56,6 +57,11 @@ void printHeader() {
 
 int main(int argc, char *argv[]) {
     printHeader();
+
+    if (strcmp(argv[1], "-help") == 0 || strcmp(argv[1], "--help") == 0) {
+        printf("usage: %s <cnf-file> [<sat-model-file>] [<unsat-proof-file>]\n", argv[0]);
+        return EXIT_SUCCESS;
+    }
 
     SimpSolver S;
 
