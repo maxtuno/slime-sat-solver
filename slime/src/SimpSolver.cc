@@ -595,14 +595,14 @@ bool SimpSolver::eliminate(bool turn_off_elim) {
     if (nVars() == 0)
         goto cleanup; // User disabling preprocessing.
 
+    // Get an initial number of clauses (more accurately).
+    if (trail.size() != 0)
+        removeSatisfied();
+
     res = eliminate_(); // The first, usual variable elimination of MiniSat.
 
     if (!res)
         goto cleanup;
-
-    // Get an initial number of clauses (more accurately).
-    if (trail.size() != 0)
-        removeSatisfied();
 
     n_cls_init = nClauses();
     n_cls = nClauses();
@@ -610,13 +610,12 @@ bool SimpSolver::eliminate(bool turn_off_elim) {
 
     printf("c Reduced to %ld vars, %ld cls (grow=%ld)\n", n_vars, n_cls, grow);
 
-    if ((double)n_cls / n_vars >= 10 || n_vars < 1000 || trail.size() == 0) {
+    if (trail.size() == 0) {
         printf("c No iterative elimination performed. (vars=%ld, c/v ratio=%.1f)\n", n_vars, (double)n_cls / n_vars);
         goto cleanup;
     }
 
-    grow = grow ? grow * 2 : 8;
-    for (; grow < 1000; grow *= 2) {
+    for (; grow < nClauses(); grow++) {
         // Rebuild elimination variable heap.
         for (long i = 0; i < clauses.size(); i++) {
             const Clause &c = ca[clauses[i]];
@@ -638,8 +637,8 @@ bool SimpSolver::eliminate(bool turn_off_elim) {
         long n_cls_now = nClauses();
         long n_vars_now = nFreeVars();
 
-        double cl_inc_rate = (double)n_cls_now / n_cls_last;
-        double var_dec_rate = (double)n_vars_last / n_vars_now;
+        double cl_inc_rate = (double)(n_cls_now) / (double)n_cls_last;
+        double var_dec_rate = (double)(n_vars_last) / (double)n_vars_now;
 
         if (n_cls_now > n_cls_init || cl_inc_rate > var_dec_rate)
             break;
