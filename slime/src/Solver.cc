@@ -1691,7 +1691,7 @@ lbool Solver::solve_() {
             long weighted = INT32_MAX;
             status = search(weighted);
         } else {
-            long nof_conflicts = pow(restart_inc, log2(curr_restarts)) * restart_first;
+            long nof_conflicts = luby(restart_inc, curr_restarts) * restart_first;
             status = search(nof_conflicts);
             curr_restarts++;
         }
