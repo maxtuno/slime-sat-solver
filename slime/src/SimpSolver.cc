@@ -615,7 +615,8 @@ bool SimpSolver::eliminate(bool turn_off_elim) {
         goto cleanup;
     }
 
-    for (; grow < nVars(); grow++) {
+    grow = grow ? grow * 2 : 8;
+    for (; grow < 1000; grow *= 2) {
         // Rebuild elimination variable heap.
         for (long i = 0; i < clauses.size(); i++) {
             const Clause &c = ca[clauses[i]];
