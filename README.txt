@@ -1,3 +1,8 @@
+NOTE: This repository is the development version, for official releases go to https://github.com/maxtuno/slime-sat-solver/releases
+
+SLIME 3.2 (Development)
+- Inversion of SHA1? o SHA256? https://github.com/vsklad/cgen.
+
 SLIME 3.1
 - Support long term executions without overflow on counters and variables.
 - The State of The Art Performance.
