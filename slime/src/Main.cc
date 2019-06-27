@@ -102,9 +102,9 @@ int main(int argc, char *argv[]) {
     }
 
     if (argc > 2) {
-        if (result == l_True) {
-            FILE *model = fopen(argv[2], "w");
-            fprintf(model, result == l_True ? "SAT\n" : result == l_False ? "UNSAT\n" : "UNKNOWN\n");
+        FILE *model = fopen(argv[2], "w");
+        fprintf(model, result == l_True ? "SAT\n" : result == l_False ? "UNSAT\n" : "UNKNOWN\n");
+        if (result == l_True) {            
             for (long i = 0; i < S.nVars(); i++)
                 if (S.model[i] != l_Undef) {
                     fprintf(model, "%s%s%ld", (i == 0) ? "" : " ", (S.model[i] == l_True) ? "" : "-", i + 1);
