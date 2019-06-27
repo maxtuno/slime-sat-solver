@@ -32,11 +32,10 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 **************************************************************************************************/
 
 #include <algorithm>
-#include <math.h>
-#include <stdio.h>
-#include <time.h>
+#include <cmath>
+#include <cstdio>
+#include <ctime>
 
-#include "SimpSolver.h"
 #include "Solver.h"
 #include "mtl/Sort.h"
 
@@ -91,7 +90,7 @@ Solver::Solver()
       // Statistics: (formerly in 'SolverStats')
       //
       ,
-      solves(0), starts(0), decisions(0), rnd_decisions(0), propagations(0), conflicts(0), conflicts_VSIDS(0), dec_vars(0), clauses_literals(0), learnts_literals(0), max_literals(0), tot_literals(0), chrono_backtrack(0), non_chrono_backtrack(0)
+      starts(0), decisions(0), rnd_decisions(0), propagations(0), conflicts(0), conflicts_VSIDS(0), dec_vars(0), clauses_literals(0), learnts_literals(0), max_literals(0), tot_literals(0), chrono_backtrack(0), non_chrono_backtrack(0)
 
       ,
       ok(true), cla_inc(1), var_inc(1), watches_bin(WatcherDeleted(ca)), watches(WatcherDeleted(ca)), qhead(0), simpDB_assigns(-1), simpDB_props(0), order_heap_CHB(VarOrderLt(activity_CHB)), order_heap_VSIDS(VarOrderLt(activity_VSIDS)), remove_satisfied(true)
@@ -253,14 +252,14 @@ void Solver::simpleAnalyze(CRef confl, vec<Lit> &out_learnt, vec<CRef> &reason_c
                 c[0] = c[1], c[1] = tmp;
             }
             // if True_confl==true, then choose p begin with the 1th index of c;
-            for (long j = (p == lit_Undef && True_confl == false) ? 0 : 1; j < c.size(); j++) {
+            for (long j = (p == lit_Undef && !True_confl) ? 0 : 1; j < c.size(); j++) {
                 Lit q = c[j];
                 if (!seen[var(q)]) {
                     seen[var(q)] = 1;
                     pathC++;
                 }
             }
-        } else if (confl == CRef_Undef) {
+        } else {
             out_learnt.push(~p);
         }
         // if not break, while() will come to the index of trail blow 0, and fatal error occur;
@@ -293,7 +292,7 @@ void Solver::simplifyLearnt(Clause &c) {
     bool True_confl = false;
     c.size();
     long i, j;
-    CRef confl;
+    CRef confl = 0;
 
     for (i = 0, j = 0; i < c.size(); i++) {
         if (value(c[i]) == l_Undef) {
@@ -316,12 +315,11 @@ void Solver::simplifyLearnt(Clause &c) {
         }
     }
     c.shrink(c.size() - j);
-    c.size();
 
-    if (confl != CRef_Undef || True_confl == true) {
+    if (confl != CRef_Undef || True_confl) {
         simp_learnt_clause.clear();
         simp_reason_clause.clear();
-        if (True_confl == true) {
+        if (True_confl) {
             simp_learnt_clause.push(c.last());
         }
         simpleAnalyze(confl, simp_learnt_clause, simp_reason_clause, True_confl);
@@ -384,12 +382,10 @@ bool Solver::simplifyLearnt_core() {
                     c.shrink(li - lj);
                 }
 
-                c.size();
                 assert(c.size() > 1);
                 // simplify a learnt clause c
                 simplifyLearnt(c);
                 assert(c.size() > 0);
-                c.size();
 
                 if (drup_file && saved_size != c.size()) {
 #ifdef BIN_DRUP
@@ -473,12 +469,10 @@ bool Solver::simplifyLearnt_tier2() {
                     c.shrink(li - lj);
                 }
 
-                c.size();
                 assert(c.size() > 1);
                 // simplify a learnt clause c
                 simplifyLearnt(c);
                 assert(c.size() > 0);
-                c.size();
 
                 if (drup_file && saved_size != c.size()) {
 
@@ -590,7 +584,7 @@ bool Solver::addClause_(vec<Lit> &ps) {
 
     if (drup_file) {
         add_oc.clear();
-        for (long i = 0; i < ps.size(); i++)
+        for (i = 0; i < ps.size(); i++)
             add_oc.push(ps[i]);
     }
 
@@ -1060,7 +1054,7 @@ bool Solver::litRedundant(Lit p, long abstract_levels) {
         }
 
         for (long i = 1; i < c.size(); i++) {
-            Lit p = c[i];
+            p = c[i];
             if (!seen[var(p)] && level(var(p)) > 0) {
                 if (reason(var(p)) != CRef_Undef && (abstractLevel(var(p)) & abstract_levels) != 0) {
                     seen[var(p)] = 1;
@@ -1650,11 +1644,6 @@ lbool Solver::solve_() {
     model.clear();
     conflict.clear();
 
-    solves++;
-
-    max_learnts = nClauses() * learntsize_factor;
-    learntsize_adjust_confl = learntsize_adjust_start_confl;
-    learntsize_adjust_cnt = (long)learntsize_adjust_confl;
     lbool status = l_Undef;
 
     add_tmp.clear();
@@ -1721,76 +1710,6 @@ lbool Solver::solve_() {
 
     cancelUntil(0);
     return status;
-}
-
-//=================================================================================================
-// Writing CNF to DIMACS:
-//
-// FIXME: this needs to be rewritten completely.
-
-static Var mapVar(Var x, vec<Var> &map, Var &max) {
-    if (map.size() <= x || map[x] == -1) {
-        map.growTo(x + 1, -1);
-        map[x] = max++;
-    }
-    return map[x];
-}
-
-void Solver::toDimacs(FILE *f, Clause &c, vec<Var> &map, Var &max) {
-    if (satisfied(c))
-        return;
-
-    for (long i = 0; i < c.size(); i++)
-        if (value(c[i]) != l_False)
-            fprintf(f, "%s%ld ", sign(c[i]) ? "-" : "", mapVar(var(c[i]), map, max) + 1);
-    fprintf(f, "0\n");
-}
-
-void Solver::toDimacs(const char *file, const vec<Lit> &assumps) {
-    FILE *f = fopen(file, "wr");
-    if (f == NULL)
-        fprintf(stderr, "could not open file %s\n", file), exit(1);
-    toDimacs(f, assumps);
-    fclose(f);
-}
-
-void Solver::toDimacs(FILE *f, const vec<Lit> &assumps) {
-    // Handle case when solver is in contradictory state:
-    if (!ok) {
-        fprintf(f, "p cnf 1 2\n1 0\n-1 0\n");
-        return;
-    }
-
-    vec<Var> map;
-    Var max = 0;
-
-    // Cannot use removeClauses here because it is not safe
-    // to deallocate them at this point. Could be improved.
-    long cnt = 0;
-    for (long i = 0; i < clauses.size(); i++)
-        if (!satisfied(ca[clauses[i]]))
-            cnt++;
-
-    for (long i = 0; i < clauses.size(); i++)
-        if (!satisfied(ca[clauses[i]])) {
-            Clause &c = ca[clauses[i]];
-            for (long j = 0; j < c.size(); j++)
-                if (value(c[j]) != l_False)
-                    mapVar(var(c[j]), map, max);
-        }
-
-    // Assumptions are added as unit clauses:
-    cnt += assumptions.size();
-
-    fprintf(f, "p cnf %ld %ld\n", max, cnt);
-
-    for (long i = 0; i < assumptions.size(); i++) {
-        assert(value(assumptions[i]) != l_False);
-        fprintf(f, "%s%ld 0\n", sign(assumptions[i]) ? "-" : "", mapVar(var(assumptions[i]), map, max) + 1);
-    }
-
-    for (long i = 0; i < clauses.size(); i++)
-        toDimacs(f, ca[clauses[i]], map, max);
 }
 
 //=================================================================================================
