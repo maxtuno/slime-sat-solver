@@ -1,7 +1,5 @@
 /************************************************************************************[SimpSolver.h]
-SLIME -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver
-
-SLIME SAT Solver and The BOOST Heuristic or Variations cannot be used on any contest without express permissions of Oscar Riveros.
+SLIME -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. - Implementation of the The Booster Heuristic.
 
 Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
 Copyright (c) 2007,      Niklas Sorensson
@@ -79,6 +77,16 @@ class SimpSolver : public Solver {
     //
     virtual void garbageCollect();
 
+    // Generate a (possibly simplified) DIMACS file:
+    //
+#if 0
+    void    toDimacs  (const char* file, const vec<Lit>& assumps);
+    void    toDimacs  (const char* file);
+    void    toDimacs  (const char* file, Lit p);
+    void    toDimacs  (const char* file, Lit p, Lit q);
+    void    toDimacs  (const char* file, Lit p, Lit q, Lit r);
+#endif
+
     // Mode of operation:
     //
     bool parsing;
@@ -105,8 +113,16 @@ class SimpSolver : public Solver {
         const vec<long> &n_occ;
         explicit ElimLt(const vec<long> &no) : n_occ(no) {}
 
+        // TODO: are 64-bit operations here noticably bad on 32-bit platforms? Could use a saturating
+        // 32-bit implementation instead then, but this will have to do for now.
         long cost(Var x) const { return (long)n_occ[toInt(mkLit(x))] * (long)n_occ[toInt(~mkLit(x))]; }
         bool operator()(Var x, Var y) const { return cost(x) < cost(y); }
+
+        // TODO: investigate this order alternative more.
+        // bool operator()(Var x, Var y) const {
+        //     long c_x = cost(x);
+        //     long c_y = cost(y);
+        //     return c_x < c_y || c_x == c_y && x < y; }
     };
 
     struct ClauseDeleted {

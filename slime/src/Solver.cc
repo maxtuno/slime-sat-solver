@@ -1,9 +1,6 @@
 /***************************************************************************************[Solver.cc]
-SLIME -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver
+SLIME -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. - Implementation of the The Booster Heuristic.
 
-SLIME SAT Solver and The BOOST Heuristic or Variations cannot be used on any contest without express permissions of Oscar Riveros.
-
-https://maxtuno.github.io/slime-sat-solver
 Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
 Copyright (c) 2007,      Niklas Sorensson
 
@@ -60,6 +57,7 @@ static double opt_random_var_freq = 0;
 static double opt_random_seed = 136983539;
 static long opt_ccmin_mode = 2;
 static long opt_phase_saving = 2;
+static bool opt_rnd_init_act = false;
 static long opt_restart_first = 100;
 static double opt_restart_inc = 2;
 static double opt_garbage_frac = 0.20;
@@ -76,7 +74,7 @@ Solver::Solver()
 
       // Parameters (user settable):
       //
-      drup_file(NULL), step_size(opt_step_size), step_size_dec(opt_step_size_dec), min_step_size(opt_min_step_size), timer(5000), var_decay(opt_var_decay), clause_decay(opt_clause_decay), random_var_freq(opt_random_var_freq), random_seed(opt_random_seed), VSIDS(false), ccmin_mode(opt_ccmin_mode), phase_saving(opt_phase_saving), rnd_pol(false), garbage_frac(opt_garbage_frac), restart_first(opt_restart_first), restart_inc(opt_restart_inc)
+      drup_file(NULL), step_size(opt_step_size), step_size_dec(opt_step_size_dec), min_step_size(opt_min_step_size), timer(5000), var_decay(opt_var_decay), clause_decay(opt_clause_decay), random_var_freq(opt_random_var_freq), random_seed(opt_random_seed), VSIDS(false), ccmin_mode(opt_ccmin_mode), phase_saving(opt_phase_saving), rnd_pol(false), rnd_init_act(opt_rnd_init_act), garbage_frac(opt_garbage_frac), restart_first(opt_restart_first), restart_inc(opt_restart_inc)
 
       // Parameters (the rest):
       //
@@ -555,7 +553,7 @@ Var Solver::newVar(bool sign, bool dvar) {
     assigns.push(l_Undef);
     vardata.push(mkVarData(CRef_Undef, 0));
     activity_CHB.push(0);
-    activity_VSIDS.push(0);
+    activity_VSIDS.push(rnd_init_act ? drand(random_seed) * 0.00001 : 0);
 
     picked.push(0);
     conflicted.push(0);
@@ -785,7 +783,8 @@ Lit Solver::pickBranchLit() {
         if (local > global) {
             global = local;
 #ifdef LOG
-            printf("c %ld\n", nVars() - global);
+            printf("\rc %.2f %% \t ", 100.0 * (nVars() - global) / nVars());
+            fflush(stdout);
 #endif
         } else if (local < global) {
             polarity[trail.size()] = !polarity[trail.size()];
@@ -1554,7 +1553,8 @@ lbool Solver::search(long &nof_conflicts) {
                 if (local > global) {
                     global = local;
 #ifdef LOG
-                    printf("c %ld\n", nVars() - global);
+                    printf("\rc %.2f %% \t ", 100.0 * (nVars() - global) / nVars());
+                    fflush(stdout);
 #endif
                 } else if (local < global) {
                     polarity[trail.size()] = !polarity[trail.size()];

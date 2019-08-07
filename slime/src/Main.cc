@@ -1,7 +1,5 @@
 /*****************************************************************************************[Main.cc]
-SLIME -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver
-
-SLIME SAT Solver and The BOOST Heuristic or Variations cannot be used on any contest without express permissions of Oscar Riveros.
+SLIME -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile.
 
 https://maxtuno.github.io/slime-sat-solver
 
@@ -25,7 +23,6 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #include <SimpSolver.h>
 #include <SolverTypes.h>
 #include <iostream>
-#include <cstring>
 
 #define DRAT // Generate unsat proof.
 
@@ -57,11 +54,6 @@ void printHeader() {
 
 int main(int argc, char *argv[]) {
     printHeader();
-
-    if (strcmp(argv[1], "-help") == 0 || strcmp(argv[1], "--help") == 0) {
-        printf("usage: %s <cnf-file> [<sat-model-file>] [<unsat-proof-file>]\n", argv[0]);
-        return EXIT_SUCCESS;
-    }
 
     SimpSolver S;
 
@@ -102,9 +94,9 @@ int main(int argc, char *argv[]) {
     }
 
     if (argc > 2) {
-        FILE *model = fopen(argv[2], "w");
-        fprintf(model, result == l_True ? "SAT\n" : result == l_False ? "UNSAT\n" : "UNKNOWN\n");
         if (result == l_True) {
+            FILE *model = fopen(argv[2], "w");
+            fprintf(model, result == l_True ? "SAT\n" : result == l_False ? "UNSAT\n" : "UNKNOWN\n");
             for (long i = 0; i < S.nVars(); i++)
                 if (S.model[i] != l_Undef) {
                     fprintf(model, "%s%s%ld", (i == 0) ? "" : " ", (S.model[i] == l_True) ? "" : "-", i + 1);
