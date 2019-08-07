@@ -3,10 +3,10 @@ NOTE: This repository is the development version, for official releases go to ht
 SLIME 3.1.1
 - Maintenance Update.
 - SLIME vs The Winners of the SAT Race 2019. (https://maxtuno.github.io/slime-sat-solver)
-	solver 						config 		SAT-VERIFIED 		UNKNOWN 			UNSAT
-	CaDiCaL 					default 	80 / 34762.8330 	95 / 171003.8300 	25 / 14057.7858
-	SLIME 3.1.1 				default 	82 / 43255.9017 	91 / 163804.3300 	27 / 16173.2391
-	MapleLCMDiscChronoBT-DL-v3 	default 	80 / 39363.0743 	91 / 163804.0300 	29 / 16442.0995
+	solver 	config 	SAT-VERIFIED 	UNKNOWN 	UNSAT
+CaDiCaL 	default 	80 / 34762.8330 	95 / 171003.8300 	25 / 14057.7858
+SLIME 3.1.1 	default 	82 / 43255.9017 	91 / 163804.3300 	27 / 16173.2391
+MapleLCMDiscChronoBT-DL-v3 	default 	80 / 39363.0743 	91 / 163804.0300 	29 / 16442.0995
 
 SLIME 3.1
 - Support long term executions without overflow on counters and variables.
