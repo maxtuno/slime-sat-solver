@@ -76,6 +76,8 @@ int main(int argc, char *argv[]) {
     vec<Lit> assumptions;
     lbool result = S.solveLimited(assumptions);
 
+    printf("\n");
+
     printf(result == l_True ? "s SATISFIABLE\nv " : result == l_False ? "s UNSATISFIABLE\n" : "s UNKNOWN\n");
     if (result == l_True) {
         for (long i = 0; i < S.nVars(); i++)
