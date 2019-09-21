@@ -24,8 +24,6 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #include <SolverTypes.h>
 #include <iostream>
 
-#define DRAT // Generate unsat proof.
-
 using namespace SLIME;
 
 #if _WIN32 || _WIN64
@@ -54,14 +52,19 @@ void printHeader() {
 
 int main(int argc, char *argv[]) {
     printHeader();
+    // Extra options:
+    //
+    BoolOption pre("SLIME", "pre", "Completely turn on/off any preprocessing.", true);
+    StringOption dimacs("SLIME", "dimacs", "If given, stop after preprocessing and write the result to this file.");
+    StringOption drup_file("SLIME", "drup-file", "DRUP UNSAT proof ouput file.", "");
+
+    parseOptions(argc, argv, true);
 
     SimpSolver S;
 
-#ifdef DRAT
-    if (argc > 3) {
-        S.drup_file = fopen(argv[3], "wb");
+    if (strcmp(drup_file, "") != 0) {
+        S.drup_file = fopen(drup_file, "wb");
     }
-#endif
 
     FILE *in = fopen(argv[1], "r");
     if (in == NULL) {
@@ -85,14 +88,10 @@ int main(int argc, char *argv[]) {
                 printf("%s%s%ld", (i == 0) ? "" : " ", (S.model[i] == l_True) ? "" : "-", i + 1);
             }
         printf(" 0\n");
-    } else {
-#ifdef DRAT
-        if (argc > 3) {
-            fputc('a', S.drup_file);
-            fputc(0, S.drup_file);
-            fclose(S.drup_file);
-        }
-#endif
+    } else if (strcmp(drup_file, "") != 0) {
+        fputc('a', S.drup_file);
+        fputc(0, S.drup_file);
+        fclose(S.drup_file);
     }
 
     if (argc > 2) {

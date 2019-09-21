@@ -1,0 +1,4 @@
+SLIME 4.0: Today the most advanced SAT Solver on the planet.
+- Increase performance and scope of solvable instances.
+- Better performance at 3000 seconds than the winner of the SAT Race 2019 on new Benchmarks.
+- Better UNSAT solving.

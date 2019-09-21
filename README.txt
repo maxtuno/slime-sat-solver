@@ -1,4 +1,13 @@
+"Thanks to the support of www.starexec.org SLIME is today the most advanced SAT Solver on the planet."
+
 NOTE: This repository is the development version, for official releases go to https://github.com/maxtuno/slime-sat-solver/releases
+
+SLIME 4.0: Today the most advanced SAT Solver on the planet.
+- Increase performance and scope of solvable instances.
+- Better performance at 3000 seconds than the winner of the SAT Race 2019 on new Benchmarks.
+- Better UNSAT solving.
+
+NOTE: The version of CaDiCaL used to measure SLIME is the SAT Race 2019.
 
 SLIME 3.1.1
 - Maintenance Update.
