@@ -4,7 +4,7 @@ NOTE: This repository is the development version, for official releases go to ht
 
 SLIME 4.0: Today the most advanced SAT Solver on the planet.
 - Increase performance and scope of solvable instances.
-- Better performance at 3000 seconds than the winner of the SAT Race 2019 on new Benchmarks. 
+- Better performance at 3000 seconds than the winner of the SAT Race 2019 on new Benchmarks. https://maxtuno.github.io/slime-sat-solver
 - Better UNSAT solving.
 
 NOTE: The version of CaDiCaL used to measure SLIME is the SAT Race 2019.
