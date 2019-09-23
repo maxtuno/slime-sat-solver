@@ -31,7 +31,7 @@ if __name__ == '__main__':
         if i == 0:
             slime_call_command = 'slime_cli {}'.format(input_file)
         else:
-            slime_call_command = 'slime_cli -rnd-init -rnd-seed={} {}'.format(random.random(), input_file)
+            slime_call_command = 'slime_cli -rnd-init -rnd-seed={} {}'.format(seed, input_file)
         args = slime_call_command.split()
         slime_process = subprocess.Popen(
             args,
