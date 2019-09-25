@@ -44,7 +44,7 @@ unsigned char* Solver::buf_ptr = drup_buf;
 //=================================================================================================
 // Options:
 
-static DoubleOption  opt_step_size         ("SLIME", "step-size",   "Initial step size",                             0.40,     DoubleRange(0, false, 1, false));
+static DoubleOption  opt_step_size         ("SLIME", "step-size",   "Initial step size",                             0.00001,     DoubleRange(0, false, 1, false));
 static DoubleOption  opt_step_size_dec     ("SLIME", "step-size-dec","Step size decrement",                          0.000001, DoubleRange(0, false, 1, false));
 static DoubleOption  opt_min_step_size     ("SLIME", "min-step-size","Minimal step size",                            0.06,     DoubleRange(0, false, 1, false));
 static DoubleOption  opt_var_decay         ("SLIME", "var-decay",   "The variable activity decay factor",            0.80,     DoubleRange(0, false, 1, false));
