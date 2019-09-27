@@ -890,7 +890,7 @@ bool Solver::addClause_(vec<Lit>& ps)
     if (!ok) return false;
 
     // Check if clause is satisfied and remove false/duplicate literals:
-    sort(ps);
+    invert(ps);
     Lit p; long i, j;
 
     if (drup_file){

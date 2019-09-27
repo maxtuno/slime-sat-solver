@@ -29,7 +29,11 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 namespace SLIME {
 
 template <class T> struct LessThan_default {
-    bool operator()(T x, T y) { return x < y; }
+    bool operator()(T x, T y) { return  x < y; }
+};
+
+template <class T> struct GreatterThan_default {
+    bool operator()(T x, T y) { return  y < x; }
 };
 
 template <class T, class LessThan> void selectionSort(T *array, long size, LessThan lt) {
@@ -81,6 +85,37 @@ template <class T, class LessThan> void sort(T *array, long size, LessThan lt) {
     }
 }
 
+template <class T, class LessThan> void invert(T *array, long size, LessThan lt) {
+    if (size <= 15)
+        selectionSort(array, size, lt);
+
+    else {
+        T pivot = array[size / 2];
+        T tmp;
+        long i = -1;
+        long j = size;
+
+        for (;;) {
+            do
+                i++;
+            while (lt(array[i], pivot));
+            do
+                j--;
+            while (lt(pivot, array[j]));
+
+            if (i <= j)
+                break;
+
+            tmp = array[i];
+            array[i] = array[j];
+            array[j] = tmp;
+        }
+
+        sort(array, i, lt);
+        sort(&array[i], size - i, lt);
+    }
+}
+
 template <class T> static inline void sort(T *array, long size) { sort(array, size, LessThan_default<T>()); }
 
 //=================================================================================================
@@ -89,6 +124,18 @@ template <class T> static inline void sort(T *array, long size) { sort(array, si
 template <class T, class LessThan> void sort(vec<T> &v, LessThan lt) { sort((T *)v, v.size(), lt); }
 
 template <class T> void sort(vec<T> &v) { sort(v, LessThan_default<T>()); }
+
+// ---
+
+template <class T> static inline void invert(T *array, long size) { invert(array, size, GreatterThan_default<T>()); }
+
+//=================================================================================================
+// For 'vec's:
+
+template <class T, class LessThan> void invert(vec<T> &v, LessThan lt) { invert((T *)v, v.size(), lt); }
+
+template <class T> void invert(vec<T> &v) { invert(v, GreatterThan_default<T>()); }
+
 
 //=================================================================================================
 } // namespace SLIME

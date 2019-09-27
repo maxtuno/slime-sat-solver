@@ -2,6 +2,9 @@
 
 NOTE: This repository is the development version, for official releases go to https://github.com/maxtuno/slime-sat-solver/releases
 
+SLIME 4.1:
+- More performance.
+
 SLIME 4.0.1:
 - Increase general performance and scope of solvable instances.
 
