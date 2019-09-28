@@ -125,7 +125,7 @@ Solver::Solver() :
         , next_T2_reduce     (10000)
         , next_L_reduce      (15000)
         , confl_to_chrono    (opt_conf_to_chrono)
-        , chrono			   (opt_chrono)
+        , chrono               (opt_chrono)
 
         , counter            (0)
 
@@ -225,37 +225,37 @@ CRef Solver::simplePropagate()
                 // Look for new watch:
                 //if (incremental)
                 //{ // ----------------- INCREMENTAL MODE
-                //	long choosenPos = -1;
-                //	for (long k = 2; k < c.size(); k++)
-                //	{
-                //		if (value(c[k]) != l_False)
-                //		{
-                //			if (decisionLevel()>assumptions.size())
-                //			{
-                //				choosenPos = k;
-                //				break;
-                //			}
-                //			else
-                //			{
-                //				choosenPos = k;
+                //  long choosenPos = -1;
+                //  for (long k = 2; k < c.size(); k++)
+                //  {
+                //      if (value(c[k]) != l_False)
+                //      {
+                //          if (decisionLevel()>assumptions.size())
+                //          {
+                //              choosenPos = k;
+                //              break;
+                //          }
+                //          else
+                //          {
+                //              choosenPos = k;
 
-                //				if (value(c[k]) == l_True || !isSelector(var(c[k]))) {
-                //					break;
-                //				}
-                //			}
+                //              if (value(c[k]) == l_True || !isSelector(var(c[k]))) {
+                //                  break;
+                //              }
+                //          }
 
-                //		}
-                //	}
-                //	if (choosenPos != -1)
-                //	{
-                //		// watcher i is abandonned using i++, because cr watches now ~c[k] instead of p
-                //		// the blocker is first in the watcher. However,
-                //		// the blocker in the corresponding watcher in ~first is not c[1]
-                //		Watcher w = Watcher(cr, first); i++;
-                //		c[1] = c[choosenPos]; c[choosenPos] = false_lit;
-                //		watches[~c[1]].push(w);
-                //		goto NextClause;
-                //	}
+                //      }
+                //  }
+                //  if (choosenPos != -1)
+                //  {
+                //      // watcher i is abandonned using i++, because cr watches now ~c[k] instead of p
+                //      // the blocker is first in the watcher. However,
+                //      // the blocker in the corresponding watcher in ~first is not c[1]
+                //      Watcher w = Watcher(cr, first); i++;
+                //      c[1] = c[choosenPos]; c[choosenPos] = false_lit;
+                //      watches[~c[1]].push(w);
+                //      goto NextClause;
+                //  }
                 //}
             else
             {  // ----------------- DEFAULT  MODE (NOT INCREMENTAL)
@@ -1017,7 +1017,7 @@ void Solver::cancelUntil(long bLevel) {
             else
             {
                 if (!VSIDS){
-                    uint32_t age = conflicts - picked[x];
+                    uint64_t age = conflicts - picked[x];
                     if (age > 0){
                         double adjusted_reward = ((double) (conflicted[x] + almost_conflicted[x])) / ((double) age);
                         double old_activity = activity_CHB[x];
@@ -1229,7 +1229,7 @@ void Solver::analyze(CRef confl, vec<Lit>& out_learnt, long& out_btlevel, long& 
     long i, j;
     out_learnt.copyTo(analyze_toclear);
     if (ccmin_mode == 2){
-        uint32_t abstract_level = 0;
+        uint64_t abstract_level = 0;
         for (i = 1; i < out_learnt.size(); i++)
             abstract_level |= abstractLevel(var(out_learnt[i])); // (maintain an abstraction of levels involved in conflict)
 
@@ -1340,7 +1340,7 @@ bool Solver::binResMinimize(vec<Lit>& out_learnt)
 
 // Check if 'p' can be removed. 'abstract_levels' is used to abort early if the algorithm is
 // visiting literals at levels that cannot be removed later.
-bool Solver::litRedundant(Lit p, uint32_t abstract_levels)
+bool Solver::litRedundant(Lit p, uint64_t abstract_levels)
 {
     analyze_stack.clear(); analyze_stack.push(p);
     long top = analyze_toclear.size();
@@ -1423,7 +1423,7 @@ void Solver::uncheckedEnqueue(Lit p, long level, CRef from)
         conflicted[x] = 0;
         almost_conflicted[x] = 0;
 #ifdef ANTI_EXPLORATION
-        uint32_t age = conflicts - canceled[var(p)];
+        uint64_t age = conflicts - canceled[var(p)];
         if (age > 0){
             double decay = pow(0.95, age);
             activity_CHB[var(p)] *= decay;
@@ -1726,7 +1726,7 @@ bool Solver::collectFirstUIP(CRef confl){
         if (seen[v]) {
             long currentDecLevel=level(v);
             //      if (currentDecLevel==decisionLevel())
-            //      	varBumpActivity(v);
+            //          varBumpActivity(v);
             seen[v]=0;
             if (--pathCs[currentDecLevel]!=0) {
                 Clause& rc=ca[reason(v)];
@@ -1743,7 +1743,7 @@ bool Solver::collectFirstUIP(CRef confl){
                     Lit q = rc[j]; Var v1=var(q);
                     if (level(v1) > 0) {
                         if (minLevel>level(v1)) {
-                            minLevel=level(v1); limit=trail_lim[minLevel-1]; 	assert(minLevel>0);
+                            minLevel=level(v1); limit=trail_lim[minLevel-1];    assert(minLevel>0);
                         }
                         if (seen[v1]) {
                             if (var_iLevel_tmp[v1]<reasonVarLevel)

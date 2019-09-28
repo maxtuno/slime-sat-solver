@@ -199,11 +199,11 @@ namespace SLIME {
         uint64_t dec_vars, clauses_literals, learnts_literals, max_literals, tot_literals;
         uint64_t chrono_backtrack, non_chrono_backtrack;
 
-        vec<uint32_t> picked;
-        vec<uint32_t> conflicted;
-        vec<uint32_t> almost_conflicted;
+        vec<uint64_t> picked;
+        vec<uint64_t> conflicted;
+        vec<uint64_t> almost_conflicted;
 #ifdef ANTI_EXPLORATION
-        vec<uint32_t> canceled;
+        vec<uint64_t> canceled;
 #endif
 
     protected:
@@ -320,7 +320,7 @@ namespace SLIME {
         void     cancelUntil      (long level);                                             // Backtrack until a certain level.
         void     analyze          (CRef confl, vec<Lit>& out_learnt, long& out_btlevel, long& out_lbd);    // (bt = backtrack)
         void     analyzeFinal     (Lit p, vec<Lit>& out_conflict);                         // COULD THIS BE IMPLEMENTED BY THE ORDINARIY "analyze" BY SOME REASONABLE GENERALIZATION?
-        bool     litRedundant     (Lit p, uint32_t abstract_levels);                       // (helper method for 'analyze()')
+        bool     litRedundant     (Lit p, uint64_t abstract_levels);                       // (helper method for 'analyze()')
         lbool    search           (long& nof_conflicts);                                    // Search for a given number of conflicts.
         lbool    solve_           ();                                                      // Main solve method (assumptions given in 'assumptions').
         void     reduceDB         ();                                                      // Reduce the set of learnt clauses.
@@ -353,7 +353,7 @@ namespace SLIME {
         // Misc:
         //
         long      decisionLevel    ()      const; // Gives the current decisionlevel.
-        uint32_t abstractLevel    (Var x) const; // Used to represent an abstraction of sets of decision levels.
+        uint64_t abstractLevel    (Var x) const; // Used to represent an abstraction of sets of decision levels.
         CRef     reason           (Var x) const;
 
         ConflictData FindConflictLevel(CRef cind);
@@ -539,7 +539,7 @@ namespace SLIME {
     inline void     Solver::newDecisionLevel()                      { trail_lim.push(trail.size()); }
 
     inline long      Solver::decisionLevel ()      const   { return trail_lim.size(); }
-    inline uint32_t Solver::abstractLevel (Var x) const   { return 1 << (level(x) & 31); }
+    inline uint64_t Solver::abstractLevel (Var x) const   { return 1 << (level(x) & 31); }
     inline lbool    Solver::value         (Var x) const   { return assigns[x]; }
     inline lbool    Solver::value         (Lit p) const   { return assigns[var(p)] ^ sign(p); }
     inline lbool    Solver::modelValue    (Var x) const   { return model[x]; }
