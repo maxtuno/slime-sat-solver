@@ -39,13 +39,13 @@ using namespace SLIME;
 //=================================================================================================
 // Options:
 
-static BoolOption   opt_use_asymm        ("SLIME", "asymm",        "Shrink clauses by asymmetric branching.", false);
-static BoolOption   opt_use_rcheck       ("SLIME", "rcheck",       "Check if a clause is already implied. (costly)", false);
-static BoolOption   opt_use_elim         ("SLIME", "elim",         "Perform variable elimination.", true);
-static IntOption    opt_grow             ("SLIME", "grow",         "Allow a variable elimination step to grow by a number of clauses.", 0);
-static IntOption    opt_clause_lim       ("SLIME", "cl-lim",       "Variables are not eliminated if it produces a resolvent with a length above this limit. -1 means no limit", 20,   IntRange(-1, INT32_MAX));
-static IntOption    opt_subsumption_lim  ("SLIME", "sub-lim",      "Do not check if subsumption against a clause larger than this. -1 means no limit.", 1000, IntRange(-1, INT32_MAX));
-static DoubleOption opt_simp_garbage_frac("SLIME", "simp-gc-frac", "The fraction of wasted memory allowed before a garbage collection is triggered during simplification.",  0.5, DoubleRange(0, false, HUGE_VAL, false));
+static bool opt_use_asymm = false;
+static bool opt_use_rcheck = false;
+static bool opt_use_elim = true;
+static long opt_grow = 0;
+static long opt_clause_lim = -1;
+static long opt_subsumption_lim = 1000;
+static double opt_simp_garbage_frac = 0.5;
 
 //=================================================================================================
 // Constructor/Destructor:
@@ -240,7 +240,7 @@ bool SimpSolver::merge(const Clause &_ps, const Clause &_qs, Var v, vec<Lit> &ou
                 }
             out_clause.push(qs[i]);
         }
-        next:;
+    next:;
     }
 
     for (long i = 0; i < ps.size(); i++)
@@ -274,7 +274,7 @@ bool SimpSolver::merge(const Clause &_ps, const Clause &_qs, Var v, long &size) 
                 }
             size++;
         }
-        next:;
+    next:;
     }
 
     return true;
@@ -563,7 +563,7 @@ void SimpSolver::extendModel() {
 
         x = toLit(elimclauses[i]);
         model[var(x)] = lbool(!sign(x));
-        next:;
+    next:;
     }
 }
 
@@ -643,7 +643,7 @@ bool SimpSolver::eliminate(bool turn_off_elim) {
             break;
     }
 
-    cleanup:
+cleanup:
     touched.clear(true);
     occurs.clear(true);
     n_occ.clear(true);
@@ -722,7 +722,7 @@ bool SimpSolver::eliminate_() {
 
         assert(subsumption_queue.size() == 0);
     }
-    cleanup:
+cleanup:
     // To get an accurate number of clauses.
     if (trail_size_last != trail.size())
         removeSatisfied();

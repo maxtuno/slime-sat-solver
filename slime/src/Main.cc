@@ -24,6 +24,8 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #include <SolverTypes.h>
 #include <iostream>
 
+#define DRAT // Generate unsat proof.
+
 using namespace SLIME;
 
 #if _WIN32 || _WIN64
@@ -52,18 +54,11 @@ void printHeader() {
 
 int main(int argc, char *argv[]) {
     printHeader();
-    // Extra options:
-    //
-    BoolOption pre("SLIME", "pre", "Completely turn on/off any preprocessing.", true);
-    StringOption dimacs("SLIME", "dimacs", "If given, stop after preprocessing and write the result to this file.");
-    StringOption drup_file("SLIME", "drup-file", "DRUP UNSAT proof ouput file.", "");
-
-    parseOptions(argc, argv, true);
 
     SimpSolver S;
 
-    if (strcmp(drup_file, "") != 0) {
-        S.drup_file = fopen(drup_file, "wb");
+    if (argc > 3) {
+        S.drup_file = fopen(argv[3], "wb");
     }
 
     FILE *in = fopen(argv[1], "r");
@@ -74,10 +69,9 @@ int main(int argc, char *argv[]) {
     parse_DIMACS(in, S);
     fclose(in);
 
+    vec<Lit> assumptions(S.nVars());
     S.eliminate();
-
-    vec<Lit> assumptions;
-    lbool result = S.solveLimited(assumptions);
+    lbool result = S.solveLimited(assumptions, true);
 
     printf("\n");
 
@@ -88,23 +82,26 @@ int main(int argc, char *argv[]) {
                 printf("%s%s%ld", (i == 0) ? "" : " ", (S.model[i] == l_True) ? "" : "-", i + 1);
             }
         printf(" 0\n");
-    } else if (strcmp(drup_file, "") != 0) {
-        fputc('a', S.drup_file);
-        fputc(0, S.drup_file);
-        fclose(S.drup_file);
+    } else {
+#ifdef DRAT
+        if (argc > 3) {
+            fputc('a', S.drup_file);
+            fputc(0, S.drup_file);
+            fclose(S.drup_file);
+        }
+#endif
     }
 
     if (argc > 2) {
-        FILE *model = fopen(argv[2], "w");
-        fprintf(model, result == l_True ? "SAT\n" : result == l_False ? "UNSAT\n" : "UNKNOWN\n");
         if (result == l_True) {
+            FILE *model = fopen(argv[2], "w");
+            fprintf(model, result == l_True ? "SAT\n" : result == l_False ? "UNSAT\n" : "UNKNOWN\n");
             for (long i = 0; i < S.nVars(); i++)
                 if (S.model[i] != l_Undef) {
                     fprintf(model, "%s%s%ld", (i == 0) ? "" : " ", (S.model[i] == l_True) ? "" : "-", i + 1);
                 }
             fprintf(model, " 0\n");
         }
-        fclose(model);
     }
 
     exit(result == l_True ? 10 : result == l_False ? 20 : 0);

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 echo
-echo "SLIME 4.1 The most advanced SAT Solver on the planet."
+echo "SLIME 4.1.1 The most advanced SAT Solver on the planet."
 echo
 echo "Building..."
 echo
@@ -14,7 +14,7 @@ cd bin
 ./slime_cli test.cnf test.model test.proof
 echo
 echo "SLIME Help:"
-echo "usage: slime_cli <cnf-file> [<sat-model-file>]"
+echo "usage: slime_cli <cnf-file> [<sat-model-file> [<unsat-proof-file>]]"
 echo
 echo "DONE..."
 echo
