@@ -352,10 +352,10 @@ class Solver {
     void cancelUntil(long level);                                                     // Backtrack until a certain level.
     void analyze(CRef confl, vec<Lit> &out_learnt, long &out_btlevel, long &out_lbd); // (bt = backtrack)
                                                                                       // COULD THIS BE IMPLEMENTED BY THE ORDINARIY "analyze" BY SOME REASONABLE GENERALIZATION?
-    bool litRedundant(Lit p, long abstract_levels); // (helper method for 'analyze()')
-    lbool search(long &nof_conflicts);              // Search for a given number of conflicts.
-    lbool solve_();                                 // Main solve method (assumptions given in 'assumptions').
-    void reduceDB();                                // Reduce the set of learnt clauses.
+    bool litRedundant(Lit p, long abstract_levels);                                   // (helper method for 'analyze()')
+    lbool search(long &nof_conflicts);                                                // Search for a given number of conflicts.
+    lbool solve_();                                                                   // Main solve method (assumptions given in 'assumptions').
+    void reduceDB();                                                                  // Reduce the set of learnt clauses.
     void reduceDB_Tier2();
     void removeSatisfied(vec<CRef> &cs); // Shrink 'cs' to contain only non-satisfied clauses.
     void safeRemoveSatisfied(vec<CRef> &cs, unsigned valid_mark);
