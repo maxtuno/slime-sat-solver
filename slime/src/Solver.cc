@@ -63,11 +63,10 @@ static double opt_restart_inc = 2;
 static double opt_garbage_frac = 0.20;
 static long opt_chrono = 100;
 static long opt_conf_to_chrono = 4000;
+static bool switch_mode = false;
 
 //=================================================================================================
 // Constructor/Destructor:
-
-static bool switch_mode = false;
 
 Solver::Solver()
     :
