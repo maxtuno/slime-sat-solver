@@ -1449,7 +1449,23 @@ lbool Solver::search(long &nof_conflicts) {
     }
 
     for (;;) {
+        /* SLIME -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver */
+        /* SLIME SAT Solver and The BOOST Heuristic or Variations cannot be used on any contest without express permissions of Oscar Riveros. */
+        polarity[trail.size()] = !polarity[trail.size()];
+
         CRef confl = propagate();
+
+        local = trail.size();
+        if (local > global) {
+            global = local;
+#ifdef LOG
+            printf("\rc %.2f %% \t ", 100.0 * (nVars() - global) / nVars());
+            fflush(stdout);
+#endif
+        } else if (local < global) {
+            polarity[trail.size()] = !polarity[trail.size()];
+        }
+
         if (confl != CRef_Undef) {
             // CONFLICT
             if (VSIDS) {
@@ -1529,21 +1545,6 @@ lbool Solver::search(long &nof_conflicts) {
             if (VSIDS)
                 varDecayActivity();
             claDecayActivity();
-            /* SLIME -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver */
-            /* SLIME SAT Solver and The BOOST Heuristic or Variations cannot be used on any contest without express permissions of Oscar Riveros. */
-            if (VSIDS) {
-                polarity[trail.size()] = !polarity[trail.size()];
-                local = trail.size();
-                if (local > global) {
-                    global = local;
-#ifdef LOG
-                    printf("\rc %.2f %% \t ", 100.0 * (nVars() - global) / nVars());
-                    fflush(stdout);
-#endif
-                } else if (local < global) {
-                    polarity[trail.size()] = !polarity[trail.size()];
-                }
-            }
         } else {
             // NO CONFLICT
             bool restart = false;
@@ -1592,22 +1593,6 @@ lbool Solver::search(long &nof_conflicts) {
             // Increase decision level and enqueue 'next'
             newDecisionLevel();
             uncheckedEnqueue(next, decisionLevel());
-
-            /* SLIME -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver */
-            /* SLIME SAT Solver and The BOOST Heuristic or Variations cannot be used on any contest without express permissions of Oscar Riveros. */
-            if (!VSIDS) {
-                polarity[trail.size()] = !polarity[trail.size()];
-                local = trail.size();
-                if (local > global) {
-                    global = local;
-#ifdef LOG
-                    printf("\rc %.2f %% \t ", 100.0 * (nVars() - global) / nVars());
-                    fflush(stdout);
-#endif
-                } else if (local < global) {
-                    polarity[trail.size()] = !polarity[trail.size()];
-                }
-            }
         }
     }
 }
@@ -1688,7 +1673,7 @@ lbool Solver::solve_() {
             }
         }
         if (VSIDS) {
-            long weighted = INT32_MAX;
+            long weighted = INT64_MAX;
             status = search(weighted);
         } else {
             long nof_conflicts = luby(restart_inc, curr_restarts) * restart_first;

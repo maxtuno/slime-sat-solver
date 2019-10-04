@@ -61,6 +61,8 @@ namespace SLIME {
 class Solver {
   protected:
     long local;
+    long cursor;
+    vec<lbool> aux;
 
   private:
     template <typename T> class MyQueue {
@@ -153,10 +155,10 @@ class Solver {
     lbool value(Lit p) const;      // The current value of a literal.
     lbool modelValue(Var x) const; // The value of a variable in the last model. The last call to solve must have been satisfiable.
     lbool modelValue(Lit p) const; // The value of a literal in the last model. The last call to solve must have been satisfiable.
-    long nAssigns() const;          // The current number of assigned literals.
-    long nClauses() const;          // The current number of original clauses.
-    long nLearnts() const;          // The current number of learnt clauses.
-    long nVars() const;             // The current number of variables.
+    long nAssigns() const;         // The current number of assigned literals.
+    long nClauses() const;         // The current number of original clauses.
+    long nLearnts() const;         // The current number of learnt clauses.
+    long nVars() const;            // The current number of variables.
     long nFreeVars() const;
 
     // Resource contraints:
@@ -191,13 +193,13 @@ class Solver {
     double random_var_freq;
     double random_seed;
     bool VSIDS;
-    long ccmin_mode;      // Controls conflict clause minimization (0=none, 1=basic, 2=deep).
-    long phase_saving;    // Controls the level of phase saving (0=none, 1=limited, 2=full).
+    long ccmin_mode;     // Controls conflict clause minimization (0=none, 1=basic, 2=deep).
+    long phase_saving;   // Controls the level of phase saving (0=none, 1=limited, 2=full).
     bool rnd_pol;        // Use random polarities for branching heuristics.
     bool rnd_init_act;   // Initialize variable activities with a small random value.
     double garbage_frac; // The fraction of wasted memory allowed before a garbage collection is triggered.
 
-    long restart_first;        // The initial restart limit.                                                                (default 100)
+    long restart_first;       // The initial restart limit.                                                                (default 100)
     double restart_inc;       // The factor with which the restart limit is multiplied in each restart.                    (default 1.5)
     double learntsize_factor; // The intitial limit for learnt clauses is a factor of the original clauses.                (default 1 / 3)
     double learntsize_inc;    // The limit for learnt clauses is multiplied with this factor each restart.                 (default 1.1)
@@ -239,8 +241,9 @@ class Solver {
         return (cr != CRef_Undef);
     }
 
-        long global;
-    protected:
+    long global;
+
+  protected:
     // Helper structures:
     //
     struct VarData {
@@ -295,11 +298,11 @@ class Solver {
     vec<char> polarity;                                      // The preferred polarity of each variable.
     vec<char> decision;                                      // Declares if a variable is eligible for selection in the decision heuristic.
     vec<Lit> trail;                                          // Assignment stack; stores all assigments made in the order they were made.
-    vec<long> trail_lim;                                      // Separator indices for different decision levels in 'trail'.
+    vec<long> trail_lim;                                     // Separator indices for different decision levels in 'trail'.
     vec<VarData> vardata;                                    // Stores reason and level for each variable.
-    long qhead;                                               // Head of queue (as index into the trail -- no more explicit propagation queue in MiniSat).
-    long simpDB_assigns;                                      // Number of top-level assignments since last execution of 'simplify()'.
-    long simpDB_props;                                    // Remaining number of propagations that must be made before next execution of 'simplify()'.
+    long qhead;                                              // Head of queue (as index into the trail -- no more explicit propagation queue in MiniSat).
+    long simpDB_assigns;                                     // Number of top-level assignments since last execution of 'simplify()'.
+    long simpDB_props;                                       // Remaining number of propagations that must be made before next execution of 'simplify()'.
     vec<Lit> assumptions;                                    // Current set of assumptions provided to solve by the user.
     Heap<VarOrderLt> order_heap_CHB,                         // A priority queue of variables ordered with respect to the variable activity.
         order_heap_VSIDS, order_heap_distance;
@@ -340,19 +343,19 @@ class Solver {
 
     // Main internal methods:
     //
-    void insertVarOrder(Var x);                                                     // Insert a variable in the decision order priority queue.
-    Lit pickBranchLit();                                                            // Return the next decision variable.
-    void newDecisionLevel();                                                        // Begins a new decision level.
-    void uncheckedEnqueue(Lit p, long level = 0, CRef from = CRef_Undef);            // Enqueue a literal. Assumes value of literal is undefined.
-    bool enqueue(Lit p, CRef from = CRef_Undef);                                    // Test if fact 'p' contradicts current state, enqueue otherwise.
-    CRef propagate();                                                               // Perform unit propagation. Returns possibly conflicting clause.
-    void cancelUntil(long level);                                                    // Backtrack until a certain level.
+    void insertVarOrder(Var x);                                                       // Insert a variable in the decision order priority queue.
+    Lit pickBranchLit();                                                              // Return the next decision variable.
+    void newDecisionLevel();                                                          // Begins a new decision level.
+    void uncheckedEnqueue(Lit p, long level = 0, CRef from = CRef_Undef);             // Enqueue a literal. Assumes value of literal is undefined.
+    bool enqueue(Lit p, CRef from = CRef_Undef);                                      // Test if fact 'p' contradicts current state, enqueue otherwise.
+    CRef propagate();                                                                 // Perform unit propagation. Returns possibly conflicting clause.
+    void cancelUntil(long level);                                                     // Backtrack until a certain level.
     void analyze(CRef confl, vec<Lit> &out_learnt, long &out_btlevel, long &out_lbd); // (bt = backtrack)
-        // COULD THIS BE IMPLEMENTED BY THE ORDINARIY "analyze" BY SOME REASONABLE GENERALIZATION?
-    bool litRedundant(Lit p, long abstract_levels);                             // (helper method for 'analyze()')
-    lbool search(long &nof_conflicts);                                               // Search for a given number of conflicts.
-    lbool solve_();                                                                 // Main solve method (assumptions given in 'assumptions').
-    void reduceDB();                                                                // Reduce the set of learnt clauses.
+                                                                                      // COULD THIS BE IMPLEMENTED BY THE ORDINARIY "analyze" BY SOME REASONABLE GENERALIZATION?
+    bool litRedundant(Lit p, long abstract_levels); // (helper method for 'analyze()')
+    lbool search(long &nof_conflicts);              // Search for a given number of conflicts.
+    lbool solve_();                                 // Main solve method (assumptions given in 'assumptions').
+    void reduceDB();                                // Reduce the set of learnt clauses.
     void reduceDB_Tier2();
     void removeSatisfied(vec<CRef> &cs); // Shrink 'cs' to contain only non-satisfied clauses.
     void safeRemoveSatisfied(vec<CRef> &cs, unsigned valid_mark);
@@ -378,7 +381,7 @@ class Solver {
 
     // Misc:
     //
-    long decisionLevel() const;           // Gives the current decisionlevel.
+    long decisionLevel() const;      // Gives the current decisionlevel.
     long abstractLevel(Var x) const; // Used to represent an abstraction of sets of decision levels.
     CRef reason(Var x) const;
 
@@ -476,11 +479,11 @@ class Solver {
     bool simplifyAll();
     void simplifyLearnt(Clause &c);
 
-        bool simplifyLearnt_core();
+    bool simplifyLearnt_core();
     bool simplifyLearnt_tier2();
     long trailRecord;
 
-        void cancelUntilTrailRecord();
+    void cancelUntilTrailRecord();
     void simpleUncheckEnqueue(Lit p, CRef from = CRef_Undef);
     CRef simplePropagate();
     long nbSimplifyAll;
@@ -500,9 +503,9 @@ class Solver {
 
     bool collectFirstUIP(CRef confl);
     vec<double> var_iLevel, var_iLevel_tmp;
-        vec<long> pathCs;
+    vec<long> pathCs;
 
-        double var_iLevel_inc;
+    double var_iLevel_inc;
     vec<Lit> involved_lits;
     double my_var_decay;
     bool DISTANCE;
@@ -657,32 +660,6 @@ inline lbool Solver::solveLimited(const vec<Lit> &assumps) {
     return solve_();
 }
 inline bool Solver::okay() const { return ok; }
-
-inline void Solver::toDimacs(const char *file) {
-    vec<Lit> as;
-    toDimacs(file, as);
-}
-inline void Solver::toDimacs(const char *file, Lit p) {
-    vec<Lit> as;
-    as.push(p);
-    toDimacs(file, as);
-}
-inline void Solver::toDimacs(const char *file, Lit p, Lit q) {
-    vec<Lit> as;
-    as.push(p);
-    as.push(q);
-    toDimacs(file, as);
-}
-inline void Solver::toDimacs(const char *file, Lit p, Lit q, Lit r) {
-    vec<Lit> as;
-    as.push(p);
-    as.push(q);
-    as.push(r);
-    toDimacs(file, as);
-}
-
-//=================================================================================================
-// Debug etc:
 
 //=================================================================================================
 } // namespace SLIME

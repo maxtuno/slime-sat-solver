@@ -70,8 +70,14 @@ int main(int argc, char *argv[]) {
     fclose(in);
 
     vec<Lit> assumptions(S.nVars());
+    for (long i = 0; i < assumptions.size(); i++) {
+        assumptions[i] = mkLit(Var(i));
+    }
+    long global, local;
+    lbool result;
+    global = INT64_MAX;
     S.eliminate();
-    lbool result = S.solveLimited(assumptions, true);
+    result = S.solveLimited(assumptions, true);
 
     printf("\n");
 
