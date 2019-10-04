@@ -190,13 +190,9 @@ class Solver {
     long timer;
     double var_decay;
     double clause_decay;
-    double random_var_freq;
-    double random_seed;
     bool VSIDS;
     long ccmin_mode;     // Controls conflict clause minimization (0=none, 1=basic, 2=deep).
     long phase_saving;   // Controls the level of phase saving (0=none, 1=limited, 2=full).
-    bool rnd_pol;        // Use random polarities for branching heuristics.
-    bool rnd_init_act;   // Initialize variable activities with a small random value.
     double garbage_frac; // The fraction of wasted memory allowed before a garbage collection is triggered.
 
     long restart_first;       // The initial restart limit.                                                                (default 100)
@@ -458,20 +454,6 @@ class Solver {
         buf_len = 0;
     }
 #endif
-
-    // Static helpers:
-    //
-
-    // Returns a random float 0 <= x < 1. Seed must never be 0.
-    static inline double drand(double &seed) {
-        seed *= 1389796;
-        long q = (long)(seed / 2147483647);
-        seed -= (double)q * 2147483647;
-        return seed / 2147483647;
-    }
-
-    // Returns a random integer 0 <= x < size. Seed must never be 0.
-    static inline long irand(double &seed, long size) { return (long)(drand(seed) * size); }
 
     // simplify
     //

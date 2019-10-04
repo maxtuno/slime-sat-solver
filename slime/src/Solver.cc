@@ -28,7 +28,6 @@ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **************************************************************************************************/
 
-#include <algorithm>
 #include <math.h>
 #include <stdio.h>
 #include <time.h>
@@ -53,11 +52,8 @@ static double opt_step_size_dec = 0.000001;
 static double opt_min_step_size = 0.06;
 static double opt_var_decay = 0.80;
 static double opt_clause_decay = 0.999;
-static double opt_random_var_freq = 0;
-static double opt_random_seed = 136983539;
 static long opt_ccmin_mode = 2;
 static long opt_phase_saving = 2;
-static bool opt_rnd_init_act = false;
 static long opt_restart_first = 100;
 static double opt_restart_inc = 2;
 static double opt_garbage_frac = 0.20;
@@ -73,7 +69,7 @@ Solver::Solver()
 
       // Parameters (user settable):
       //
-      drup_file(NULL), step_size(opt_step_size), step_size_dec(opt_step_size_dec), min_step_size(opt_min_step_size), timer(5000), var_decay(opt_var_decay), clause_decay(opt_clause_decay), random_var_freq(opt_random_var_freq), random_seed(opt_random_seed), VSIDS(false), ccmin_mode(opt_ccmin_mode), phase_saving(opt_phase_saving), rnd_pol(false), rnd_init_act(opt_rnd_init_act), garbage_frac(opt_garbage_frac), restart_first(opt_restart_first), restart_inc(opt_restart_inc)
+      drup_file(NULL), step_size(opt_step_size), step_size_dec(opt_step_size_dec), min_step_size(opt_min_step_size), timer(5000), var_decay(opt_var_decay), clause_decay(opt_clause_decay), VSIDS(false), ccmin_mode(opt_ccmin_mode), phase_saving(opt_phase_saving), garbage_frac(opt_garbage_frac), restart_first(opt_restart_first), restart_inc(opt_restart_inc)
 
       // Parameters (the rest):
       //
@@ -552,7 +548,7 @@ Var Solver::newVar(bool sign, bool dvar) {
     assigns.push(l_Undef);
     vardata.push(mkVarData(CRef_Undef, 0));
     activity_CHB.push(0);
-    activity_VSIDS.push(rnd_init_act ? drand(random_seed) * 0.00001 : 0);
+    activity_VSIDS.push(0);
 
     picked.push(0);
     conflicted.push(0);
