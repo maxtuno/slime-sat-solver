@@ -75,7 +75,8 @@ int main(int argc, char *argv[]) {
     double global = INT64_MAX;
     clock_t before = clock();
     double var_decay = 0, clause_decay = 0, opt_step_size = 0, opt_step_size_dec = 0, opt_min_step_size = 0;
-    long opt_chrono = 0, chrono_backtrack = 0, opt_restart_inc = 0, opt_restart_first = 0, trigger = 0;
+    long opt_chrono = 0, chrono_backtrack = 0, opt_restart_inc = 0, opt_restart_first = 0, trigger = 0, opt_ccmin_mode = 0, opt_phase_saving = 0;
+    bool switch_mode = false;
     /*****************************************************************************************[Main.cc]
     SLIME SO -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver
 
@@ -90,6 +91,10 @@ int main(int argc, char *argv[]) {
     **************************************************************************************************/
     S.trigger = 0;
     for (;;) {
+        S.switch_mode = !S.switch_mode;
+        ++S.opt_ccmin_mode %= 3;
+        ++S.opt_phase_saving %= 3;
+
         S.complexity = 0;
         S.opt_step_size += 0.0001;
         result = S.solveLimited(assumptions, true);
@@ -99,6 +104,9 @@ int main(int argc, char *argv[]) {
         if (S.score < global) {
             global = S.score;
             printf("\nc score = %lf\n", global);
+            switch_mode = S.switch_mode;
+            opt_ccmin_mode = S.opt_ccmin_mode;
+            opt_phase_saving = S.opt_phase_saving;
             opt_step_size = S.opt_step_size;
             clause_decay = S.clause_decay;
             opt_chrono = S.opt_chrono;
@@ -122,6 +130,9 @@ int main(int argc, char *argv[]) {
         if (S.score < global) {
             global = S.score;
             printf("\nc score = %lf\n", global);
+            switch_mode = S.switch_mode;
+            opt_ccmin_mode = S.opt_ccmin_mode;
+            opt_phase_saving = S.opt_phase_saving;
             opt_step_size_dec = S.opt_step_size_dec;
             clause_decay = S.clause_decay;
             opt_chrono = S.opt_chrono;
@@ -145,7 +156,10 @@ int main(int argc, char *argv[]) {
         if (S.score < global) {
             global = S.score;
             printf("\nc score = %lf\n", global);
-            opt_min_step_size = S.opt_min_step_size;
+            switch_mode = S.switch_mode;
+            opt_ccmin_mode = S.opt_ccmin_mode;
+            opt_phase_saving = S.opt_phase_saving;
+            opt_step_size_dec = S.opt_step_size_dec;
             clause_decay = S.clause_decay;
             opt_chrono = S.opt_chrono;
             chrono_backtrack = S.chrono_backtrack;
@@ -168,7 +182,10 @@ int main(int argc, char *argv[]) {
         if (S.score < global) {
             global = S.score;
             printf("\nc score = %lf\n", global);
-            var_decay = S.var_decay;
+            switch_mode = S.switch_mode;
+            opt_ccmin_mode = S.opt_ccmin_mode;
+            opt_phase_saving = S.opt_phase_saving;
+            opt_step_size_dec = S.opt_step_size_dec;
             clause_decay = S.clause_decay;
             opt_chrono = S.opt_chrono;
             chrono_backtrack = S.chrono_backtrack;
@@ -191,7 +208,10 @@ int main(int argc, char *argv[]) {
         if (S.score < global) {
             global = S.score;
             printf("\nc score = %lf\n", global);
-            var_decay = S.var_decay;
+            switch_mode = S.switch_mode;
+            opt_ccmin_mode = S.opt_ccmin_mode;
+            opt_phase_saving = S.opt_phase_saving;
+            opt_step_size_dec = S.opt_step_size_dec;
             clause_decay = S.clause_decay;
             opt_chrono = S.opt_chrono;
             chrono_backtrack = S.chrono_backtrack;
@@ -214,7 +234,10 @@ int main(int argc, char *argv[]) {
         if (S.score < global) {
             global = S.score;
             printf("\nc score = %lf\n", global);
-            var_decay = S.var_decay;
+            switch_mode = S.switch_mode;
+            opt_ccmin_mode = S.opt_ccmin_mode;
+            opt_phase_saving = S.opt_phase_saving;
+            opt_step_size_dec = S.opt_step_size_dec;
             clause_decay = S.clause_decay;
             opt_chrono = S.opt_chrono;
             chrono_backtrack = S.chrono_backtrack;
@@ -237,7 +260,10 @@ int main(int argc, char *argv[]) {
         if (S.score < global) {
             global = S.score;
             printf("\nc score = %lf\n", global);
-            var_decay = S.var_decay;
+            switch_mode = S.switch_mode;
+            opt_ccmin_mode = S.opt_ccmin_mode;
+            opt_phase_saving = S.opt_phase_saving;
+            opt_step_size_dec = S.opt_step_size_dec;
             clause_decay = S.clause_decay;
             opt_chrono = S.opt_chrono;
             chrono_backtrack = S.chrono_backtrack;
@@ -260,10 +286,13 @@ int main(int argc, char *argv[]) {
         if (S.score < global) {
             global = S.score;
             printf("\nc score = %lf\n", global);
-            var_decay = S.var_decay;
+            switch_mode = S.switch_mode;
+            opt_ccmin_mode = S.opt_ccmin_mode;
+            opt_phase_saving = S.opt_phase_saving;
+            opt_step_size_dec = S.opt_step_size_dec;
             clause_decay = S.clause_decay;
             opt_chrono = S.opt_chrono;
-            opt_restart_inc = S.opt_restart_inc;
+            chrono_backtrack = S.chrono_backtrack;
             trigger = S.trigger;
             if (S.score == 0) {
                 break;
@@ -283,10 +312,13 @@ int main(int argc, char *argv[]) {
         if (S.score < global) {
             global = S.score;
             printf("\nc score = %lf\n", global);
-            var_decay = S.var_decay;
+            switch_mode = S.switch_mode;
+            opt_ccmin_mode = S.opt_ccmin_mode;
+            opt_phase_saving = S.opt_phase_saving;
+            opt_step_size_dec = S.opt_step_size_dec;
             clause_decay = S.clause_decay;
             opt_chrono = S.opt_chrono;
-            opt_restart_first = S.opt_restart_first;
+            chrono_backtrack = S.chrono_backtrack;
             trigger = S.trigger;
             if (S.score == 0) {
                 break;
@@ -297,15 +329,43 @@ int main(int argc, char *argv[]) {
             S.opt_restart_first -= 1;
         }
 
+        S.complexity = 0;
+        S.trigger += 1;
+        result = S.solveLimited(assumptions, true);
+        if (result != l_Undef) {
+            break;
+        }
+        if (S.score < global) {
+            global = S.score;
+            printf("\nc score = %lf\n", global);
+            switch_mode = S.switch_mode;
+            opt_ccmin_mode = S.opt_ccmin_mode;
+            opt_phase_saving = S.opt_phase_saving;
+            opt_step_size_dec = S.opt_step_size_dec;
+            clause_decay = S.clause_decay;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            trigger = S.trigger;
+            if (S.score == 0) {
+                break;
+            }
+            S.limit = 0;
+            before = clock();
+        } else if (S.score > global) {
+            S.trigger -= 1;
+        }
+
         S.limit++;
-        S.trigger++;
         clock_t difference = clock() - before;
         if (difference * 1000 / CLOCKS_PER_SEC > 10000) {
             break;
         }
     }
     printf("\nc go!\n");
+    S.switch_mode = switch_mode;
     S.trigger = trigger;
+    S.opt_ccmin_mode = opt_ccmin_mode;
+    S.opt_phase_saving = opt_phase_saving;
     S.opt_step_size = opt_step_size;
     S.opt_step_size_dec = opt_step_size_dec;
     S.opt_min_step_size = opt_min_step_size;
