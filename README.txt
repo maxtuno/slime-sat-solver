@@ -4,6 +4,17 @@
 
 NOTE: This repository is the development version, for official releases go to https://github.com/maxtuno/slime-sat-solver/releases
 
+SLIME SO: The Self Optimized SAT Solver.
+- More Deepness (Solved More Unsolvable Instances).
+- Self Optimization.
+- Cutting edge technology property of www.PEQNP.science now Open Source.
+
+SLIME 4.2: The most advanced SAT Solver on the planet.
+- More performance.
+- Pre Release from 5.0 version.
+- Chronos property is deleted.
+- No randomness is on SLIME.
+
 SLIME 4.1.1:
 - More performance.
 - Pre Release from 5.0 version.

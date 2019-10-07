@@ -1,0 +1,4 @@
+SLIME SO: The Self Optimized SAT Solver.
+- More Deepness (Solved More Unsolvable Instances).
+- Self Optimization.
+- Cutting edge technology property of www.PEQNP.science now Open Source.

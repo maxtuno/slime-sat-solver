@@ -1,28 +1,23 @@
 /*****************************************************************************************[Main.cc]
-SLIME -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile.
+SLIME SO -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver
 
-https://maxtuno.github.io/slime-sat-solver
+All technology of SLIME SO that make this software Self Optimized is property of Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile,
+It can be used for commercial or private purposes, as long as the condition of mentioning explicitly
+"This project use technology property of Oscar Riveros Founder and CEO of www.PEQNP.science".
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
-associated documentation files (the "Software"), to deal in the Software without restriction,
-including without limitation the rights to use, copy, modify, merge, publish, distribute,
-sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Any use that violates this clause is considered illegal.
 
-The above copyright notice and this permission notice shall be included in all copies or
-substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
-NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
-OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
 **************************************************************************************************/
 
 #include <Dimacs.h>
 #include <SimpSolver.h>
 #include <SolverTypes.h>
 #include <iostream>
+#include <vector>
+#include <cmath>
+#include <ctime>
 
 #define DRAT // Generate unsat proof.
 
@@ -30,11 +25,12 @@ using namespace SLIME;
 
 #if _WIN32 || _WIN64
 void printHeader() {
-    printf("c                                             \n");
-    printf("c SLIME SAT Solver by http://www.peqnp.science\n");
-    printf("c                                             \n");
+    printf("c                                                \n");
+    printf("c SLIME SO SAT Solver by http://www.peqnp.science\n");
+    printf("c                                                \n");
 }
 #else
+
 void printHeader() {
     printf("c                                         \n");
     printf("c   ██████  ██▓     ██▓ ███▄ ▄███▓▓█████  \n");
@@ -50,7 +46,9 @@ void printHeader() {
     printf("c        http://www.peqnp.science         \n");
     printf("c                                         \n");
 }
+
 #endif
+
 
 int main(int argc, char *argv[]) {
     printHeader();
@@ -69,18 +67,260 @@ int main(int argc, char *argv[]) {
     parse_DIMACS(in, S);
     fclose(in);
 
-    vec<Lit> assumptions(S.nVars());
-    for (long i = 0; i < assumptions.size(); i++) {
-        assumptions[i] = mkLit(Var(i));
-    }
-    long global, local;
-    lbool result;
-    global = INT64_MAX;
+    vec<Lit> assumptions;
+
     S.eliminate();
-    result = S.solveLimited(assumptions, true);
 
+    lbool result;
+    double global = INT64_MAX;
+    clock_t before = clock();
+    double var_decay = 0, clause_decay = 0, opt_step_size = 0, opt_step_size_dec = 0, opt_min_step_size = 0;
+    long opt_chrono = 0, chrono_backtrack = 0, opt_restart_inc = 0, opt_restart_first = 0, trigger = 0;
+    /*****************************************************************************************[Main.cc]
+    SLIME SO -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver
+
+    All technology of SLIME SO that make this software Self Optimized is property of Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile,
+    It can be used for commercial or private purposes, as long as the condition of mentioning explicitly
+    "This project use technology property of Oscar Riveros Founder and CEO of www.PEQNP.science".
+
+    Any use that violates this clause is considered illegal.
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+    **************************************************************************************************/
+    S.trigger = 0;
+    for (;;) {
+        S.complexity = 0;
+        S.opt_step_size += 0.0001;
+        result = S.solveLimited(assumptions, true);
+        if (result != l_Undef) {
+            break;
+        }
+        if (S.score < global) {
+            global = S.score;
+            printf("\nc score = %lf\n", global);
+            opt_step_size = S.opt_step_size;
+            clause_decay = S.clause_decay;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            trigger = S.trigger;
+            if (S.score == 0) {
+                break;
+            }
+            S.limit = 0;
+            before = clock();
+        } else if (S.score > global) {
+            S.opt_step_size -= 0.0001;
+        }
+
+        S.complexity = 0;
+        S.opt_step_size_dec += 0.0001;
+        result = S.solveLimited(assumptions, true);
+        if (result != l_Undef) {
+            break;
+        }
+        if (S.score < global) {
+            global = S.score;
+            printf("\nc score = %lf\n", global);
+            opt_step_size_dec = S.opt_step_size_dec;
+            clause_decay = S.clause_decay;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            trigger = S.trigger;
+            if (S.score == 0) {
+                break;
+            }
+            S.limit = 0;
+            before = clock();
+        } else if (S.score > global) {
+            S.opt_step_size_dec -= 0.0001;
+        }
+
+        S.complexity = 0;
+        S.opt_min_step_size += 0.0001;
+        result = S.solveLimited(assumptions, true);
+        if (result != l_Undef) {
+            break;
+        }
+        if (S.score < global) {
+            global = S.score;
+            printf("\nc score = %lf\n", global);
+            opt_min_step_size = S.opt_min_step_size;
+            clause_decay = S.clause_decay;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            trigger = S.trigger;
+            if (S.score == 0) {
+                break;
+            }
+            S.limit = 0;
+            before = clock();
+        } else if (S.score > global) {
+            S.opt_min_step_size -= 0.0001;
+        }
+
+        S.complexity = 0;
+        S.var_decay += 0.0001;
+        result = S.solveLimited(assumptions, true);
+        if (result != l_Undef) {
+            break;
+        }
+        if (S.score < global) {
+            global = S.score;
+            printf("\nc score = %lf\n", global);
+            var_decay = S.var_decay;
+            clause_decay = S.clause_decay;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            trigger = S.trigger;
+            if (S.score == 0) {
+                break;
+            }
+            S.limit = 0;
+            before = clock();
+        } else if (S.score > global) {
+            S.var_decay -= 0.0001;
+        }
+
+        S.complexity = 0;
+        S.clause_decay += 0.0001;
+        result = S.solveLimited(assumptions, true);
+        if (result != l_Undef) {
+            break;
+        }
+        if (S.score < global) {
+            global = S.score;
+            printf("\nc score = %lf\n", global);
+            var_decay = S.var_decay;
+            clause_decay = S.clause_decay;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            trigger = S.trigger;
+            if (S.score == 0) {
+                break;
+            }
+            S.limit = 0;
+            before = clock();
+        } else if (S.score > global) {
+            S.clause_decay -= 0.0001;
+        }
+
+        S.complexity = 0;
+        S.opt_chrono += 1;
+        result = S.solveLimited(assumptions, true);
+        if (result != l_Undef) {
+            break;
+        }
+        if (S.score < global) {
+            global = S.score;
+            printf("\nc score = %lf\n", global);
+            var_decay = S.var_decay;
+            clause_decay = S.clause_decay;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            trigger = S.trigger;
+            if (S.score == 0) {
+                break;
+            }
+            S.limit = 0;
+            before = clock();
+        } else if (S.score > global) {
+            S.opt_chrono -= 1;
+        }
+
+        S.complexity = 0;
+        S.chrono_backtrack += 1;
+        result = S.solveLimited(assumptions, true);
+        if (result != l_Undef) {
+            break;
+        }
+        if (S.score < global) {
+            global = S.score;
+            printf("\nc score = %lf\n", global);
+            var_decay = S.var_decay;
+            clause_decay = S.clause_decay;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            trigger = S.trigger;
+            if (S.score == 0) {
+                break;
+            }
+            S.limit = 0;
+            before = clock();
+        } else if (S.score > global) {
+            S.chrono_backtrack -= 1;
+        }
+
+        S.complexity = 0;
+        S.opt_restart_inc += 1;
+        result = S.solveLimited(assumptions, true);
+        if (result != l_Undef) {
+            break;
+        }
+        if (S.score < global) {
+            global = S.score;
+            printf("\nc score = %lf\n", global);
+            var_decay = S.var_decay;
+            clause_decay = S.clause_decay;
+            opt_chrono = S.opt_chrono;
+            opt_restart_inc = S.opt_restart_inc;
+            trigger = S.trigger;
+            if (S.score == 0) {
+                break;
+            }
+            S.limit = 0;
+            before = clock();
+        } else if (S.score > global) {
+            S.opt_restart_inc -= 1;
+        }
+
+        S.complexity = 0;
+        S.opt_restart_first += 1;
+        result = S.solveLimited(assumptions, true);
+        if (result != l_Undef) {
+            break;
+        }
+        if (S.score < global) {
+            global = S.score;
+            printf("\nc score = %lf\n", global);
+            var_decay = S.var_decay;
+            clause_decay = S.clause_decay;
+            opt_chrono = S.opt_chrono;
+            opt_restart_first = S.opt_restart_first;
+            trigger = S.trigger;
+            if (S.score == 0) {
+                break;
+            }
+            S.limit = 0;
+            before = clock();
+        } else if (S.score > global) {
+            S.opt_restart_first -= 1;
+        }
+
+        S.limit++;
+        S.trigger++;
+        clock_t difference = clock() - before;
+        if (difference * 1000 / CLOCKS_PER_SEC > 10000) {
+            break;
+        }
+    }
+    printf("\nc go!\n");
+    S.trigger = trigger;
+    S.opt_step_size = opt_step_size;
+    S.opt_step_size_dec = opt_step_size_dec;
+    S.opt_min_step_size = opt_min_step_size;
+    S.var_decay = var_decay;
+    S.clause_decay = clause_decay;
+    S.opt_chrono = opt_chrono;
+    S.chrono_backtrack = chrono_backtrack;
+    S.opt_restart_first = opt_restart_first;
+    S.opt_restart_inc = opt_restart_inc;
+    S.limit = INT64_MAX;
+    if (result == l_Undef) {
+        S.limit = INT64_MAX;
+        result = S.solveLimited(assumptions, true);
+    }
     printf("\n");
-
     printf(result == l_True ? "s SATISFIABLE\nv " : result == l_False ? "s UNSATISFIABLE\n" : "s UNKNOWN\n");
     if (result == l_True) {
         for (long i = 0; i < S.nVars(); i++)
@@ -109,6 +349,6 @@ int main(int argc, char *argv[]) {
             fprintf(model, " 0\n");
         }
     }
-
     exit(result == l_True ? 10 : result == l_False ? 20 : 0);
 }
+

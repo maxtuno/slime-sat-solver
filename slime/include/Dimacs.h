@@ -70,9 +70,9 @@ template <class B, class Solver> static void parse_DIMACS_main(B &in, Solver &S)
         }
     }
     if (vars != S.nVars())
-        fprintf(stderr, "WARNING! DIMACS header mismatch: wrong number of variables.\n");
+        fprintf(stderr, "c WARNING! DIMACS header mismatch: wrong number of variables.\n");
     if (cnt != clauses)
-        fprintf(stderr, "WARNING! DIMACS header mismatch: wrong number of clauses.\n");
+        fprintf(stderr, "c WARNING! DIMACS header mismatch: wrong number of clauses.\n");
 }
 
 // Inserts problem into solver.

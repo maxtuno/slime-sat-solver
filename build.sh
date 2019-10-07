@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 echo
-echo "SLIME 4.1.1 The most advanced SAT Solver on the planet."
+echo "SLIME SO: The Self Optimized SAT Solver by http://www.peqnp.science"
 echo
 echo "Building..."
 echo

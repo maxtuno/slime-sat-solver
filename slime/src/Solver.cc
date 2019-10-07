@@ -1,31 +1,14 @@
 /***************************************************************************************[Solver.cc]
-SLIME -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. - Implementation of the The Booster Heuristic.
+SLIME SO -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver
 
-Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
-Copyright (c) 2007,      Niklas Sorensson
+All technology of SLIME SO that make this software Self Optimized is property of Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile,
+It can be used for commercial or private purposes, as long as the condition of mentioning explicitly
+"This project use technology property of Oscar Riveros Founder and CEO of www.PEQNP.science".
 
-Chanseok Oh's MiniSat Patch Series -- Copyright (c) 2015, Chanseok Oh
+Any use that violates this clause is considered illegal.
 
-Maple_LCM, Based on MapleCOMSPS_DRUP -- Copyright (c) 2017, Mao Luo, Chu-Min LI, Fan Xiao: implementing a learnt clause minimisation approach
-Reference: M. Luo, C.-M. Li, F. Xiao, F. Manya, and Z. L. , “An effective learnt clause minimization approach for cdcl sat solvers,” in IJCAI-2017, 2017, pp. to–appear.
-
-Maple_LCM_Dist, Based on Maple_LCM -- Copyright (c) 2017, Fan Xiao, Chu-Min LI, Mao Luo: using a new branching heuristic called Distance at the beginning of search
-
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
-associated documentation files (the "Software"), to deal in the Software without restriction,
-including without limitation the rights to use, copy, modify, merge, publish, distribute,
-sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or
-substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
-NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
-OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
 **************************************************************************************************/
 
 #include <math.h>
@@ -43,23 +26,6 @@ long Solver::buf_len = 0;
 unsigned char Solver::drup_buf[2 * 1024 * 1024];
 unsigned char *Solver::buf_ptr = drup_buf;
 #endif
-
-//=================================================================================================
-// Options:
-
-static double opt_step_size = 0.40;
-static double opt_step_size_dec = 0.000001;
-static double opt_min_step_size = 0.06;
-static double opt_var_decay = 0.80;
-static double opt_clause_decay = 0.999;
-static long opt_ccmin_mode = 2;
-static long opt_phase_saving = 2;
-static long opt_restart_first = 100;
-static double opt_restart_inc = 2;
-static double opt_garbage_frac = 0.20;
-static long opt_chrono = 100;
-static long opt_conf_to_chrono = 4000;
-static bool switch_mode = false;
 
 //=================================================================================================
 // Constructor/Destructor:
@@ -113,7 +79,9 @@ Solver::Solver()
 
 {}
 
-Solver::~Solver() {}
+Solver::~Solver() {
+
+}
 
 // simplify All
 //
@@ -1444,6 +1412,7 @@ lbool Solver::search(long &nof_conflicts) {
     }
 
     for (;;) {
+        complexity++;
         /* SLIME -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver */
         /* SLIME SAT Solver and The BOOST Heuristic or Variations cannot be used on any contest without express permissions of Oscar Riveros. */
         polarity[trail.size()] = !polarity[trail.size()];
@@ -1624,7 +1593,7 @@ static double luby(double y, long x) {
 // NOTE: assumptions passed in member-variable 'assumptions'.
 lbool Solver::solve_() {
 
-    long msec = 0, trigger = 1000; /* 10ms */
+    long msec = 0; /* 10ms */
     clock_t before = clock();
 
     model.clear();
@@ -1683,6 +1652,10 @@ lbool Solver::solve_() {
 #ifdef ANTI_EXPLORATION
             canceled.clear();
 #endif
+        }
+        if (complexity > limit) {
+            score = (100.0 * (double)(nVars() - global) / nVars()) * complexity;
+            break;
         }
     }
 

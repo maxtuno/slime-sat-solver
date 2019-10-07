@@ -1,31 +1,14 @@
 /****************************************************************************************[Solver.h]
-SLIME -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. - Implementation of the The Booster Heuristic.
+SLIME SO -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver
 
-Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
-Copyright (c) 2007,      Niklas Sorensson
+All technology of SLIME SO that make this software Self Optimized is property of Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile,
+It can be used for commercial or private purposes, as long as the condition of mentioning explicitly
+"This project use technology property of Oscar Riveros Founder and CEO of www.PEQNP.science".
 
-Chanseok Oh's MiniSat Patch Series -- Copyright (c) 2015, Chanseok Oh
+Any use that violates this clause is considered illegal.
 
-Maple_LCM, Based on MapleCOMSPS_DRUP -- Copyright (c) 2017, Mao Luo, Chu-Min LI, Fan Xiao: implementing a learnt clause minimisation approach
-Reference: M. Luo, C.-M. Li, F. Xiao, F. Manya, and Z. L. , “An effective learnt clause minimization approach for cdcl sat solvers,” in IJCAI-2017, 2017, pp. to–appear.
-
-Maple_LCM_Dist, Based on Maple_LCM -- Copyright (c) 2017, Fan Xiao, Chu-Min LI, Mao Luo: using a new branching heuristic called Distance at the beginning of search
-
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
-associated documentation files (the "Software"), to deal in the Software without restriction,
-including without limitation the rights to use, copy, modify, merge, publish, distribute,
-sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or
-substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
-NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
-OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
 **************************************************************************************************/
 
 #ifndef SLIME_Solver_h
@@ -61,8 +44,6 @@ namespace SLIME {
 class Solver {
   protected:
     long local;
-    long cursor;
-    vec<lbool> aux;
 
   private:
     template <typename T> class MyQueue {
@@ -106,6 +87,28 @@ class Solver {
     };
 
   public:
+    long complexity = 0;
+    long limit = 0;
+    double score = 0;
+
+    //=================================================================================================
+    // Options:
+
+    double opt_step_size = 0.40;
+    double opt_step_size_dec = 0.000001;
+    double opt_min_step_size = 0.06;
+    double opt_var_decay = 0.80;
+    double opt_clause_decay = 0.999;
+    long opt_ccmin_mode = 2;
+    long opt_phase_saving = 2;
+    long opt_restart_first = 100;
+    double opt_restart_inc = 2;
+    double opt_garbage_frac = 0.20;
+    long opt_chrono = 100;
+    long opt_conf_to_chrono = 4000;
+    bool switch_mode = false;
+    long trigger = 0;
+
     // Constructor/Destructor:
     //
     Solver();
@@ -239,7 +242,9 @@ class Solver {
 
     long global;
 
-  protected:
+        ClauseAllocator ca;
+        vec<CRef> clauses;
+    protected:
     // Helper structures:
     //
     struct VarData {
@@ -281,7 +286,7 @@ class Solver {
     // Solver state:
     //
     bool ok;                // If FALSE, the constraints are already unsatisfiable. No part of the solver state may be used!
-    vec<CRef> clauses;      // List of problem clauses.
+        // List of problem clauses.
     vec<CRef> learnts_core, // List of learnt clauses.
         learnts_tier2, learnts_local;
     double cla_inc;           // Amount to bump next clause with.
@@ -310,9 +315,7 @@ class Solver {
 
     long next_T2_reduce, next_L_reduce;
 
-    ClauseAllocator ca;
-
-    long confl_to_chrono;
+        long confl_to_chrono;
     long chrono;
 
     // Temporaries (to reduce allocation overhead). Each variable is prefixed by the method in which it is
