@@ -107,7 +107,7 @@ class Solver {
     long opt_chrono = 100;
     long opt_conf_to_chrono = 4000;
     bool switch_mode = false;
-    long trigger = 100;
+    long trigger = 0;
 
     // Constructor/Destructor:
     //

@@ -1637,7 +1637,7 @@ lbool Solver::solve_() {
             }
         }
         if (VSIDS) {
-            long weighted = INT64_MAX;
+            long weighted = INT32_MAX;
             status = search(weighted);
         } else {
             long nof_conflicts = luby(restart_inc, curr_restarts) * restart_first;
