@@ -1653,7 +1653,7 @@ lbool Solver::solve_() {
             canceled.clear();
 #endif
         }
-        if (complexity > limit) {
+        if (lm > 0 && complexity > lm) {
             score = (100.0 * (double)(nVars() - global) / nVars()) * complexity;
             break;
         }

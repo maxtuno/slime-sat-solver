@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
     double global = INT64_MAX;
     clock_t before = clock();
     double var_decay = 0, clause_decay = 0, opt_step_size = 0, opt_step_size_dec = 0, opt_min_step_size = 0, opt_restart_inc = 0;
-    long opt_chrono = 0, chrono_backtrack = 0, opt_restart_first = 0, trigger = 0;
+    long opt_chrono = 0, chrono_backtrack = 0, opt_restart_first = 0, trigger = 0; // , opt_grow = 0;
     /*****************************************************************************************[Main.cc]
     SLIME SO -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver
 
@@ -99,15 +99,21 @@ int main(int argc, char *argv[]) {
         if (S.score < global) {
             global = S.score;
             printf("\nc score = %lf\n", global);
+            trigger = S.trigger;
+            // S.grow = opt_grow;
             opt_step_size = S.opt_step_size;
+            opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
+            var_decay = S.var_decay;
             clause_decay = S.clause_decay;
             opt_chrono = S.opt_chrono;
             chrono_backtrack = S.chrono_backtrack;
-            trigger = S.trigger;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
             if (S.score == 0) {
                 break;
             }
-            S.limit = 0;
+            S.lm = 0;
             before = clock();
         } else if (S.score > global) {
             S.opt_step_size -= 0.0001;
@@ -122,15 +128,21 @@ int main(int argc, char *argv[]) {
         if (S.score < global) {
             global = S.score;
             printf("\nc score = %lf\n", global);
+            trigger = S.trigger;
+            // S.grow = opt_grow;
+            opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
+            var_decay = S.var_decay;
             clause_decay = S.clause_decay;
             opt_chrono = S.opt_chrono;
             chrono_backtrack = S.chrono_backtrack;
-            trigger = S.trigger;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
             if (S.score == 0) {
                 break;
             }
-            S.limit = 0;
+            S.lm = 0;
             before = clock();
         } else if (S.score > global) {
             S.opt_step_size_dec -= 0.0001;
@@ -145,15 +157,21 @@ int main(int argc, char *argv[]) {
         if (S.score < global) {
             global = S.score;
             printf("\nc score = %lf\n", global);
+            trigger = S.trigger;
+            // S.grow = opt_grow;
+            opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
+            var_decay = S.var_decay;
             clause_decay = S.clause_decay;
             opt_chrono = S.opt_chrono;
             chrono_backtrack = S.chrono_backtrack;
-            trigger = S.trigger;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
             if (S.score == 0) {
                 break;
             }
-            S.limit = 0;
+            S.lm = 0;
             before = clock();
         } else if (S.score > global) {
             S.opt_min_step_size -= 0.0001;
@@ -168,15 +186,21 @@ int main(int argc, char *argv[]) {
         if (S.score < global) {
             global = S.score;
             printf("\nc score = %lf\n", global);
+            trigger = S.trigger;
+            // S.grow = opt_grow;
+            opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
+            var_decay = S.var_decay;
             clause_decay = S.clause_decay;
             opt_chrono = S.opt_chrono;
             chrono_backtrack = S.chrono_backtrack;
-            trigger = S.trigger;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
             if (S.score == 0) {
                 break;
             }
-            S.limit = 0;
+            S.lm = 0;
             before = clock();
         } else if (S.score > global) {
             S.var_decay -= 0.0001;
@@ -191,15 +215,21 @@ int main(int argc, char *argv[]) {
         if (S.score < global) {
             global = S.score;
             printf("\nc score = %lf\n", global);
+            trigger = S.trigger;
+            // S.grow = opt_grow;
+            opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
+            var_decay = S.var_decay;
             clause_decay = S.clause_decay;
             opt_chrono = S.opt_chrono;
             chrono_backtrack = S.chrono_backtrack;
-            trigger = S.trigger;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
             if (S.score == 0) {
                 break;
             }
-            S.limit = 0;
+            S.lm = 0;
             before = clock();
         } else if (S.score > global) {
             S.clause_decay -= 0.0001;
@@ -214,15 +244,21 @@ int main(int argc, char *argv[]) {
         if (S.score < global) {
             global = S.score;
             printf("\nc score = %lf\n", global);
+            trigger = S.trigger;
+            // S.grow = opt_grow;
+            opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
+            var_decay = S.var_decay;
             clause_decay = S.clause_decay;
             opt_chrono = S.opt_chrono;
             chrono_backtrack = S.chrono_backtrack;
-            trigger = S.trigger;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
             if (S.score == 0) {
                 break;
             }
-            S.limit = 0;
+            S.lm = 0;
             before = clock();
         } else if (S.score > global) {
             S.opt_chrono -= 1;
@@ -237,15 +273,21 @@ int main(int argc, char *argv[]) {
         if (S.score < global) {
             global = S.score;
             printf("\nc score = %lf\n", global);
+            trigger = S.trigger;
+            // S.grow = opt_grow;
+            opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
+            var_decay = S.var_decay;
             clause_decay = S.clause_decay;
             opt_chrono = S.opt_chrono;
             chrono_backtrack = S.chrono_backtrack;
-            trigger = S.trigger;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
             if (S.score == 0) {
                 break;
             }
-            S.limit = 0;
+            S.lm = 0;
             before = clock();
         } else if (S.score > global) {
             S.chrono_backtrack -= 1;
@@ -260,15 +302,21 @@ int main(int argc, char *argv[]) {
         if (S.score < global) {
             global = S.score;
             printf("\nc score = %lf\n", global);
+            trigger = S.trigger;
+            // S.grow = opt_grow;
+            opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
+            var_decay = S.var_decay;
             clause_decay = S.clause_decay;
             opt_chrono = S.opt_chrono;
             chrono_backtrack = S.chrono_backtrack;
-            trigger = S.trigger;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
             if (S.score == 0) {
                 break;
             }
-            S.limit = 0;
+            S.lm = 0;
             before = clock();
         } else if (S.score > global) {
             S.opt_restart_inc -= 1;
@@ -283,21 +331,56 @@ int main(int argc, char *argv[]) {
         if (S.score < global) {
             global = S.score;
             printf("\nc score = %lf\n", global);
+            trigger = S.trigger;
+            // S.grow = opt_grow;
+            opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
+            var_decay = S.var_decay;
             clause_decay = S.clause_decay;
             opt_chrono = S.opt_chrono;
             chrono_backtrack = S.chrono_backtrack;
-            trigger = S.trigger;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
             if (S.score == 0) {
                 break;
             }
-            S.limit = 0;
+            S.lm = 0;
             before = clock();
         } else if (S.score > global) {
             S.opt_restart_first -= 1;
         }
 
-        S.limit++;
+        S.complexity = 0;
+        S.grow += 1;
+        result = S.solveLimited(assumptions, true);
+        if (result != l_Undef) {
+            break;
+        }
+        if (S.score < global) {
+            global = S.score;
+            printf("\nc score = %lf\n", global);
+            trigger = S.trigger;
+            // S.grow = opt_grow;
+            opt_step_size = S.opt_step_size;
+            opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
+            var_decay = S.var_decay;
+            clause_decay = S.clause_decay;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
+            if (S.score == 0) {
+                break;
+            }
+            S.lm = 0;
+            before = clock();
+        } else if (S.score > global) {
+            S.grow -= 1;
+        }
+
+        S.lm++;
         S.trigger++;
         clock_t difference = clock() - before;
         if (difference * 1000 / CLOCKS_PER_SEC > 10000) {
@@ -306,6 +389,7 @@ int main(int argc, char *argv[]) {
     }
     printf("\nc go!\n");
     S.trigger = trigger;
+    // S.grow = opt_grow;
     S.opt_step_size = opt_step_size;
     S.opt_step_size_dec = opt_step_size_dec;
     S.opt_min_step_size = opt_min_step_size;
@@ -315,9 +399,8 @@ int main(int argc, char *argv[]) {
     S.chrono_backtrack = chrono_backtrack;
     S.opt_restart_first = opt_restart_first;
     S.opt_restart_inc = opt_restart_inc;
-    S.limit = INT64_MAX;
+    S.lm = -1;
     if (result == l_Undef) {
-        S.limit = INT64_MAX;
         result = S.solveLimited(assumptions, true);
     }
     printf("\n");

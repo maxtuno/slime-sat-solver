@@ -88,7 +88,7 @@ class Solver {
 
   public:
     long complexity = 0;
-    long limit = 0;
+    long lm = 0;
     double score = 0;
 
     //=================================================================================================
