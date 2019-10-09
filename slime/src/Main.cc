@@ -14,10 +14,10 @@ in all copies or substantial portions of the Software.
 #include <Dimacs.h>
 #include <SimpSolver.h>
 #include <SolverTypes.h>
-#include <iostream>
-#include <vector>
 #include <cmath>
 #include <ctime>
+#include <iostream>
+#include <vector>
 
 #define DRAT // Generate unsat proof.
 
@@ -49,7 +49,6 @@ void printHeader() {
 
 #endif
 
-
 int main(int argc, char *argv[]) {
     printHeader();
 
@@ -72,7 +71,7 @@ int main(int argc, char *argv[]) {
     S.eliminate();
 
     lbool result;
-    double global = INT64_MAX;
+    double score = INT32_MAX;
     clock_t before = clock();
     double var_decay = 0, clause_decay = 0, opt_step_size = 0, opt_step_size_dec = 0, opt_min_step_size = 0, opt_restart_inc = 0;
     long opt_chrono = 0, chrono_backtrack = 0, opt_restart_first = 0, trigger = 0; // , opt_grow = 0;
@@ -96,11 +95,10 @@ int main(int argc, char *argv[]) {
         if (result != l_Undef) {
             break;
         }
-        if (S.score < global) {
-            global = S.score;
-            printf("\nc score = %lf\n", global);
+        if (S.score < score) {
+            score = S.score;
+            printf("c %lf\n", score);
             trigger = S.trigger;
-            // S.grow = opt_grow;
             opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
             opt_min_step_size = S.opt_min_step_size;
@@ -115,7 +113,7 @@ int main(int argc, char *argv[]) {
             }
             S.lm = 0;
             before = clock();
-        } else if (S.score > global) {
+        } else if (S.score > score) {
             S.opt_step_size -= 0.0001;
         }
 
@@ -125,11 +123,10 @@ int main(int argc, char *argv[]) {
         if (result != l_Undef) {
             break;
         }
-        if (S.score < global) {
-            global = S.score;
-            printf("\nc score = %lf\n", global);
+        if (S.score < score) {
+            score = S.score;
+            printf("c %lf\n", score);
             trigger = S.trigger;
-            // S.grow = opt_grow;
             opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
             opt_min_step_size = S.opt_min_step_size;
@@ -144,7 +141,7 @@ int main(int argc, char *argv[]) {
             }
             S.lm = 0;
             before = clock();
-        } else if (S.score > global) {
+        } else if (S.score > score) {
             S.opt_step_size_dec -= 0.0001;
         }
 
@@ -154,11 +151,10 @@ int main(int argc, char *argv[]) {
         if (result != l_Undef) {
             break;
         }
-        if (S.score < global) {
-            global = S.score;
-            printf("\nc score = %lf\n", global);
+        if (S.score < score) {
+            score = S.score;
+            printf("c %lf\n", score);
             trigger = S.trigger;
-            // S.grow = opt_grow;
             opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
             opt_min_step_size = S.opt_min_step_size;
@@ -173,7 +169,7 @@ int main(int argc, char *argv[]) {
             }
             S.lm = 0;
             before = clock();
-        } else if (S.score > global) {
+        } else if (S.score > score) {
             S.opt_min_step_size -= 0.0001;
         }
 
@@ -183,11 +179,10 @@ int main(int argc, char *argv[]) {
         if (result != l_Undef) {
             break;
         }
-        if (S.score < global) {
-            global = S.score;
-            printf("\nc score = %lf\n", global);
+        if (S.score < score) {
+            score = S.score;
+            printf("c %lf\n", score);
             trigger = S.trigger;
-            // S.grow = opt_grow;
             opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
             opt_min_step_size = S.opt_min_step_size;
@@ -202,7 +197,7 @@ int main(int argc, char *argv[]) {
             }
             S.lm = 0;
             before = clock();
-        } else if (S.score > global) {
+        } else if (S.score > score) {
             S.var_decay -= 0.0001;
         }
 
@@ -212,11 +207,10 @@ int main(int argc, char *argv[]) {
         if (result != l_Undef) {
             break;
         }
-        if (S.score < global) {
-            global = S.score;
-            printf("\nc score = %lf\n", global);
+        if (S.score < score) {
+            score = S.score;
+            printf("c %lf\n", score);
             trigger = S.trigger;
-            // S.grow = opt_grow;
             opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
             opt_min_step_size = S.opt_min_step_size;
@@ -231,7 +225,7 @@ int main(int argc, char *argv[]) {
             }
             S.lm = 0;
             before = clock();
-        } else if (S.score > global) {
+        } else if (S.score > score) {
             S.clause_decay -= 0.0001;
         }
 
@@ -241,11 +235,10 @@ int main(int argc, char *argv[]) {
         if (result != l_Undef) {
             break;
         }
-        if (S.score < global) {
-            global = S.score;
-            printf("\nc score = %lf\n", global);
+        if (S.score < score) {
+            score = S.score;
+            printf("c %lf\n", score);
             trigger = S.trigger;
-            // S.grow = opt_grow;
             opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
             opt_min_step_size = S.opt_min_step_size;
@@ -260,7 +253,7 @@ int main(int argc, char *argv[]) {
             }
             S.lm = 0;
             before = clock();
-        } else if (S.score > global) {
+        } else if (S.score > score) {
             S.opt_chrono -= 1;
         }
 
@@ -270,11 +263,10 @@ int main(int argc, char *argv[]) {
         if (result != l_Undef) {
             break;
         }
-        if (S.score < global) {
-            global = S.score;
-            printf("\nc score = %lf\n", global);
+        if (S.score < score) {
+            score = S.score;
+            printf("c %lf\n", score);
             trigger = S.trigger;
-            // S.grow = opt_grow;
             opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
             opt_min_step_size = S.opt_min_step_size;
@@ -289,7 +281,7 @@ int main(int argc, char *argv[]) {
             }
             S.lm = 0;
             before = clock();
-        } else if (S.score > global) {
+        } else if (S.score > score) {
             S.chrono_backtrack -= 1;
         }
 
@@ -299,11 +291,10 @@ int main(int argc, char *argv[]) {
         if (result != l_Undef) {
             break;
         }
-        if (S.score < global) {
-            global = S.score;
-            printf("\nc score = %lf\n", global);
+        if (S.score < score) {
+            score = S.score;
+            printf("c %lf\n", score);
             trigger = S.trigger;
-            // S.grow = opt_grow;
             opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
             opt_min_step_size = S.opt_min_step_size;
@@ -318,7 +309,7 @@ int main(int argc, char *argv[]) {
             }
             S.lm = 0;
             before = clock();
-        } else if (S.score > global) {
+        } else if (S.score > score) {
             S.opt_restart_inc -= 1;
         }
 
@@ -328,11 +319,10 @@ int main(int argc, char *argv[]) {
         if (result != l_Undef) {
             break;
         }
-        if (S.score < global) {
-            global = S.score;
-            printf("\nc score = %lf\n", global);
+        if (S.score < score) {
+            score = S.score;
+            printf("c %lf\n", score);
             trigger = S.trigger;
-            // S.grow = opt_grow;
             opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
             opt_min_step_size = S.opt_min_step_size;
@@ -347,63 +337,35 @@ int main(int argc, char *argv[]) {
             }
             S.lm = 0;
             before = clock();
-        } else if (S.score > global) {
+        } else if (S.score > score) {
             S.opt_restart_first -= 1;
-        }
-
-        S.complexity = 0;
-        S.grow += 1;
-        result = S.solveLimited(assumptions, true);
-        if (result != l_Undef) {
-            break;
-        }
-        if (S.score < global) {
-            global = S.score;
-            printf("\nc score = %lf\n", global);
-            trigger = S.trigger;
-            // S.grow = opt_grow;
-            opt_step_size = S.opt_step_size;
-            opt_step_size_dec = S.opt_step_size_dec;
-            opt_min_step_size = S.opt_min_step_size;
-            var_decay = S.var_decay;
-            clause_decay = S.clause_decay;
-            opt_chrono = S.opt_chrono;
-            chrono_backtrack = S.chrono_backtrack;
-            opt_restart_first = S.opt_restart_first;
-            opt_restart_inc = S.opt_restart_inc;
-            if (S.score == 0) {
-                break;
-            }
-            S.lm = 0;
-            before = clock();
-        } else if (S.score > global) {
-            S.grow -= 1;
         }
 
         S.lm++;
         S.trigger++;
         clock_t difference = clock() - before;
-        if (difference * 1000 / CLOCKS_PER_SEC > 10000) {
+        if (difference * 1000 / CLOCKS_PER_SEC > 10000 * ((double)(S.nClauses()) / S.nVars())) {
             break;
         }
     }
-    printf("\nc go!\n");
-    S.trigger = trigger;
-    // S.grow = opt_grow;
-    S.opt_step_size = opt_step_size;
-    S.opt_step_size_dec = opt_step_size_dec;
-    S.opt_min_step_size = opt_min_step_size;
-    S.var_decay = var_decay;
-    S.clause_decay = clause_decay;
-    S.opt_chrono = opt_chrono;
-    S.chrono_backtrack = chrono_backtrack;
-    S.opt_restart_first = opt_restart_first;
-    S.opt_restart_inc = opt_restart_inc;
-    S.lm = -1;
+    printf("c go!\n");
     if (result == l_Undef) {
+        S.global = 0;
+        S.log = true;
+        S.trigger = trigger;
+        S.opt_step_size = opt_step_size;
+        S.opt_step_size_dec = opt_step_size_dec;
+        S.opt_min_step_size = opt_min_step_size;
+        S.var_decay = var_decay;
+        S.clause_decay = clause_decay;
+        S.opt_chrono = opt_chrono;
+        S.chrono_backtrack = chrono_backtrack;
+        S.opt_restart_first = opt_restart_first;
+        S.opt_restart_inc = opt_restart_inc;
+        S.lm = -1;
         result = S.solveLimited(assumptions, true);
+        printf("\n");
     }
-    printf("\n");
     printf(result == l_True ? "s SATISFIABLE\nv " : result == l_False ? "s UNSATISFIABLE\n" : "s UNKNOWN\n");
     if (result == l_True) {
         for (long i = 0; i < S.nVars(); i++)
@@ -434,4 +396,3 @@ int main(int argc, char *argv[]) {
     }
     exit(result == l_True ? 10 : result == l_False ? 20 : 0);
 }
-

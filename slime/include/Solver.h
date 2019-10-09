@@ -87,6 +87,8 @@ class Solver {
     };
 
   public:
+    bool log = false;
+    long global;
     long complexity = 0;
     long lm = 0;
     double score = 0;
@@ -240,11 +242,10 @@ class Solver {
         return (cr != CRef_Undef);
     }
 
-    long global;
+    ClauseAllocator ca;
+    vec<CRef> clauses;
 
-        ClauseAllocator ca;
-        vec<CRef> clauses;
-    protected:
+  protected:
     // Helper structures:
     //
     struct VarData {
@@ -286,7 +287,7 @@ class Solver {
     // Solver state:
     //
     bool ok;                // If FALSE, the constraints are already unsatisfiable. No part of the solver state may be used!
-        // List of problem clauses.
+                            // List of problem clauses.
     vec<CRef> learnts_core, // List of learnt clauses.
         learnts_tier2, learnts_local;
     double cla_inc;           // Amount to bump next clause with.
@@ -315,7 +316,7 @@ class Solver {
 
     long next_T2_reduce, next_L_reduce;
 
-        long confl_to_chrono;
+    long confl_to_chrono;
     long chrono;
 
     // Temporaries (to reduce allocation overhead). Each variable is prefixed by the method in which it is

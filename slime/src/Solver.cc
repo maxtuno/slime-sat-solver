@@ -79,9 +79,7 @@ Solver::Solver()
 
 {}
 
-Solver::~Solver() {
-
-}
+Solver::~Solver() {}
 
 // simplify All
 //
@@ -1422,10 +1420,10 @@ lbool Solver::search(long &nof_conflicts) {
         local = trail.size();
         if (local > global) {
             global = local;
-#ifdef LOG
-            printf("\rc %.2f %% \t ", 100.0 * (nVars() - global) / nVars());
-            fflush(stdout);
-#endif
+            if (log) {
+                printf("\rc %.2f %% \t ", 100.0 * (nVars() - global) / nVars());
+                fflush(stdout);
+            }
         } else if (local < global) {
             polarity[trail.size()] = !polarity[trail.size()];
         }
@@ -1615,7 +1613,6 @@ lbool Solver::solve_() {
     VSIDS = false;
 
     // Search:
-    global = 0;
     long curr_restarts = 0;
     status = l_Undef;
     while (status == l_Undef /*&& withinBudget()*/) {
