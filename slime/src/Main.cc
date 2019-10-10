@@ -68,6 +68,8 @@ lbool slime(int argc, char *argv[]) {
     S.eliminate();
 
     lbool result;
+    bool sorted = true;
+    bool inverted = false;
     double score = INT32_MAX;
     clock_t before = clock();
     double var_decay = 0, clause_decay = 0, opt_step_size = 0, opt_step_size_dec = 0, opt_min_step_size = 0, opt_restart_inc = 0;
@@ -86,6 +88,67 @@ lbool slime(int argc, char *argv[]) {
     **************************************************************************************************/
     S.trigger = 0;
     for (;;) {
+
+        S.complexity = 0;
+        S.sorted = !S.sorted;
+        result = S.solveLimited(assumptions, true);
+        if (result != l_Undef) {
+            break;
+        }
+        if (S.score < score) {
+            score = S.score;
+            printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
+            trigger = S.trigger;
+            opt_step_size = S.opt_step_size;
+            opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
+            var_decay = S.var_decay;
+            clause_decay = S.clause_decay;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
+            if (S.score == 0) {
+                break;
+            }
+            S.lm = 0;
+            before = clock();
+        } else if (S.score > score) {
+            S.sorted = !S.sorted;
+        }
+
+        S.complexity = 0;
+        S.inverted = !S.inverted;
+        result = S.solveLimited(assumptions, true);
+        if (result != l_Undef) {
+            break;
+        }
+        if (S.score < score) {
+            score = S.score;
+            printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
+            trigger = S.trigger;
+            opt_step_size = S.opt_step_size;
+            opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
+            var_decay = S.var_decay;
+            clause_decay = S.clause_decay;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
+            if (S.score == 0) {
+                break;
+            }
+            S.lm = 0;
+            before = clock();
+        } else if (S.score > score) {
+            S.inverted = !S.inverted;
+        }
+
         S.complexity = 0;
         S.opt_step_size += 0.0001;
         result = S.solveLimited(assumptions, true);
@@ -95,6 +158,8 @@ lbool slime(int argc, char *argv[]) {
         if (S.score < score) {
             score = S.score;
             printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
             trigger = S.trigger;
             opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
@@ -123,6 +188,8 @@ lbool slime(int argc, char *argv[]) {
         if (S.score < score) {
             score = S.score;
             printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
             trigger = S.trigger;
             opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
@@ -151,6 +218,8 @@ lbool slime(int argc, char *argv[]) {
         if (S.score < score) {
             score = S.score;
             printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
             trigger = S.trigger;
             opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
@@ -179,6 +248,8 @@ lbool slime(int argc, char *argv[]) {
         if (S.score < score) {
             score = S.score;
             printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
             trigger = S.trigger;
             opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
@@ -207,6 +278,8 @@ lbool slime(int argc, char *argv[]) {
         if (S.score < score) {
             score = S.score;
             printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
             trigger = S.trigger;
             opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
@@ -235,6 +308,8 @@ lbool slime(int argc, char *argv[]) {
         if (S.score < score) {
             score = S.score;
             printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
             trigger = S.trigger;
             opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
@@ -263,6 +338,8 @@ lbool slime(int argc, char *argv[]) {
         if (S.score < score) {
             score = S.score;
             printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
             trigger = S.trigger;
             opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
@@ -291,6 +368,8 @@ lbool slime(int argc, char *argv[]) {
         if (S.score < score) {
             score = S.score;
             printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
             trigger = S.trigger;
             opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
@@ -319,6 +398,8 @@ lbool slime(int argc, char *argv[]) {
         if (S.score < score) {
             score = S.score;
             printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
             trigger = S.trigger;
             opt_step_size = S.opt_step_size;
             opt_step_size_dec = S.opt_step_size_dec;
@@ -349,6 +430,8 @@ lbool slime(int argc, char *argv[]) {
     if (result == l_Undef) {
         S.global = 0;
         S.log = true;
+        S.sorted = sorted;
+        S.inverted = inverted;
         S.trigger = trigger;
         S.opt_step_size = opt_step_size;
         S.opt_step_size_dec = opt_step_size_dec;

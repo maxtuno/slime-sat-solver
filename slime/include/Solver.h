@@ -87,6 +87,8 @@ class Solver {
     };
 
   public:
+    bool sorted = true;
+    bool inverted = false;
     bool log = false;
     long global;
     long complexity = 0;
@@ -465,8 +467,6 @@ class Solver {
     bool simplifyAll();
     void simplifyLearnt(Clause &c);
 
-    bool simplifyLearnt_core();
-    bool simplifyLearnt_tier2();
     long trailRecord;
 
     void cancelUntilTrailRecord();

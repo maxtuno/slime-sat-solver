@@ -298,201 +298,10 @@ void Solver::simplifyLearnt(Clause &c) {
     simplified_length_record += c.size();
 }
 
-bool Solver::simplifyLearnt_core() {
-
-    long ci, cj, li, lj;
-    bool sat, false_lit;
-    long nblevels;
-
-    long nbSimplified = 0;
-    long nbSimplifing = 0;
-
-    for (ci = 0, cj = 0; ci < learnts_core.size(); ci++) {
-        CRef cr = learnts_core[ci];
-        Clause &c = ca[cr];
-
-        if (removed(cr))
-            continue;
-        else if (c.simplified()) {
-            learnts_core[cj++] = learnts_core[ci];
-            nbSimplified++;
-        } else {
-            long saved_size = c.size();
-
-            nbSimplifing++;
-            sat = false_lit = false;
-            for (long i = 0; i < c.size(); i++) {
-                if (value(c[i]) == l_True) {
-                    sat = true;
-                    break;
-                } else if (value(c[i]) == l_False) {
-                    false_lit = true;
-                }
-            }
-            if (sat) {
-                removeClause(cr);
-            } else {
-                detachClause(cr, true);
-
-                if (false_lit) {
-                    for (li = lj = 0; li < c.size(); li++) {
-                        if (value(c[li]) != l_False) {
-                            c[lj++] = c[li];
-                        }
-                    }
-                    c.shrink(li - lj);
-                }
-
-                c.size();
-                assert(c.size() > 1);
-                // simplify a learnt clause c
-                simplifyLearnt(c);
-                assert(c.size() > 0);
-                c.size();
-
-                if (drup_file && saved_size != c.size()) {
-#ifdef BIN_DRUP
-                    binDRUP('a', c, drup_file);
-#else
-                    for (long i = 0; i < c.size(); i++)
-                        fprintf(drup_file, "%ld ", (var(c[i]) + 1) * (-2 * sign(c[i]) + 1));
-                    fprintf(drup_file, "0\n");
-#endif
-                }
-
-                if (c.size() == 1) {
-                    // when unit clause occur, enqueue and propagate
-                    uncheckedEnqueue(c[0]);
-                    if (propagate() != CRef_Undef) {
-                        ok = false;
-                        return false;
-                    }
-                    // delete the clause memory in logic
-                    c.mark(1);
-                    ca.free(cr);
-                } else {
-                    attachClause(cr);
-                    learnts_core[cj++] = learnts_core[ci];
-
-                    nblevels = computeLBD(c);
-                    if (nblevels < c.lbd()) {
-                        c.set_lbd(nblevels);
-                    }
-
-                    c.setSimplified(true);
-                }
-            }
-        }
-    }
-    learnts_core.shrink(ci - cj);
-    return true;
-}
-
-bool Solver::simplifyLearnt_tier2() {
-
-    long ci, cj, li, lj;
-    bool sat, false_lit;
-    long nblevels;
-
-    long nbSimplified = 0;
-    long nbSimplifing = 0;
-
-    for (ci = 0, cj = 0; ci < learnts_tier2.size(); ci++) {
-        CRef cr = learnts_tier2[ci];
-        Clause &c = ca[cr];
-
-        if (removed(cr))
-            continue;
-        else if (c.simplified()) {
-            learnts_tier2[cj++] = learnts_tier2[ci];
-            nbSimplified++;
-        } else {
-            long saved_size = c.size();
-            nbSimplifing++;
-            sat = false_lit = false;
-            for (long i = 0; i < c.size(); i++) {
-                if (value(c[i]) == l_True) {
-                    sat = true;
-                    break;
-                } else if (value(c[i]) == l_False) {
-                    false_lit = true;
-                }
-            }
-            if (sat) {
-                removeClause(cr);
-            } else {
-                detachClause(cr, true);
-
-                if (false_lit) {
-                    for (li = lj = 0; li < c.size(); li++) {
-                        if (value(c[li]) != l_False) {
-                            c[lj++] = c[li];
-                        }
-                    }
-                    c.shrink(li - lj);
-                }
-
-                c.size();
-                assert(c.size() > 1);
-                // simplify a learnt clause c
-                simplifyLearnt(c);
-                assert(c.size() > 0);
-                c.size();
-
-                if (drup_file && saved_size != c.size()) {
-
-#ifdef BIN_DRUP
-                    binDRUP('a', c, drup_file);
-#else
-                    for (long i = 0; i < c.size(); i++)
-                        fprintf(drup_file, "%ld ", (var(c[i]) + 1) * (-2 * sign(c[i]) + 1));
-                    fprintf(drup_file, "0\n");
-#endif
-                }
-
-                if (c.size() == 1) {
-                    // when unit clause occur, enqueue and propagate
-                    uncheckedEnqueue(c[0]);
-                    if (propagate() != CRef_Undef) {
-                        ok = false;
-                        return false;
-                    }
-                    // delete the clause memory in logic
-                    c.mark(1);
-                    ca.free(cr);
-                } else {
-                    attachClause(cr);
-                    learnts_tier2[cj++] = learnts_tier2[ci];
-
-                    nblevels = computeLBD(c);
-                    if (nblevels < c.lbd()) {
-                        c.set_lbd(nblevels);
-                    }
-
-                    if (c.lbd() <= core_lbd_cut) {
-                        cj--;
-                        learnts_core.push(cr);
-                        c.mark(CORE);
-                    }
-
-                    c.setSimplified(true);
-                }
-            }
-        }
-    }
-    learnts_tier2.shrink(ci - cj);
-    return true;
-}
-
 bool Solver::simplifyAll() {
     simplified_length_record = original_length_record = 0;
 
     if (!ok || propagate() != CRef_Undef)
-        return ok = false;
-
-    if (!simplifyLearnt_core())
-        return ok = false;
-    if (!simplifyLearnt_tier2())
         return ok = false;
 
     checkGarbage();
@@ -543,7 +352,11 @@ bool Solver::addClause_(vec<Lit> &ps) {
         return false;
 
     // Check if clause is satisfied and remove false/duplicate literals:
-    sort(ps);
+    if (sorted) {
+        sort(ps);
+    } else {
+        invert(ps);
+    }
     Lit p;
     long i, j;
 
@@ -1179,7 +992,11 @@ struct reduceDB_lt {
 void Solver::reduceDB() {
     long i, j;
 
-    invert(learnts_local, reduceDB_lt(ca));
+    if (inverted) {
+        invert(learnts_local, reduceDB_lt(ca));
+    } else {
+        sort(learnts_local, reduceDB_lt(ca));
+    }
 
     long limit = learnts_local.size() / 2;
     for (i = j = 0; i < learnts_local.size(); i++) {
