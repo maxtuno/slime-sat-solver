@@ -17,7 +17,6 @@ in all copies or substantial portions of the Software.
 #include <cmath>
 #include <ctime>
 #include <iostream>
-#include <vector>
 
 #define DRAT // Generate unsat proof.
 
@@ -49,9 +48,7 @@ void printHeader() {
 
 #endif
 
-int main(int argc, char *argv[]) {
-    printHeader();
-
+lbool slime(int argc, char *argv[]) {
     SimpSolver S;
 
     if (argc > 3) {
@@ -61,7 +58,7 @@ int main(int argc, char *argv[]) {
     FILE *in = fopen(argv[1], "r");
     if (in == NULL) {
         std::cout << "c ERROR! Could not open file: " << argv[1] << std::endl;
-        return EXIT_FAILURE;
+        return l_Undef;
     }
     parse_DIMACS(in, S);
     fclose(in);
@@ -394,5 +391,11 @@ int main(int argc, char *argv[]) {
             fprintf(model, " 0\n");
         }
     }
+    return result;
+}
+
+int main(int argc, char *argv[]) {
+    printHeader();
+    lbool result = slime(argc, argv); 
     exit(result == l_True ? 10 : result == l_False ? 20 : 0);
 }

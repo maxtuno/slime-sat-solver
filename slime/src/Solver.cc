@@ -11,9 +11,9 @@ The above copyright notice and this permission notice shall be included
 in all copies or substantial portions of the Software.
 **************************************************************************************************/
 
-#include <math.h>
-#include <stdio.h>
-#include <time.h>
+#include <cmath>
+#include <cstdio>
+#include <ctime>
 
 #include "SimpSolver.h"
 #include "Solver.h"
@@ -1179,7 +1179,7 @@ struct reduceDB_lt {
 void Solver::reduceDB() {
     long i, j;
 
-    sort(learnts_local, reduceDB_lt(ca));
+    invert(learnts_local, reduceDB_lt(ca));
 
     long limit = learnts_local.size() / 2;
     for (i = j = 0; i < learnts_local.size(); i++) {
@@ -1636,6 +1636,7 @@ lbool Solver::solve_() {
         if (VSIDS) {
             long weighted = INT32_MAX;
             status = search(weighted);
+
         } else {
             long nof_conflicts = luby(restart_inc, curr_restarts) * restart_first;
             status = search(nof_conflicts);
