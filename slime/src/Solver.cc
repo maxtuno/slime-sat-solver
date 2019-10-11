@@ -957,8 +957,8 @@ CRef Solver::propagate() {
 
                     if (nMaxInd != 1) {
                         std::swap(c[1], c[nMaxInd]);
-                        watches[~c[1]].push(w);
                         *j--; // undo last watch
+                        watches[~c[1]].push(w);
                     }
 
                     uncheckedEnqueue(first, nMaxLevel, cr);
