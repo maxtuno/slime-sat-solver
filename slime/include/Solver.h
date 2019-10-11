@@ -90,7 +90,7 @@ class Solver {
     bool sorted = true;
     bool inverted = false;
     bool log = false;
-    long global;
+    long global = 0;
     long complexity = 0;
     long lm = 0;
     double score = 0;
@@ -106,7 +106,7 @@ class Solver {
     long opt_ccmin_mode = 2;
     long opt_phase_saving = 2;
     long opt_restart_first = 100;
-    double opt_restart_inc = 2;
+    double opt_restart_inc = 100;
     double opt_garbage_frac = 0.20;
     long opt_chrono = 100;
     long opt_conf_to_chrono = 4000;

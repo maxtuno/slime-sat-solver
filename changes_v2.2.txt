@@ -1,8 +1,0 @@
-SLIME 2.2
-- RACE mode on default
-- DRAT mode off default (#define DRAT // on Main.cc to generate unsat proof or "-D DRAT" on compiler options)
-- PAR-2 SCORE: 588448.3821 (on SAT Race 2015 Benchmarks at 1800 tested on starexec.org)
-
-NOTE: 
-
-Review changes_v2.1 for more info.

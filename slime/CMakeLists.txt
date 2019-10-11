@@ -6,15 +6,11 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
 include_directories(. include)
-link_directories(${PROJECT_SOURCE_DIR}/lib)
 
 set(CMAKE_CXX_FLAGS "-std=c++11 -O3 -Wno-reorder -Wno-unused-value -D NDEBUG -D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS -D LOG")
 
-add_library(slime
-        src/Main.cc
-        src/SimpSolver.cc
-        src/Solver.cc
-        )
+add_executable(slime_cli
+            src/Main.cc
+            src/SimpSolver.cc
+            src/Solver.cc)
 
-add_executable(slime_cli src/Main.cc)
-target_link_libraries(slime_cli slime)

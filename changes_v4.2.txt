@@ -1,5 +1,0 @@
-SLIME 4.2: The most advanced SAT Solver on the planet.
-- More performance.
-- Pre Release from 5.0 version.
-- Chronos property is deleted.
-- No randomness is on SLIME.

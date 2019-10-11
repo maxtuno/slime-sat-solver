@@ -1,3 +1,0 @@
-SLIME 3.0
-- Implementation of Alternating Dual BOOST Heuristic
-- The State of The Art Performance.

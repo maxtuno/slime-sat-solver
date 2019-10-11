@@ -1,3 +1,0 @@
-SLIME 3.1
-- Support long term executions without overflow on counters and variables.
-- The State of The Art Performance.
