@@ -14,17 +14,17 @@ in all copies or substantial portions of the Software.
 #include <Dimacs.h>
 #include <SimpSolver.h>
 #include <SolverTypes.h>
+#include <cfloat>
 #include <cmath>
 #include <iostream>
-#include <cfloat>
 
 using namespace SLIME;
 
 #if _WIN32 || _WIN64
 void printHeader() {
-    printf("c                                                \n");
-    printf("c SLIME SO SAT Solver by http://www.peqnp.science\n");
-    printf("c                                                \n");
+    printf("c                                                 \n");
+    printf("c SLIME SO+ SAT Solver by http://www.peqnp.science\n");
+    printf("c                                                 \n");
 }
 #else
 
@@ -49,12 +49,15 @@ void printHeader() {
 lbool slime(int argc, char *argv[]) {
     SimpSolver S;
 
+    if (argc > 3) {
+        S.drup_file = fopen(argv[3], "wb");
+    }
+
     FILE *in = fopen(argv[1], "r");
     if (in == NULL) {
         std::cout << "c ERROR! Could not open file: " << argv[1] << std::endl;
         return l_Undef;
     }
-    S.drup_file = (argc >= 3) ? fopen(argv[2], "wb") : NULL;
     parse_DIMACS(in, S);
     fclose(in);
 
@@ -72,7 +75,7 @@ lbool slime(int argc, char *argv[]) {
     double score = DBL_MAX, var_decay = 0, clause_decay = 0;
     int restart_first = 0, restart_inc = 0, weight = 0;
     lbool result;
-    next:
+next:
     S.log = false;
     for (;;) {
         S.complexity = 0;
