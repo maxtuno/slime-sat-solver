@@ -943,8 +943,8 @@ CRef Solver::propagate() {
 
                     if (nMaxInd != 1) {
                         std::swap(c[1], c[nMaxInd]);
-                        *j--; // undo last watch
                         watches[~c[1]].push(w);
+                        *j--; // undo last watch
                     }
 
                     uncheckedEnqueue(first, nMaxLevel, cr);
@@ -1227,7 +1227,7 @@ lbool Solver::search(long &nof_conflicts) {
                     polarity[i] = !polarity[j];
                 } else {
                     char aux = polarity[i];
-                    polarity[i] = !polarity[i];
+                    polarity[i] = !polarity[j];
                     polarity[j] = aux;
                 }
                 CRef confl = propagate();
