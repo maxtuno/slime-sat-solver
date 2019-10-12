@@ -31,53 +31,43 @@ unsigned char *Solver::buf_ptr = drup_buf;
 // Constructor/Destructor:
 
 Solver::Solver()
-    :
+        :
 
-      // Parameters (user settable):
-      //
-      drup_file(NULL), step_size(opt_step_size), step_size_dec(opt_step_size_dec), min_step_size(opt_min_step_size), timer(5000), var_decay(opt_var_decay), clause_decay(opt_clause_decay), VSIDS(false), ccmin_mode(opt_ccmin_mode), phase_saving(opt_phase_saving), garbage_frac(opt_garbage_frac), restart_first(opt_restart_first), restart_inc(opt_restart_inc)
+// Parameters (user settable):
+//
+        drup_file(NULL), step_size(opt_step_size), step_size_dec(opt_step_size_dec), min_step_size(opt_min_step_size), timer(5000), var_decay(opt_var_decay), clause_decay(opt_clause_decay), VSIDS(false), ccmin_mode(opt_ccmin_mode), phase_saving(opt_phase_saving), garbage_frac(opt_garbage_frac), restart_first(opt_restart_first), restart_inc(opt_restart_inc)
 
-      // Parameters (the rest):
-      //
-      ,
-      learntsize_factor((double)1 / (double)3), learntsize_inc(1.1)
+        // Parameters (the rest):
+        //
+        ,
+        learntsize_factor((double) 1 / (double) 3), learntsize_inc(1.1)
 
-      // Parameters (experimental):
-      //
-      ,
-      learntsize_adjust_start_confl(100), learntsize_adjust_inc(1.5)
+        // Parameters (experimental):
+        //
+        ,
+        learntsize_adjust_start_confl(100), learntsize_adjust_inc(1.5)
 
-      // Statistics: (formerly in 'SolverStats')
-      //
-      ,
-      solves(0), starts(0), decisions(0), rnd_decisions(0), propagations(0), conflicts(0), conflicts_VSIDS(0), dec_vars(0), clauses_literals(0), learnts_literals(0), max_literals(0), tot_literals(0), chrono_backtrack(0), non_chrono_backtrack(0)
+        // Statistics: (formerly in 'SolverStats')
+        //
+        ,
+        solves(0), starts(0), decisions(0), rnd_decisions(0), propagations(0), conflicts(0), conflicts_VSIDS(0), dec_vars(0), clauses_literals(0), learnts_literals(0), max_literals(0), tot_literals(0), chrono_backtrack(0), non_chrono_backtrack(0),
+        ok(true), cla_inc(1), var_inc(1), watches_bin(WatcherDeleted(ca)), watches(WatcherDeleted(ca)), qhead(0), simpDB_assigns(-1), simpDB_props(0), order_heap_CHB(VarOrderLt(activity_CHB)), order_heap_VSIDS(VarOrderLt(activity_VSIDS)), remove_satisfied(true),
+        core_lbd_cut(3), global_lbd_sum(0), lbd_queue(50), next_T2_reduce(10000), next_L_reduce(15000), confl_to_chrono(opt_conf_to_chrono), chrono(opt_chrono),
+        counter(0)
 
-      ,
-      ok(true), cla_inc(1), var_inc(1), watches_bin(WatcherDeleted(ca)), watches(WatcherDeleted(ca)), qhead(0), simpDB_assigns(-1), simpDB_props(0), order_heap_CHB(VarOrderLt(activity_CHB)), order_heap_VSIDS(VarOrderLt(activity_VSIDS)), remove_satisfied(true)
+        // Resource constraints:
+        //
+        ,
+        conflict_budget(-1), propagation_budget(-1), asynch_interrupt(false)
 
-      ,
-      core_lbd_cut(3), global_lbd_sum(0), lbd_queue(50), next_T2_reduce(10000), next_L_reduce(15000), confl_to_chrono(opt_conf_to_chrono), chrono(opt_chrono)
+        // simplfiy
+        ,
+        nbSimplifyAll(0), s_propagations(0)
 
-      ,
-      counter(0)
-
-      // Resource constraints:
-      //
-      ,
-      conflict_budget(-1), propagation_budget(-1), asynch_interrupt(false)
-
-      // simplfiy
-      ,
-      nbSimplifyAll(0), s_propagations(0)
-
-      // simplifyAll adjust occasion
-      ,
-      curSimplify(1), nbconfbeforesimplify(1000), incSimplify(1000)
-
-      ,
-      my_var_decay(0.6), DISTANCE(true), var_iLevel_inc(1), order_heap_distance(VarOrderLt(activity_distance))
-
-{}
+        // simplifyAll adjust occasion
+        ,
+        curSimplify(1), nbconfbeforesimplify(1000), incSimplify(1000),
+        my_var_decay(0.6), DISTANCE(true), var_iLevel_inc(1), order_heap_distance(VarOrderLt(activity_distance)) {}
 
 Solver::~Solver() {}
 
@@ -109,7 +99,7 @@ CRef Solver::simplePropagate() {
                 simpleUncheckEnqueue(imp, wbin[k].cref);
             }
         }
-        for (i = j = (Watcher *)ws, end = i + ws.size(); i != end;) {
+        for (i = j = (Watcher *) ws, end = i + ws.size(); i != end;) {
             // Try to avoid inspecting the clause:
             Lit blocker = i->blocker;
             if (value(blocker) == l_True) {
@@ -135,9 +125,7 @@ CRef Solver::simplePropagate() {
                 i->blocker = first;
                 *j++ = *i++;
                 continue;
-            }
-
-            else { // ----------------- DEFAULT  MODE (NOT INCREMENTAL)
+            } else { // ----------------- DEFAULT  MODE (NOT INCREMENTAL)
                 for (long k = 2; k < c.size(); k++) {
 
                     if (value(c[k]) != l_False) {
@@ -166,7 +154,7 @@ CRef Solver::simplePropagate() {
             } else {
                 simpleUncheckEnqueue(first, cr);
             }
-        NextClause:;
+            NextClause:;
         }
         ws.shrink(i - j);
     }
@@ -226,8 +214,7 @@ void Solver::simpleAnalyze(CRef confl, vec<Lit> &out_learnt, vec<CRef> &reason_c
         if (pathC == 0)
             break;
         // Select next clause to look at:
-        while (!seen[var(trail[index--])])
-            ;
+        while (!seen[var(trail[index--])]);
         // if the reason cr from the 0-level assigned var, we must break avoid move forth further;
         // but attention that maybe seen[x]=1 and never be clear. However makes no matter;
         if (trailRecord > index + 1)
@@ -485,7 +472,7 @@ void Solver::cancelUntil(long bLevel) {
                 if (!VSIDS) {
                     long age = conflicts - picked[x];
                     if (age > 0) {
-                        double adjusted_reward = ((double)(conflicted[x] + almost_conflicted[x])) / ((double)age);
+                        double adjusted_reward = ((double) (conflicted[x] + almost_conflicted[x])) / ((double) age);
                         double old_activity = activity_CHB[x];
                         activity_CHB[x] = step_size * adjusted_reward + ((1 - step_size) * old_activity);
                         if (order_heap_CHB.inHeap(x)) {
@@ -668,8 +655,7 @@ void Solver::analyze(CRef confl, vec<Lit> &out_learnt, long &out_btlevel, long &
 
         // Select next clause to look at:
         do {
-            while (!seen[var(trail[index--])])
-                ;
+            while (!seen[var(trail[index--])]);
             p = trail[index + 1];
         } while (level(var(p)) < nDecisionLevel);
 
@@ -898,7 +884,7 @@ CRef Solver::propagate() {
             }
         }
 
-        for (i = j = (Watcher *)ws, end = i + ws.size(); i != end;) {
+        for (i = j = (Watcher *) ws, end = i + ws.size(); i != end;) {
             // Try to avoid inspecting the clause:
             Lit blocker = i->blocker;
             if (value(blocker) == l_True) {
@@ -965,7 +951,7 @@ CRef Solver::propagate() {
                 }
             }
 
-        NextClause:;
+            NextClause:;
         }
         ws.shrink(i - j);
     }
@@ -986,9 +972,12 @@ CRef Solver::propagate() {
 |________________________________________________________________________________________________@*/
 struct reduceDB_lt {
     ClauseAllocator &ca;
+
     reduceDB_lt(ClauseAllocator &ca_) : ca(ca_) {}
+
     bool operator()(CRef x, CRef y) const { return ca[x].activity() < ca[y].activity(); }
 };
+
 void Solver::reduceDB() {
     long i, j;
 
@@ -1016,6 +1005,7 @@ void Solver::reduceDB() {
 
     checkGarbage();
 }
+
 void Solver::reduceDB_Tier2() {
     long i, j;
     for (i = j = 0; i < learnts_tier2.size(); i++) {
@@ -1226,169 +1216,170 @@ lbool Solver::search(long &nof_conflicts) {
         nbconfbeforesimplify += incSimplify;
     }
 
-    CRef confl;
-    for (int i = 0; i < polarity.size(); i++) {
-        for (int j = 0; j < polarity.size(); j++) {
-            complexity++;
+    for (;;) {
+        for (int i = 0; i < polarity.size(); i++) {
+            for (int j = 0; j < polarity.size(); j++) {
+                complexity++;
 
-            /* SLIME SO+ -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver */
-            /* SLIME AO+ SAT Solver and The BOOST Heuristic or Variations cannot be used on any contest without express permissions of Oscar Riveros. */
-            if (polarity[i] == polarity[j]) {
-                polarity[i] = !polarity[j];
-            } else {
-                char aux = polarity[i];
-                polarity[i] = !polarity[i];
-                polarity[j] = aux;
-            }
-            confl = propagate();
-            local = trail.size();
-            if (local > global) {
-                global = local;
-                if (log) {
-                    printf("\rc %.2f %% \t ", 100.0 * (nVars() - global) / nVars());
-                    fflush(stdout);
-                }
-            } else if (local < global) {
+                /* SLIME SO+ -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver */
+                /* SLIME AO+ SAT Solver and The BOOST Heuristic or Variations cannot be used on any contest without express permissions of Oscar Riveros. */
                 if (polarity[i] == polarity[j]) {
                     polarity[i] = !polarity[j];
                 } else {
                     char aux = polarity[i];
-                    polarity[i] = !polarity[j];
+                    polarity[i] = !polarity[i];
                     polarity[j] = aux;
                 }
-            }
-
-            if (confl != CRef_Undef) {
-                // CONFLICT
-                if (VSIDS) {
-                    if (--timer == 0 && var_decay < 0.95)
-                        timer = 5000, var_decay += 0.01;
-                } else if (step_size > min_step_size)
-                    step_size -= step_size_dec;
-
-                conflicts++;
-                nof_conflicts--;
-                if (conflicts == 100000 && learnts_core.size() < 100)
-                    core_lbd_cut = 5;
-                ConflictData data = FindConflictLevel(confl);
-                if (data.nHighestLevel == 0)
-                    return l_False;
-                if (data.bOnlyOneLitFromHighest) {
-                    cancelUntil(data.nHighestLevel - 1);
-                    continue;
-                }
-
-                learnt_clause.clear();
-                if (conflicts > 50000)
-                    DISTANCE = 0;
-                else
-                    DISTANCE = 1;
-                if (VSIDS && DISTANCE)
-                    collectFirstUIP(confl);
-
-                analyze(confl, learnt_clause, backtrack_level, lbd);
-                // check chrono backtrack condition
-                if ((confl_to_chrono < 0 || confl_to_chrono <= conflicts) && chrono > -1 && (decisionLevel() - backtrack_level) >= chrono) {
-                    ++chrono_backtrack;
-                    cancelUntil(data.nHighestLevel - 1);
-                } else // default behavior
-                {
-                    ++non_chrono_backtrack;
-                    cancelUntil(backtrack_level);
-                }
-
-                lbd--;
-                if (VSIDS) {
-                    cached = false;
-                    conflicts_VSIDS++;
-                    lbd_queue.push(lbd);
-                    global_lbd_sum += (lbd > 50 ? 50 : lbd);
-                }
-
-                if (learnt_clause.size() == 1) {
-                    uncheckedEnqueue(learnt_clause[0]);
-                } else {
-                    CRef cr = ca.alloc(learnt_clause, true);
-                    ca[cr].set_lbd(lbd);
-                    if (lbd <= core_lbd_cut) {
-                        learnts_core.push(cr);
-                        ca[cr].mark(CORE);
-                    } else if (lbd <= 6) {
-                        learnts_tier2.push(cr);
-                        ca[cr].mark(TIER2);
-                        ca[cr].touched() = conflicts;
+                CRef confl = propagate();
+                local = trail.size();
+                if (local > global) {
+                    global = local;
+                    if (log) {
+                        printf("\rc %.2f %% \t ", 100.0 * (nVars() - global) / nVars());
+                        fflush(stdout);
+                    }
+                } else if (local < global) {
+                    if (polarity[i] == polarity[j]) {
+                        polarity[i] = !polarity[j];
                     } else {
-                        learnts_local.push(cr);
-                        claBumpActivity(ca[cr]);
+                        char aux = polarity[i];
+                        polarity[i] = !polarity[j];
+                        polarity[j] = aux;
                     }
-                    attachClause(cr);
-                    uncheckedEnqueue(learnt_clause[0], backtrack_level, cr);
-                }
-                if (drup_file) {
-#ifdef BIN_DRUP
-                    binDRUP('a', learnt_clause, drup_file);
-#else
-                    for (long i = 0; i < learnt_clause.size(); i++)
-                        fprintf(drup_file, "%ld ", (var(learnt_clause[i]) + 1) * (-2 * sign(learnt_clause[i]) + 1));
-                    fprintf(drup_file, "0\n");
-#endif
                 }
 
-                if (VSIDS)
-                    varDecayActivity();
-                claDecayActivity();
-            } else {
-                // NO CONFLICT
-                bool restart = false;
-                if (!VSIDS) {
-                    restart = nof_conflicts <= 0;
-                } else if (!cached) {
-                    restart = lbd_queue.full() && (lbd_queue.avg() * 0.8 > global_lbd_sum / conflicts_VSIDS);
-                    cached = true;
-                }
-                if (restart /*|| !withinBudget()*/) {
-                    lbd_queue.clear();
-                    cached = false;
-                    // Reached bound on number of conflicts:
-                    cancelUntil(0);
-                    return l_Undef;
-                }
+                if (confl != CRef_Undef) {
+                    // CONFLICT
+                    if (VSIDS) {
+                        if (--timer == 0 && var_decay < 0.95)
+                            timer = 5000, var_decay += 0.01;
+                    } else if (step_size > min_step_size)
+                        step_size -= step_size_dec;
 
-                // Simplify the set of problem clauses:
-                if (decisionLevel() == 0 && !simplify())
-                    return l_False;
+                    conflicts++;
+                    nof_conflicts--;
+                    if (conflicts == 100000 && learnts_core.size() < 100)
+                        core_lbd_cut = 5;
+                    ConflictData data = FindConflictLevel(confl);
+                    if (data.nHighestLevel == 0)
+                        return l_False;
+                    if (data.bOnlyOneLitFromHighest) {
+                        cancelUntil(data.nHighestLevel - 1);
+                        continue;
+                    }
 
-                if (conflicts >= next_T2_reduce) {
-                    next_T2_reduce = conflicts + 10000;
-                    reduceDB_Tier2();
-                }
-                if (conflicts >= next_L_reduce) {
-                    next_L_reduce = conflicts + 15000;
-                    reduceDB();
-                }
+                    learnt_clause.clear();
+                    if (conflicts > 50000)
+                        DISTANCE = 0;
+                    else
+                        DISTANCE = 1;
+                    if (VSIDS && DISTANCE)
+                        collectFirstUIP(confl);
 
-                Lit next = lit_Undef;
-                // New variable decision:
-                decisions++;
-                next = pickBranchLit();
+                    analyze(confl, learnt_clause, backtrack_level, lbd);
+                    // check chrono backtrack condition
+                    if ((confl_to_chrono < 0 || confl_to_chrono <= conflicts) && chrono > -1 && (decisionLevel() - backtrack_level) >= chrono) {
+                        ++chrono_backtrack;
+                        cancelUntil(data.nHighestLevel - 1);
+                    } else // default behavior
+                    {
+                        ++non_chrono_backtrack;
+                        cancelUntil(backtrack_level);
+                    }
 
-                if (next == lit_Undef) {
-                    // Model found:
-                    for (long i = 0; i < nClauses(); i++) {
-                        if (!satisfied(ca[clauses[i]])) {
-                            return l_False;
+                    lbd--;
+                    if (VSIDS) {
+                        cached = false;
+                        conflicts_VSIDS++;
+                        lbd_queue.push(lbd);
+                        global_lbd_sum += (lbd > 50 ? 50 : lbd);
+                    }
+
+                    if (learnt_clause.size() == 1) {
+                        uncheckedEnqueue(learnt_clause[0]);
+                    } else {
+                        CRef cr = ca.alloc(learnt_clause, true);
+                        ca[cr].set_lbd(lbd);
+                        if (lbd <= core_lbd_cut) {
+                            learnts_core.push(cr);
+                            ca[cr].mark(CORE);
+                        } else if (lbd <= 6) {
+                            learnts_tier2.push(cr);
+                            ca[cr].mark(TIER2);
+                            ca[cr].touched() = conflicts;
+                        } else {
+                            learnts_local.push(cr);
+                            claBumpActivity(ca[cr]);
                         }
+                        attachClause(cr);
+                        uncheckedEnqueue(learnt_clause[0], backtrack_level, cr);
                     }
-                    return l_True;
-                }
+                    if (drup_file) {
+#ifdef BIN_DRUP
+                        binDRUP('a', learnt_clause, drup_file);
+#else
+                        for (long i = 0; i < learnt_clause.size(); i++)
+                            fprintf(drup_file, "%ld ", (var(learnt_clause[i]) + 1) * (-2 * sign(learnt_clause[i]) + 1));
+                        fprintf(drup_file, "0\n");
+#endif
+                    }
 
-                // Increase decision level and enqueue 'next'
-                newDecisionLevel();
-                uncheckedEnqueue(next, decisionLevel());
+                    if (VSIDS)
+                        varDecayActivity();
+                    claDecayActivity();
+                } else {
+                    // NO CONFLICT
+                    bool restart = false;
+                    if (!VSIDS) {
+                        restart = nof_conflicts <= 0;
+                    } else if (!cached) {
+                        restart = lbd_queue.full() && (lbd_queue.avg() * 0.8 > global_lbd_sum / conflicts_VSIDS);
+                        cached = true;
+                    }
+                    if (restart /*|| !withinBudget()*/) {
+                        lbd_queue.clear();
+                        cached = false;
+                        // Reached bound on number of conflicts:
+                        cancelUntil(0);
+                        return l_Undef;
+                    }
+
+                    // Simplify the set of problem clauses:
+                    if (decisionLevel() == 0 && !simplify())
+                        return l_False;
+
+                    if (conflicts >= next_T2_reduce) {
+                        next_T2_reduce = conflicts + 10000;
+                        reduceDB_Tier2();
+                    }
+                    if (conflicts >= next_L_reduce) {
+                        next_L_reduce = conflicts + 15000;
+                        reduceDB();
+                    }
+
+                    Lit next = lit_Undef;
+                    // New variable decision:
+                    decisions++;
+                    next = pickBranchLit();
+
+                    if (next == lit_Undef) {
+                        // Model found:
+                        for (long i = 0; i < nClauses(); i++) {
+                            if (!satisfied(ca[clauses[i]])) {
+                                return l_False;
+                            }
+                        }
+                        return l_True;
+                    }
+
+                    // Increase decision level and enqueue 'next'
+                    newDecisionLevel();
+                    uncheckedEnqueue(next, decisionLevel());
+                }
             }
         }
+
     }
-    return l_Undef;
 }
 
 /*
@@ -1408,8 +1399,7 @@ static double luby(double y, long x) {
     // Find the finite subsequence that contains index 'x', and the
     // size of that subsequence:
     long size, seq;
-    for (size = 1, seq = 0; size < x + 1; seq++, size = 2 * size + 1)
-        ;
+    for (size = 1, seq = 0; size < x + 1; seq++, size = 2 * size + 1);
 
     while (size - 1 != x) {
         size = (size - 1) >> 1;
@@ -1433,7 +1423,7 @@ lbool Solver::solve_() {
 
     max_learnts = nClauses() * learntsize_factor;
     learntsize_adjust_confl = learntsize_adjust_start_confl;
-    learntsize_adjust_cnt = (long)learntsize_adjust_confl;
+    learntsize_adjust_cnt = (long) learntsize_adjust_confl;
     lbool status = l_Undef;
 
     add_tmp.clear();
@@ -1484,7 +1474,7 @@ lbool Solver::solve_() {
 #endif
         }
         if (lm >= 0 && complexity > lm) {
-            score = (100.0 * (double)(nVars() - global) / nVars()) * complexity;
+            score = (100.0 * (double) (nVars() - global) / nVars()) * complexity;
             break;
         }
     }
