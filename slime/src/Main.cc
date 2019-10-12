@@ -24,9 +24,9 @@ using namespace SLIME;
 
 #if _WIN32 || _WIN64
 void printHeader() {
-    printf("c                                                \n");
+    printf("c                                                 \n");
     printf("c SLIME SO+ SAT Solver by http://www.peqnp.science\n");
-    printf("c                                                \n");
+    printf("c                                                 \n");
 }
 #else
 
@@ -97,7 +97,8 @@ lbool slime(int argc, char *argv[]) {
         }
         if (S.score < score) {
             score = S.score;
-            printf("c %lf\n", score);
+            printf("\rc %lf \t ", score);
+            fflush(stdout);
             sorted = S.sorted;
             inverted = S.inverted;
             trigger = S.trigger;
@@ -127,7 +128,8 @@ lbool slime(int argc, char *argv[]) {
         }
         if (S.score < score) {
             score = S.score;
-            printf("c %lf\n", score);
+            printf("\rc %lf \t ", score);
+            fflush(stdout);
             sorted = S.sorted;
             inverted = S.inverted;
             trigger = S.trigger;
@@ -157,7 +159,8 @@ lbool slime(int argc, char *argv[]) {
         }
         if (S.score < score) {
             score = S.score;
-            printf("c %lf\n", score);
+            printf("\rc %lf \t ", score);
+            fflush(stdout);
             sorted = S.sorted;
             inverted = S.inverted;
             trigger = S.trigger;
@@ -187,7 +190,8 @@ lbool slime(int argc, char *argv[]) {
         }
         if (S.score < score) {
             score = S.score;
-            printf("c %lf\n", score);
+            printf("\rc %lf \t ", score);
+            fflush(stdout);
             sorted = S.sorted;
             inverted = S.inverted;
             trigger = S.trigger;
@@ -217,7 +221,8 @@ lbool slime(int argc, char *argv[]) {
         }
         if (S.score < score) {
             score = S.score;
-            printf("c %lf\n", score);
+            printf("\rc %lf \t ", score);
+            fflush(stdout);
             sorted = S.sorted;
             inverted = S.inverted;
             trigger = S.trigger;
@@ -247,7 +252,8 @@ lbool slime(int argc, char *argv[]) {
         }
         if (S.score < score) {
             score = S.score;
-            printf("c %lf\n", score);
+            printf("\rc %lf \t ", score);
+            fflush(stdout);
             sorted = S.sorted;
             inverted = S.inverted;
             trigger = S.trigger;
@@ -277,7 +283,8 @@ lbool slime(int argc, char *argv[]) {
         }
         if (S.score < score) {
             score = S.score;
-            printf("c %lf\n", score);
+            printf("\rc %lf \t ", score);
+            fflush(stdout);
             sorted = S.sorted;
             inverted = S.inverted;
             trigger = S.trigger;
@@ -307,7 +314,8 @@ lbool slime(int argc, char *argv[]) {
         }
         if (S.score < score) {
             score = S.score;
-            printf("c %lf\n", score);
+            printf("\rc %lf \t ", score);
+            fflush(stdout);
             sorted = S.sorted;
             inverted = S.inverted;
             trigger = S.trigger;
@@ -337,7 +345,8 @@ lbool slime(int argc, char *argv[]) {
         }
         if (S.score < score) {
             score = S.score;
-            printf("c %lf\n", score);
+            printf("\rc %lf \t ", score);
+            fflush(stdout);
             sorted = S.sorted;
             inverted = S.inverted;
             trigger = S.trigger;
@@ -367,7 +376,8 @@ lbool slime(int argc, char *argv[]) {
         }
         if (S.score < score) {
             score = S.score;
-            printf("c %lf\n", score);
+            printf("\rc %lf \t ", score);
+            fflush(stdout);
             sorted = S.sorted;
             inverted = S.inverted;
             trigger = S.trigger;
@@ -397,7 +407,8 @@ lbool slime(int argc, char *argv[]) {
         }
         if (S.score < score) {
             score = S.score;
-            printf("c %lf\n", score);
+            printf("\rc %lf \t ", score);
+            fflush(stdout);
             sorted = S.sorted;
             inverted = S.inverted;
             trigger = S.trigger;
@@ -422,11 +433,11 @@ lbool slime(int argc, char *argv[]) {
         S.lm++;
         S.trigger++;
         clock_t difference = clock() - before;
-        if (difference * 1000 / CLOCKS_PER_SEC > 10000 * ((double)(S.nClauses()) / S.nVars())) {
+        if (difference * 1000 / CLOCKS_PER_SEC > 10000 * ((double) (S.nClauses()) / S.nVars())) {
             break;
         }
     }
-    printf("c go!\n");
+    printf("\nc go!\n");
     if (result == l_Undef) {
         S.global = 0;
         S.log = true;
