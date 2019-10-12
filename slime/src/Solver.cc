@@ -1253,7 +1253,7 @@ lbool Solver::search(long &nof_conflicts) {
                     polarity[i] = !polarity[j];
                 } else {
                     char aux = polarity[i];
-                    polarity[i] = !polarity[i];
+                    polarity[i] = !polarity[j];
                     polarity[j] = aux;
                 }
             }
