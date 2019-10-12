@@ -2,8 +2,8 @@
 SLIME SO -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver
 
 All technology of SLIME SO that make this software Self Optimized is property of Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile,
-It can be used for commercial or private purposes, as int as the condition of mentioning explicitly
-"This project use technology property of Oscar Riveros Founder of www.PEQNP.science".
+It can be used for commercial or private purposes, as long as the condition of mentioning explicitly
+"This project use technology property of Oscar Riveros Founder and CEO of www.PEQNP.science".
 
 Any use that violates this clause is considered illegal.
 
@@ -14,17 +14,19 @@ in all copies or substantial portions of the Software.
 #include <Dimacs.h>
 #include <SimpSolver.h>
 #include <SolverTypes.h>
-#include <cfloat>
 #include <cmath>
+#include <ctime>
 #include <iostream>
+
+#define DRAT // Generate unsat proof.
 
 using namespace SLIME;
 
 #if _WIN32 || _WIN64
 void printHeader() {
-    printf("c                                                 \n");
+    printf("c                                                \n");
     printf("c SLIME SO+ SAT Solver by http://www.peqnp.science\n");
-    printf("c                                                 \n");
+    printf("c                                                \n");
 }
 #else
 
@@ -63,21 +65,180 @@ lbool slime(int argc, char *argv[]) {
 
     vec<Lit> assumptions;
 
-    S.parsing = 0;
-    S.eliminate(true);
-    if (!S.okay()) {
-        if (S.drup_file != NULL)
-            fprintf(S.drup_file, "0\n"), fclose(S.drup_file);
-        printf("s UNSATISFIABLE\n");
-        exit(20);
-    }
+    S.eliminate();
 
-    double score = DBL_MAX, var_decay = 0, clause_decay = 0;
-    int restart_first = 0, restart_inc = 0, weight = 0;
     lbool result;
-next:
-    S.log = false;
+    bool sorted = true;
+    bool inverted = false;
+    double score = INT32_MAX;
+    clock_t before = clock();
+    double var_decay = 0, clause_decay = 0, opt_step_size = 0, opt_step_size_dec = 0, opt_min_step_size = 0, opt_restart_inc = 0;
+    long opt_chrono = 0, chrono_backtrack = 0, opt_restart_first = 0, trigger = 0; // , opt_grow = 0;
+    /*****************************************************************************************[Main.cc]
+    SLIME SO -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver
+
+    All technology of SLIME SO that make this software Self Optimized is property of Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile,
+    It can be used for commercial or private purposes, as long as the condition of mentioning explicitly
+    "This project use technology property of Oscar Riveros Founder and CEO of www.PEQNP.science".
+
+    Any use that violates this clause is considered illegal.
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+    **************************************************************************************************/
+    S.trigger = 0;
     for (;;) {
+
+        S.complexity = 0;
+        S.sorted = !S.sorted;
+        result = S.solveLimited(assumptions, true);
+        if (result != l_Undef) {
+            break;
+        }
+        if (S.score < score) {
+            score = S.score;
+            printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
+            trigger = S.trigger;
+            opt_step_size = S.opt_step_size;
+            opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
+            var_decay = S.var_decay;
+            clause_decay = S.clause_decay;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
+            if (S.score == 0) {
+                break;
+            }
+            S.lm = 0;
+            before = clock();
+        } else if (S.score > score) {
+            S.sorted = !S.sorted;
+        }
+
+        S.complexity = 0;
+        S.inverted = !S.inverted;
+        result = S.solveLimited(assumptions, true);
+        if (result != l_Undef) {
+            break;
+        }
+        if (S.score < score) {
+            score = S.score;
+            printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
+            trigger = S.trigger;
+            opt_step_size = S.opt_step_size;
+            opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
+            var_decay = S.var_decay;
+            clause_decay = S.clause_decay;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
+            if (S.score == 0) {
+                break;
+            }
+            S.lm = 0;
+            before = clock();
+        } else if (S.score > score) {
+            S.inverted = !S.inverted;
+        }
+
+        S.complexity = 0;
+        S.opt_step_size += 0.0001;
+        result = S.solveLimited(assumptions, true);
+        if (result != l_Undef) {
+            break;
+        }
+        if (S.score < score) {
+            score = S.score;
+            printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
+            trigger = S.trigger;
+            opt_step_size = S.opt_step_size;
+            opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
+            var_decay = S.var_decay;
+            clause_decay = S.clause_decay;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
+            if (S.score == 0) {
+                break;
+            }
+            S.lm = 0;
+            before = clock();
+        } else if (S.score > score) {
+            S.opt_step_size -= 0.0001;
+        }
+
+        S.complexity = 0;
+        S.opt_step_size_dec += 0.0001;
+        result = S.solveLimited(assumptions, true);
+        if (result != l_Undef) {
+            break;
+        }
+        if (S.score < score) {
+            score = S.score;
+            printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
+            trigger = S.trigger;
+            opt_step_size = S.opt_step_size;
+            opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
+            var_decay = S.var_decay;
+            clause_decay = S.clause_decay;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
+            if (S.score == 0) {
+                break;
+            }
+            S.lm = 0;
+            before = clock();
+        } else if (S.score > score) {
+            S.opt_step_size_dec -= 0.0001;
+        }
+
+        S.complexity = 0;
+        S.opt_min_step_size += 0.0001;
+        result = S.solveLimited(assumptions, true);
+        if (result != l_Undef) {
+            break;
+        }
+        if (S.score < score) {
+            score = S.score;
+            printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
+            trigger = S.trigger;
+            opt_step_size = S.opt_step_size;
+            opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
+            var_decay = S.var_decay;
+            clause_decay = S.clause_decay;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
+            if (S.score == 0) {
+                break;
+            }
+            S.lm = 0;
+            before = clock();
+        } else if (S.score > score) {
+            S.opt_min_step_size -= 0.0001;
+        }
+
         S.complexity = 0;
         S.var_decay += 0.0001;
         result = S.solveLimited(assumptions, true);
@@ -86,12 +247,24 @@ next:
         }
         if (S.score < score) {
             score = S.score;
+            printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
+            trigger = S.trigger;
+            opt_step_size = S.opt_step_size;
+            opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
             var_decay = S.var_decay;
             clause_decay = S.clause_decay;
-            restart_first = S.restart_first;
-            restart_inc = S.restart_inc;
-            printf("c %lf\n", score);
-            weight++;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
+            if (S.score == 0) {
+                break;
+            }
+            S.lm = 0;
+            before = clock();
         } else if (S.score > score) {
             S.var_decay -= 0.0001;
         }
@@ -104,68 +277,173 @@ next:
         }
         if (S.score < score) {
             score = S.score;
+            printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
+            trigger = S.trigger;
+            opt_step_size = S.opt_step_size;
+            opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
             var_decay = S.var_decay;
             clause_decay = S.clause_decay;
-            restart_first = S.restart_first;
-            restart_inc = S.restart_inc;
-            printf("c %lf\n", score);
-            weight++;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
+            if (S.score == 0) {
+                break;
+            }
+            S.lm = 0;
+            before = clock();
         } else if (S.score > score) {
             S.clause_decay -= 0.0001;
         }
 
         S.complexity = 0;
-        S.restart_first += 1;
+        S.opt_chrono += 1;
         result = S.solveLimited(assumptions, true);
         if (result != l_Undef) {
             break;
         }
         if (S.score < score) {
             score = S.score;
+            printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
+            trigger = S.trigger;
+            opt_step_size = S.opt_step_size;
+            opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
             var_decay = S.var_decay;
             clause_decay = S.clause_decay;
-            restart_first = S.restart_first;
-            restart_inc = S.restart_inc;
-            printf("c %lf\n", score);
-            weight++;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
+            if (S.score == 0) {
+                break;
+            }
+            S.lm = 0;
+            before = clock();
         } else if (S.score > score) {
-            S.restart_first -= 1;
+            S.opt_chrono -= 1;
         }
 
         S.complexity = 0;
-        S.restart_inc += 1;
+        S.chrono_backtrack += 1;
         result = S.solveLimited(assumptions, true);
         if (result != l_Undef) {
             break;
         }
         if (S.score < score) {
             score = S.score;
+            printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
+            trigger = S.trigger;
+            opt_step_size = S.opt_step_size;
+            opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
             var_decay = S.var_decay;
             clause_decay = S.clause_decay;
-            restart_first = S.restart_first;
-            restart_inc = S.restart_inc;
-            printf("c %lf\n", score);
-            weight++;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
+            if (S.score == 0) {
+                break;
+            }
+            S.lm = 0;
+            before = clock();
         } else if (S.score > score) {
-            S.restart_inc -= 1;
+            S.chrono_backtrack -= 1;
         }
+
+        S.complexity = 0;
+        S.opt_restart_inc += 1;
+        result = S.solveLimited(assumptions, true);
+        if (result != l_Undef) {
+            break;
+        }
+        if (S.score < score) {
+            score = S.score;
+            printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
+            trigger = S.trigger;
+            opt_step_size = S.opt_step_size;
+            opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
+            var_decay = S.var_decay;
+            clause_decay = S.clause_decay;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
+            if (S.score == 0) {
+                break;
+            }
+            S.lm = 0;
+            before = clock();
+        } else if (S.score > score) {
+            S.opt_restart_inc -= 1;
+        }
+
+        S.complexity = 0;
+        S.opt_restart_first += 1;
+        result = S.solveLimited(assumptions, true);
+        if (result != l_Undef) {
+            break;
+        }
+        if (S.score < score) {
+            score = S.score;
+            printf("c %lf\n", score);
+            sorted = S.sorted;
+            inverted = S.inverted;
+            trigger = S.trigger;
+            opt_step_size = S.opt_step_size;
+            opt_step_size_dec = S.opt_step_size_dec;
+            opt_min_step_size = S.opt_min_step_size;
+            var_decay = S.var_decay;
+            clause_decay = S.clause_decay;
+            opt_chrono = S.opt_chrono;
+            chrono_backtrack = S.chrono_backtrack;
+            opt_restart_first = S.opt_restart_first;
+            opt_restart_inc = S.opt_restart_inc;
+            if (S.score == 0) {
+                break;
+            }
+            S.lm = 0;
+            before = clock();
+        } else if (S.score > score) {
+            S.opt_restart_first -= 1;
+        }
+
         S.lm++;
-        if (S.lm > weight * (S.nClauses() / S.nVars())) {
+        S.trigger++;
+        clock_t difference = clock() - before;
+        if (difference * 1000 / CLOCKS_PER_SEC > 10000 * ((double)(S.nClauses()) / S.nVars())) {
             break;
         }
     }
+    printf("c go!\n");
     if (result == l_Undef) {
-        S.log = true;
-        S.lm = -1;
         S.global = 0;
+        S.log = true;
+        S.sorted = sorted;
+        S.inverted = inverted;
+        S.trigger = trigger;
+        S.opt_step_size = opt_step_size;
+        S.opt_step_size_dec = opt_step_size_dec;
+        S.opt_min_step_size = opt_min_step_size;
         S.var_decay = var_decay;
         S.clause_decay = clause_decay;
-        S.restart_first = restart_first;
-        S.restart_inc = restart_inc;
+        S.opt_chrono = opt_chrono;
+        S.chrono_backtrack = chrono_backtrack;
+        S.opt_restart_first = opt_restart_first;
+        S.opt_restart_inc = opt_restart_inc;
+        S.lm = -1;
         result = S.solveLimited(assumptions, true);
-        if (result == l_Undef) {
-            goto next;
-        }
         printf("\n");
     }
     printf(result == l_True ? "s SATISFIABLE\nv " : result == l_False ? "s UNSATISFIABLE\n" : "s UNKNOWN\n");
