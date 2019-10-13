@@ -1217,7 +1217,6 @@ lbool Solver::search(long &nof_conflicts) {
     vec<Lit> learnt_clause;
     bool cached = false;
     starts++;
-
     // simplify
     //
     if (conflicts >= curSimplify * nbconfbeforesimplify) {
@@ -1230,6 +1229,7 @@ lbool Solver::search(long &nof_conflicts) {
     }
 
     for (;;) {
+        complexity++;
         CRef confl = propagate();
         if (confl != CRef_Undef) {
             // CONFLICT
