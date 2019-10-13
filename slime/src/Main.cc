@@ -433,7 +433,7 @@ lbool slime(int argc, char *argv[]) {
         S.lm++;
         S.trigger++;
         clock_t difference = clock() - before;
-        if (difference * 1000 / CLOCKS_PER_SEC > 10000 * ((double) (S.nClauses()) / S.nVars())) {
+        if (difference * 1000 / CLOCKS_PER_SEC > 1000 * ((double) (S.nClauses()) / S.nVars())) {
             break;
         }
     }
