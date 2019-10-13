@@ -31,43 +31,39 @@ unsigned char *Solver::buf_ptr = drup_buf;
 // Constructor/Destructor:
 
 Solver::Solver()
-        :
+    :
 
-// Parameters (user settable):
-//
-        drup_file(NULL), step_size(opt_step_size), step_size_dec(opt_step_size_dec), min_step_size(opt_min_step_size), timer(5000), var_decay(opt_var_decay), clause_decay(opt_clause_decay), VSIDS(false), ccmin_mode(opt_ccmin_mode), phase_saving(opt_phase_saving), garbage_frac(opt_garbage_frac), restart_first(opt_restart_first), restart_inc(opt_restart_inc)
+      // Parameters (user settable):
+      //
+      drup_file(NULL), step_size(opt_step_size), step_size_dec(opt_step_size_dec), min_step_size(opt_min_step_size), timer(5000), var_decay(opt_var_decay), clause_decay(opt_clause_decay), VSIDS(false), ccmin_mode(opt_ccmin_mode), phase_saving(opt_phase_saving), garbage_frac(opt_garbage_frac), restart_first(opt_restart_first), restart_inc(opt_restart_inc)
 
-        // Parameters (the rest):
-        //
-        ,
-        learntsize_factor((double) 1 / (double) 3), learntsize_inc(1.1)
+      // Parameters (the rest):
+      //
+      ,
+      learntsize_factor((double)1 / (double)3), learntsize_inc(1.1)
 
-        // Parameters (experimental):
-        //
-        ,
-        learntsize_adjust_start_confl(100), learntsize_adjust_inc(1.5)
+      // Parameters (experimental):
+      //
+      ,
+      learntsize_adjust_start_confl(100), learntsize_adjust_inc(1.5)
 
-        // Statistics: (formerly in 'SolverStats')
-        //
-        ,
-        solves(0), starts(0), decisions(0), rnd_decisions(0), propagations(0), conflicts(0), conflicts_VSIDS(0), dec_vars(0), clauses_literals(0), learnts_literals(0), max_literals(0), tot_literals(0), chrono_backtrack(0), non_chrono_backtrack(0),
-        ok(true), cla_inc(1), var_inc(1), watches_bin(WatcherDeleted(ca)), watches(WatcherDeleted(ca)), qhead(0), simpDB_assigns(-1), simpDB_props(0), order_heap_CHB(VarOrderLt(activity_CHB)), order_heap_VSIDS(VarOrderLt(activity_VSIDS)), remove_satisfied(true),
-        core_lbd_cut(3), global_lbd_sum(0), lbd_queue(50), next_T2_reduce(10000), next_L_reduce(15000), confl_to_chrono(opt_conf_to_chrono), chrono(opt_chrono),
-        counter(0)
+      // Statistics: (formerly in 'SolverStats')
+      //
+      ,
+      solves(0), starts(0), decisions(0), rnd_decisions(0), propagations(0), conflicts(0), conflicts_VSIDS(0), dec_vars(0), clauses_literals(0), learnts_literals(0), max_literals(0), tot_literals(0), chrono_backtrack(0), non_chrono_backtrack(0), ok(true), cla_inc(1), var_inc(1), watches_bin(WatcherDeleted(ca)), watches(WatcherDeleted(ca)), qhead(0), simpDB_assigns(-1), simpDB_props(0), order_heap_CHB(VarOrderLt(activity_CHB)), order_heap_VSIDS(VarOrderLt(activity_VSIDS)), remove_satisfied(true), core_lbd_cut(3), global_lbd_sum(0), lbd_queue(50), next_T2_reduce(10000), next_L_reduce(15000), confl_to_chrono(opt_conf_to_chrono), chrono(opt_chrono), counter(0)
 
-        // Resource constraints:
-        //
-        ,
-        conflict_budget(-1), propagation_budget(-1), asynch_interrupt(false)
+      // Resource constraints:
+      //
+      ,
+      conflict_budget(-1), propagation_budget(-1), asynch_interrupt(false)
 
-        // simplfiy
-        ,
-        nbSimplifyAll(0), s_propagations(0)
+      // simplfiy
+      ,
+      nbSimplifyAll(0), s_propagations(0)
 
-        // simplifyAll adjust occasion
-        ,
-        curSimplify(1), nbconfbeforesimplify(1000), incSimplify(1000),
-        my_var_decay(0.6), DISTANCE(true), var_iLevel_inc(1), order_heap_distance(VarOrderLt(activity_distance)) {}
+      // simplifyAll adjust occasion
+      ,
+      curSimplify(1), nbconfbeforesimplify(1000), incSimplify(1000), my_var_decay(0.6), DISTANCE(true), var_iLevel_inc(1), order_heap_distance(VarOrderLt(activity_distance)) {}
 
 Solver::~Solver() {}
 
@@ -99,7 +95,7 @@ CRef Solver::simplePropagate() {
                 simpleUncheckEnqueue(imp, wbin[k].cref);
             }
         }
-        for (i = j = (Watcher *) ws, end = i + ws.size(); i != end;) {
+        for (i = j = (Watcher *)ws, end = i + ws.size(); i != end;) {
             // Try to avoid inspecting the clause:
             Lit blocker = i->blocker;
             if (value(blocker) == l_True) {
@@ -154,7 +150,7 @@ CRef Solver::simplePropagate() {
             } else {
                 simpleUncheckEnqueue(first, cr);
             }
-            NextClause:;
+        NextClause:;
         }
         ws.shrink(i - j);
     }
@@ -214,7 +210,8 @@ void Solver::simpleAnalyze(CRef confl, vec<Lit> &out_learnt, vec<CRef> &reason_c
         if (pathC == 0)
             break;
         // Select next clause to look at:
-        while (!seen[var(trail[index--])]);
+        while (!seen[var(trail[index--])])
+            ;
         // if the reason cr from the 0-level assigned var, we must break avoid move forth further;
         // but attention that maybe seen[x]=1 and never be clear. However makes no matter;
         if (trailRecord > index + 1)
@@ -472,7 +469,7 @@ void Solver::cancelUntil(long bLevel) {
                 if (!VSIDS) {
                     long age = conflicts - picked[x];
                     if (age > 0) {
-                        double adjusted_reward = ((double) (conflicted[x] + almost_conflicted[x])) / ((double) age);
+                        double adjusted_reward = ((double)(conflicted[x] + almost_conflicted[x])) / ((double)age);
                         double old_activity = activity_CHB[x];
                         activity_CHB[x] = step_size * adjusted_reward + ((1 - step_size) * old_activity);
                         if (order_heap_CHB.inHeap(x)) {
@@ -523,7 +520,8 @@ Lit Solver::pickBranchLit() {
                 Var v = order_heap_CHB[0];
                 long age = conflicts - canceled[v];
                 while (age > 0) {
-                    activity_CHB[v] = 0;
+                    double decay = pow(0.95, age);
+                    activity_CHB[v] *= decay;
                     if (order_heap_CHB.inHeap(v))
                         order_heap_CHB.increase(v);
                     canceled[v] = conflicts;
@@ -534,6 +532,22 @@ Lit Solver::pickBranchLit() {
 #endif
             next = order_heap.removeMin();
         }
+
+    /* SLIME -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver */
+    /* SLIME SAT Solver and The BOOST Heuristic or Variations cannot be used on any contest without express permissions of Oscar Riveros. */
+    if (!VSIDS) {
+        polarity[trail.size()] = !polarity[trail.size()];
+        local = trail.size();
+        if (local > global) {
+            global = local;
+            if (log) {
+                printf("\rc %.2f %% \t ", 100.0 * (nVars() - global) / nVars());
+                fflush(stdout);
+            }
+        } else if (local < global) {
+            polarity[trail.size()] = !polarity[trail.size()];
+        }
+    }
 
     return mkLit(next, polarity[next]);
 }
@@ -654,7 +668,8 @@ void Solver::analyze(CRef confl, vec<Lit> &out_learnt, long &out_btlevel, long &
 
         // Select next clause to look at:
         do {
-            while (!seen[var(trail[index--])]);
+            while (!seen[var(trail[index--])])
+                ;
             p = trail[index + 1];
         } while (level(var(p)) < nDecisionLevel);
 
@@ -882,7 +897,7 @@ CRef Solver::propagate() {
             }
         }
 
-        for (i = j = (Watcher *) ws, end = i + ws.size(); i != end;) {
+        for (i = j = (Watcher *)ws, end = i + ws.size(); i != end;) {
             // Try to avoid inspecting the clause:
             Lit blocker = i->blocker;
             if (value(blocker) == l_True) {
@@ -949,7 +964,7 @@ CRef Solver::propagate() {
                 }
             }
 
-            NextClause:;
+        NextClause:;
         }
         ws.shrink(i - j);
     }
@@ -1215,17 +1230,7 @@ lbool Solver::search(long &nof_conflicts) {
     }
 
     for (;;) {
-        complexity++;
         CRef confl = propagate();
-        local = trail.size();
-        if (local > global) {
-            global = local;
-            if (log) {
-                printf("\rc %.2f %% \t ", 100.0 * (nVars() - global) / nVars());
-                fflush(stdout);
-            }
-        }
-
         if (confl != CRef_Undef) {
             // CONFLICT
             if (VSIDS) {
@@ -1305,6 +1310,21 @@ lbool Solver::search(long &nof_conflicts) {
             if (VSIDS)
                 varDecayActivity();
             claDecayActivity();
+            /* SLIME -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver */
+            /* SLIME SAT Solver and The BOOST Heuristic or Variations cannot be used on any contest without express permissions of Oscar Riveros. */
+            if (VSIDS) {
+                polarity[trail.size()] = !polarity[trail.size()];
+                local = trail.size();
+                if (local > global) {
+                    global = local;
+                    if (log) {
+                        printf("\rc %.2f %% \t ", 100.0 * (nVars() - global) / nVars());
+                        fflush(stdout);
+                    }
+                } else if (local < global) {
+                    polarity[trail.size()] = !polarity[trail.size()];
+                }
+            }
         } else {
             // NO CONFLICT
             bool restart = false;
@@ -1374,7 +1394,8 @@ static double luby(double y, long x) {
     // Find the finite subsequence that contains index 'x', and the
     // size of that subsequence:
     long size, seq;
-    for (size = 1, seq = 0; size < x + 1; seq++, size = 2 * size + 1);
+    for (size = 1, seq = 0; size < x + 1; seq++, size = 2 * size + 1)
+        ;
 
     while (size - 1 != x) {
         size = (size - 1) >> 1;
@@ -1423,7 +1444,7 @@ lbool Solver::solve_() {
 #endif
         }
         if (lm >= 0 && complexity > lm) {
-            score = (100.0 * (double) (nVars() - global) / nVars()) * complexity;
+            score = (100.0 * (double)(nVars() - global) / nVars()) * complexity;
             break;
         }
     }
