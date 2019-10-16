@@ -40,6 +40,14 @@ namespace SLIME {
         long sz;
         long cap;
 
+        // Don't allow copying (error prone):
+        vec<T> &operator=(vec<T> &other) {
+            assert(0);
+            return *this;
+        }
+
+        vec(vec<T> &other) { assert(0); }
+
         // Helpers for calculating next capacity:
         static inline long imax(long x, long y) {
             long mask = (y - x) >> (sizeof(long) * 8 - 1);
@@ -50,12 +58,6 @@ namespace SLIME {
         static inline void nextCap(long &cap) { cap += ((cap >> 1) + 2) & ~1; }
 
     public:
-
-        // Don't allow copying (error prone):
-        vec<T> &operator=(vec<T> &other) {
-            assert(0);
-            return *this;
-        }
         // Constructors:
         vec() : data(NULL), sz(0), cap(0) {}
 
@@ -142,8 +144,6 @@ namespace SLIME {
             sz = 0;
             cap = 0;
         }
-
-        vec(vec<T> &other) { assert(0); }
     };
 
 

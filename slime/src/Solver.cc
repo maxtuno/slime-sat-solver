@@ -1,19 +1,37 @@
 /***************************************************************************************[Solver.cc]
-SLIME SO -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver
+SLIME -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. - Implementation of the The Booster Heuristic.
 
-All technology of SLIME SO that make this software Self Optimized is property of Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile,
-It can be used for commercial or private purposes, as long as the condition of mentioning explicitly
-"This project use technology property of Oscar Riveros Founder of www.PEQNP.science".
+Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
+Copyright (c) 2007,      Niklas Sorensson
 
-Any use that violates this clause is considered illegal.
+Chanseok Oh's MiniSat Patch Series -- Copyright (c) 2015, Chanseok Oh
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
+Maple_LCM, Based on MapleCOMSPS_DRUP -- Copyright (c) 2017, Mao Luo, Chu-Min LI, Fan Xiao: implementing a learnt clause minimisation approach
+Reference: M. Luo, C.-M. Li, F. Xiao, F. Manya, and Z. L. , “An effective learnt clause minimization approach for cdcl sat solvers,” in IJCAI-2017, 2017, pp. to–appear.
+
+Maple_LCM_Dist, Based on Maple_LCM -- Copyright (c) 2017, Fan Xiao, Chu-Min LI, Mao Luo: using a new branching heuristic called Distance at the beginning of search
+
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute,
+sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or
+substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **************************************************************************************************/
 
-#include <cmath>
-#include <cstdio>
-#include <ctime>
+#include <algorithm>
+#include <math.h>
+#include <stdio.h>
+#include <time.h>
 
 #include "SimpSolver.h"
 #include "Solver.h"
@@ -28,14 +46,35 @@ unsigned char *Solver::buf_ptr = drup_buf;
 #endif
 
 //=================================================================================================
+// Options:
+
+static double opt_step_size = 0.40;
+static double opt_step_size_dec = 0.000001;
+static double opt_min_step_size = 0.06;
+static double opt_var_decay = 0.80;
+static double opt_clause_decay = 0.999;
+static double opt_random_var_freq = 0;
+static double opt_random_seed = 136983539;
+static long opt_ccmin_mode = 2;
+static long opt_phase_saving = 2;
+static bool opt_rnd_init_act = false;
+static long opt_restart_first = 100;
+static double opt_restart_inc = 2;
+static double opt_garbage_frac = 0.20;
+static long opt_chrono = 100;
+static long opt_conf_to_chrono = 4000;
+
+//=================================================================================================
 // Constructor/Destructor:
+
+static bool switch_mode = false;
 
 Solver::Solver()
     :
 
       // Parameters (user settable):
       //
-      drup_file(NULL), step_size(opt_step_size), step_size_dec(opt_step_size_dec), min_step_size(opt_min_step_size), timer(5000), var_decay(opt_var_decay), clause_decay(opt_clause_decay), VSIDS(false), ccmin_mode(opt_ccmin_mode), phase_saving(opt_phase_saving), garbage_frac(opt_garbage_frac), restart_first(opt_restart_first), restart_inc(opt_restart_inc)
+      drup_file(NULL), step_size(opt_step_size), step_size_dec(opt_step_size_dec), min_step_size(opt_min_step_size), timer(5000), var_decay(opt_var_decay), clause_decay(opt_clause_decay), random_var_freq(opt_random_var_freq), random_seed(opt_random_seed), VSIDS(false), ccmin_mode(opt_ccmin_mode), phase_saving(opt_phase_saving), rnd_pol(false), rnd_init_act(opt_rnd_init_act), garbage_frac(opt_garbage_frac), restart_first(opt_restart_first), restart_inc(opt_restart_inc)
 
       // Parameters (the rest):
       //
@@ -50,7 +89,16 @@ Solver::Solver()
       // Statistics: (formerly in 'SolverStats')
       //
       ,
-      solves(0), starts(0), decisions(0), rnd_decisions(0), propagations(0), conflicts(0), conflicts_VSIDS(0), dec_vars(0), clauses_literals(0), learnts_literals(0), max_literals(0), tot_literals(0), chrono_backtrack(0), non_chrono_backtrack(0), ok(true), cla_inc(1), var_inc(1), watches_bin(WatcherDeleted(ca)), watches(WatcherDeleted(ca)), qhead(0), simpDB_assigns(-1), simpDB_props(0), order_heap_CHB(VarOrderLt(activity_CHB)), order_heap_VSIDS(VarOrderLt(activity_VSIDS)), remove_satisfied(true), core_lbd_cut(3), global_lbd_sum(0), lbd_queue(50), next_T2_reduce(10000), next_L_reduce(15000), confl_to_chrono(opt_conf_to_chrono), chrono(opt_chrono), counter(0)
+      solves(0), starts(0), decisions(0), rnd_decisions(0), propagations(0), conflicts(0), conflicts_VSIDS(0), dec_vars(0), clauses_literals(0), learnts_literals(0), max_literals(0), tot_literals(0), chrono_backtrack(0), non_chrono_backtrack(0)
+
+      ,
+      ok(true), cla_inc(1), var_inc(1), watches_bin(WatcherDeleted(ca)), watches(WatcherDeleted(ca)), qhead(0), simpDB_assigns(-1), simpDB_props(0), order_heap_CHB(VarOrderLt(activity_CHB)), order_heap_VSIDS(VarOrderLt(activity_VSIDS)), remove_satisfied(true)
+
+      ,
+      core_lbd_cut(3), global_lbd_sum(0), lbd_queue(50), next_T2_reduce(10000), next_L_reduce(15000), confl_to_chrono(opt_conf_to_chrono), chrono(opt_chrono)
+
+      ,
+      counter(0)
 
       // Resource constraints:
       //
@@ -63,7 +111,12 @@ Solver::Solver()
 
       // simplifyAll adjust occasion
       ,
-      curSimplify(1), nbconfbeforesimplify(1000), incSimplify(1000), my_var_decay(0.6), DISTANCE(true), var_iLevel_inc(1), order_heap_distance(VarOrderLt(activity_distance)) {}
+      curSimplify(1), nbconfbeforesimplify(1000), incSimplify(1000)
+
+      ,
+      my_var_decay(0.6), DISTANCE(true), var_iLevel_inc(1), order_heap_distance(VarOrderLt(activity_distance))
+
+{}
 
 Solver::~Solver() {}
 
@@ -121,7 +174,9 @@ CRef Solver::simplePropagate() {
                 i->blocker = first;
                 *j++ = *i++;
                 continue;
-            } else { // ----------------- DEFAULT  MODE (NOT INCREMENTAL)
+            }
+
+            else { // ----------------- DEFAULT  MODE (NOT INCREMENTAL)
                 for (long k = 2; k < c.size(); k++) {
 
                     if (value(c[k]) != l_False) {
@@ -282,10 +337,201 @@ void Solver::simplifyLearnt(Clause &c) {
     simplified_length_record += c.size();
 }
 
+bool Solver::simplifyLearnt_core() {
+
+    long ci, cj, li, lj;
+    bool sat, false_lit;
+    long nblevels;
+
+    long nbSimplified = 0;
+    long nbSimplifing = 0;
+
+    for (ci = 0, cj = 0; ci < learnts_core.size(); ci++) {
+        CRef cr = learnts_core[ci];
+        Clause &c = ca[cr];
+
+        if (removed(cr))
+            continue;
+        else if (c.simplified()) {
+            learnts_core[cj++] = learnts_core[ci];
+            nbSimplified++;
+        } else {
+            long saved_size = c.size();
+
+            nbSimplifing++;
+            sat = false_lit = false;
+            for (long i = 0; i < c.size(); i++) {
+                if (value(c[i]) == l_True) {
+                    sat = true;
+                    break;
+                } else if (value(c[i]) == l_False) {
+                    false_lit = true;
+                }
+            }
+            if (sat) {
+                removeClause(cr);
+            } else {
+                detachClause(cr, true);
+
+                if (false_lit) {
+                    for (li = lj = 0; li < c.size(); li++) {
+                        if (value(c[li]) != l_False) {
+                            c[lj++] = c[li];
+                        }
+                    }
+                    c.shrink(li - lj);
+                }
+
+                c.size();
+                assert(c.size() > 1);
+                // simplify a learnt clause c
+                simplifyLearnt(c);
+                assert(c.size() > 0);
+                c.size();
+
+                if (drup_file && saved_size != c.size()) {
+#ifdef BIN_DRUP
+                    binDRUP('a', c, drup_file);
+#else
+                    for (long i = 0; i < c.size(); i++)
+                        fprintf(drup_file, "%ld ", (var(c[i]) + 1) * (-2 * sign(c[i]) + 1));
+                    fprintf(drup_file, "0\n");
+#endif
+                }
+
+                if (c.size() == 1) {
+                    // when unit clause occur, enqueue and propagate
+                    uncheckedEnqueue(c[0]);
+                    if (propagate() != CRef_Undef) {
+                        ok = false;
+                        return false;
+                    }
+                    // delete the clause memory in logic
+                    c.mark(1);
+                    ca.free(cr);
+                } else {
+                    attachClause(cr);
+                    learnts_core[cj++] = learnts_core[ci];
+
+                    nblevels = computeLBD(c);
+                    if (nblevels < c.lbd()) {
+                        c.set_lbd(nblevels);
+                    }
+
+                    c.setSimplified(true);
+                }
+            }
+        }
+    }
+    learnts_core.shrink(ci - cj);
+    return true;
+}
+
+bool Solver::simplifyLearnt_tier2() {
+
+    long ci, cj, li, lj;
+    bool sat, false_lit;
+    long nblevels;
+
+    long nbSimplified = 0;
+    long nbSimplifing = 0;
+
+    for (ci = 0, cj = 0; ci < learnts_tier2.size(); ci++) {
+        CRef cr = learnts_tier2[ci];
+        Clause &c = ca[cr];
+
+        if (removed(cr))
+            continue;
+        else if (c.simplified()) {
+            learnts_tier2[cj++] = learnts_tier2[ci];
+            nbSimplified++;
+        } else {
+            long saved_size = c.size();
+            nbSimplifing++;
+            sat = false_lit = false;
+            for (long i = 0; i < c.size(); i++) {
+                if (value(c[i]) == l_True) {
+                    sat = true;
+                    break;
+                } else if (value(c[i]) == l_False) {
+                    false_lit = true;
+                }
+            }
+            if (sat) {
+                removeClause(cr);
+            } else {
+                detachClause(cr, true);
+
+                if (false_lit) {
+                    for (li = lj = 0; li < c.size(); li++) {
+                        if (value(c[li]) != l_False) {
+                            c[lj++] = c[li];
+                        }
+                    }
+                    c.shrink(li - lj);
+                }
+
+                c.size();
+                assert(c.size() > 1);
+                // simplify a learnt clause c
+                simplifyLearnt(c);
+                assert(c.size() > 0);
+                c.size();
+
+                if (drup_file && saved_size != c.size()) {
+
+#ifdef BIN_DRUP
+                    binDRUP('a', c, drup_file);
+#else
+                    for (long i = 0; i < c.size(); i++)
+                        fprintf(drup_file, "%ld ", (var(c[i]) + 1) * (-2 * sign(c[i]) + 1));
+                    fprintf(drup_file, "0\n");
+#endif
+                }
+
+                if (c.size() == 1) {
+                    // when unit clause occur, enqueue and propagate
+                    uncheckedEnqueue(c[0]);
+                    if (propagate() != CRef_Undef) {
+                        ok = false;
+                        return false;
+                    }
+                    // delete the clause memory in logic
+                    c.mark(1);
+                    ca.free(cr);
+                } else {
+                    attachClause(cr);
+                    learnts_tier2[cj++] = learnts_tier2[ci];
+
+                    nblevels = computeLBD(c);
+                    if (nblevels < c.lbd()) {
+                        c.set_lbd(nblevels);
+                    }
+
+                    if (c.lbd() <= core_lbd_cut) {
+                        cj--;
+                        learnts_core.push(cr);
+                        c.mark(CORE);
+                    }
+
+                    c.setSimplified(true);
+                }
+            }
+        }
+    }
+    learnts_tier2.shrink(ci - cj);
+    return true;
+}
+
 bool Solver::simplifyAll() {
     simplified_length_record = original_length_record = 0;
 
     if (!ok || propagate() != CRef_Undef)
+        return ok = false;
+
+    if (!simplifyLearnt_core())
+        return ok = false;
+    if (!simplifyLearnt_tier2())
         return ok = false;
 
     checkGarbage();
@@ -307,7 +553,7 @@ Var Solver::newVar(bool sign, bool dvar) {
     assigns.push(l_Undef);
     vardata.push(mkVarData(CRef_Undef, 0));
     activity_CHB.push(0);
-    activity_VSIDS.push(0);
+    activity_VSIDS.push(rnd_init_act ? drand(random_seed) * 0.00001 : 0);
 
     picked.push(0);
     conflicted.push(0);
@@ -336,11 +582,7 @@ bool Solver::addClause_(vec<Lit> &ps) {
         return false;
 
     // Check if clause is satisfied and remove false/duplicate literals:
-    if (sorted) {
-        sort(ps);
-    } else {
-        invert(ps);
-    }
+    sort(ps);
     Lit p;
     long i, j;
 
@@ -540,10 +782,10 @@ Lit Solver::pickBranchLit() {
         local = trail.size();
         if (local > global) {
             global = local;
-            if (log) {
-                printf("\rc %.2f %% \t ", 100.0 * (nVars() - global) / nVars());
-                fflush(stdout);
-            }
+#ifdef LOG
+            printf("\rc %.2f %% \t ", 100.0 * (nVars() - global) / nVars());
+            fflush(stdout);
+#endif
         } else if (local < global) {
             polarity[trail.size()] = !polarity[trail.size()];
         }
@@ -846,7 +1088,8 @@ void Solver::uncheckedEnqueue(Lit p, long level, CRef from) {
 #ifdef ANTI_EXPLORATION
         long age = conflicts - canceled[var(p)];
         if (age > 0) {
-            activity_CHB[var(p)] = 0;
+            double decay = pow(0.95, age);
+            activity_CHB[var(p)] *= decay;
             if (order_heap_CHB.inHeap(var(p)))
                 order_heap_CHB.increase(var(p));
         }
@@ -985,20 +1228,13 @@ CRef Solver::propagate() {
 |________________________________________________________________________________________________@*/
 struct reduceDB_lt {
     ClauseAllocator &ca;
-
     reduceDB_lt(ClauseAllocator &ca_) : ca(ca_) {}
-
     bool operator()(CRef x, CRef y) const { return ca[x].activity() < ca[y].activity(); }
 };
-
 void Solver::reduceDB() {
     long i, j;
 
-    if (inverted) {
-        invert(learnts_local, reduceDB_lt(ca));
-    } else {
-        sort(learnts_local, reduceDB_lt(ca));
-    }
+    sort(learnts_local, reduceDB_lt(ca));
 
     long limit = learnts_local.size() / 2;
     for (i = j = 0; i < learnts_local.size(); i++) {
@@ -1018,7 +1254,6 @@ void Solver::reduceDB() {
 
     checkGarbage();
 }
-
 void Solver::reduceDB_Tier2() {
     long i, j;
     for (i = j = 0; i < learnts_tier2.size(); i++) {
@@ -1217,6 +1452,7 @@ lbool Solver::search(long &nof_conflicts) {
     vec<Lit> learnt_clause;
     bool cached = false;
     starts++;
+
     // simplify
     //
     if (conflicts >= curSimplify * nbconfbeforesimplify) {
@@ -1229,7 +1465,6 @@ lbool Solver::search(long &nof_conflicts) {
     }
 
     for (;;) {
-        complexity++;
         CRef confl = propagate();
         if (confl != CRef_Undef) {
             // CONFLICT
@@ -1317,10 +1552,10 @@ lbool Solver::search(long &nof_conflicts) {
                 local = trail.size();
                 if (local > global) {
                     global = local;
-                    if (log) {
-                        printf("\rc %.2f %% \t ", 100.0 * (nVars() - global) / nVars());
-                        fflush(stdout);
-                    }
+#ifdef LOG
+                    printf("\rc %.2f %% \t ", 100.0 * (nVars() - global) / nVars());
+                    fflush(stdout);
+#endif
                 } else if (local < global) {
                     polarity[trail.size()] = !polarity[trail.size()];
                 }
@@ -1409,26 +1644,52 @@ static double luby(double y, long x) {
 // NOTE: assumptions passed in member-variable 'assumptions'.
 lbool Solver::solve_() {
 
-    long msec = 0; /* 10ms */
+    long msec = 0, trigger = 1000; /* 10ms */
     clock_t before = clock();
 
+    model.clear();
+    conflict.clear();
+
+    solves++;
+
+    max_learnts = nClauses() * learntsize_factor;
+    learntsize_adjust_confl = learntsize_adjust_start_confl;
+    learntsize_adjust_cnt = (long)learntsize_adjust_confl;
+    lbool status = l_Undef;
+
+    add_tmp.clear();
+
+    VSIDS = true;
+    long init = 0;
+    while (status == l_Undef && init > 0 /*&& withinBudget()*/)
+        status = search(init);
     VSIDS = false;
 
     // Search:
+    global = 0;
     long curr_restarts = 0;
-    lbool status = l_Undef;
+    status = l_Undef;
     while (status == l_Undef /*&& withinBudget()*/) {
-        clock_t difference = clock() - before;
-        msec = difference * 1000 / CLOCKS_PER_SEC;
-        if (msec > trigger) {
-            switch_mode = !switch_mode;
-            trigger += msec;
-            VSIDS = switch_mode;
+        if (!switch_mode) {
+            clock_t difference = clock() - before;
+            msec = difference * 1000 / CLOCKS_PER_SEC;
+            if (msec > trigger) {
+                switch_mode = true;
+                trigger = 2 * msec + 1;
+                VSIDS = switch_mode;
+            }
+        } else {
+            clock_t difference = clock() - before;
+            msec = difference * 1000 / CLOCKS_PER_SEC;
+            if (msec > trigger) {
+                switch_mode = false;
+                trigger = 2 * msec + 1;
+                VSIDS = switch_mode;
+            }
         }
         if (VSIDS) {
             long weighted = INT32_MAX;
             status = search(weighted);
-
         } else {
             long nof_conflicts = luby(restart_inc, curr_restarts) * restart_first;
             status = search(nof_conflicts);
@@ -1442,10 +1703,6 @@ lbool Solver::solve_() {
 #ifdef ANTI_EXPLORATION
             canceled.clear();
 #endif
-        }
-        if (lm >= 0 && complexity > lm) {
-            score = (100.0 * (double)(nVars() - global) / nVars()) * complexity;
-            break;
         }
     }
 
@@ -1464,6 +1721,76 @@ lbool Solver::solve_() {
 
     cancelUntil(0);
     return status;
+}
+
+//=================================================================================================
+// Writing CNF to DIMACS:
+//
+// FIXME: this needs to be rewritten completely.
+
+static Var mapVar(Var x, vec<Var> &map, Var &max) {
+    if (map.size() <= x || map[x] == -1) {
+        map.growTo(x + 1, -1);
+        map[x] = max++;
+    }
+    return map[x];
+}
+
+void Solver::toDimacs(FILE *f, Clause &c, vec<Var> &map, Var &max) {
+    if (satisfied(c))
+        return;
+
+    for (long i = 0; i < c.size(); i++)
+        if (value(c[i]) != l_False)
+            fprintf(f, "%s%ld ", sign(c[i]) ? "-" : "", mapVar(var(c[i]), map, max) + 1);
+    fprintf(f, "0\n");
+}
+
+void Solver::toDimacs(const char *file, const vec<Lit> &assumps) {
+    FILE *f = fopen(file, "wr");
+    if (f == NULL)
+        fprintf(stderr, "could not open file %s\n", file), exit(1);
+    toDimacs(f, assumps);
+    fclose(f);
+}
+
+void Solver::toDimacs(FILE *f, const vec<Lit> &assumps) {
+    // Handle case when solver is in contradictory state:
+    if (!ok) {
+        fprintf(f, "p cnf 1 2\n1 0\n-1 0\n");
+        return;
+    }
+
+    vec<Var> map;
+    Var max = 0;
+
+    // Cannot use removeClauses here because it is not safe
+    // to deallocate them at this point. Could be improved.
+    long cnt = 0;
+    for (long i = 0; i < clauses.size(); i++)
+        if (!satisfied(ca[clauses[i]]))
+            cnt++;
+
+    for (long i = 0; i < clauses.size(); i++)
+        if (!satisfied(ca[clauses[i]])) {
+            Clause &c = ca[clauses[i]];
+            for (long j = 0; j < c.size(); j++)
+                if (value(c[j]) != l_False)
+                    mapVar(var(c[j]), map, max);
+        }
+
+    // Assumptions are added as unit clauses:
+    cnt += assumptions.size();
+
+    fprintf(f, "p cnf %ld %ld\n", max, cnt);
+
+    for (long i = 0; i < assumptions.size(); i++) {
+        assert(value(assumptions[i]) != l_False);
+        fprintf(f, "%s%ld 0\n", sign(assumptions[i]) ? "-" : "", mapVar(var(assumptions[i]), map, max) + 1);
+    }
+
+    for (long i = 0; i < clauses.size(); i++)
+        toDimacs(f, ca[clauses[i]], map, max);
 }
 
 //=================================================================================================

@@ -1,1 +1,1 @@
-SLIME SO+: The Self Optimized SAT Solver.
+SLIME 3.1: The Unofficial State of The Art.
