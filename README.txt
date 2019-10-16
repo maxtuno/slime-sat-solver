@@ -4,37 +4,6 @@
 
 NOTE: This repository is the development version, for official releases go to https://github.com/maxtuno/slime-sat-solver/releases
 
-SLIME SO+: The Self Optimized SAT Solver.
-- More Deep and More Fast.
-
-SLIME SO: The Self Optimized SAT Solver.
-- More Deepness (Solved More Unsolvable Instances).
-- Self Optimization.
-- Cutting edge technology property of www.PEQNP.science now Open Source.
-
-SLIME 4.2: The most advanced SAT Solver on the planet.
-- More performance.
-- Pre Release from 5.0 version.
-- Chronos property is deleted.
-- No randomness is on SLIME.
-
-SLIME 4.1.1:
-- More performance.
-- Pre Release from 5.0 version.
-
-SLIME 4.1:
-- More performance.
-
-SLIME 4.0.1:
-- Increase general performance and scope of solvable instances.
-
-SLIME 4.0: Today the most advanced SAT Solver on the planet.
-- Increase performance and scope of solvable instances.
-- Better performance at 3000 seconds than the winner of the SAT Race 2019 on new Benchmarks. https://maxtuno.github.io/slime-sat-solver
-- Better UNSAT solving.
-
-NOTE: The version of CaDiCaL used to measure SLIME is the SAT Race 2019.
-
 SLIME 3.1.1
 - Maintenance Update.
 - SLIME vs The Winners of the SAT Race 2019. (https://maxtuno.github.io/slime-sat-solver)
