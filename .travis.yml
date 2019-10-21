@@ -1,0 +1,9 @@
+language: cpp
+compiler:
+cmake
+os:
+- linux
+- osx
+- windows
+branches:
+- master
