@@ -8,7 +8,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 include_directories(. include)
 link_directories(${PROJECT_SOURCE_DIR}/lib)
 
-set(CMAKE_CXX_FLAGS "-std=c++98 -O3 -Wno-unused-value -D NDEBUG -D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS -D LOG") # -static
+set(CMAKE_CXX_FLAGS "-std=c++98 -O3 -D NDEBUG -D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS -D LOG") # -static
 
 add_library(slime
         src/Solver.cc
