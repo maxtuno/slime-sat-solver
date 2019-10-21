@@ -5,6 +5,5 @@ script:
 os:
 - linux
 - osx
-- windows
 branches:
 - master
