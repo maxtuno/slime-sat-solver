@@ -1,6 +1,7 @@
 language: cpp
-compiler:
-cmake
+script:
+  - cmake .
+  - cmake --build .
 os:
 - linux
 - osx
