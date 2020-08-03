@@ -27,7 +27,7 @@ SLIME 4 -- Copyright (c) 2020, Oscar Riveros, oscar.riveros@peqnp.science, Santi
 
 SLIME 3 -- Copyright (c) 2019, Oscar Riveros, oscar.riveros@peqnp.science, Santiago, Chile. https://maxtuno.github.io/slime-sat-solver
 
-SLIME SAT Solver and The BOOST Heuristic or Variations cannot be used on any contest without express permissions of Oscar Riveros.
+SLIME SAT Solver and The BOOST Heuristic and HESS algorithm or Variations cannot be used on any contest without express permissions of Oscar Riveros.
 
 DurianSat -- Copyright (c) 2020, Arijit Shaw, Kuldeep S. Meel
 
