@@ -2,6 +2,20 @@
 "Thank you very much to the SLIME Team and to all who participate in this colossal task of breaking the hand to Intractability."
 "The greatest triumph of the human mind will be when against all theory we lived in a world where all NP-Complete problems can be solved regardless of whether P = NP." - Oscar Riveros
 
+
+SLIME 5 Cloud: A Free Massive World Class High Performance SAT Solver.
+https://maxtuno.github.io/slime-sat-solver/
+https://github.com/maxtuno/slime-sat-solver/tree/master/SLIME5-binary
+
+Mathematical Solver
+https://www.peqnp.com
+
+SLIME 4 win 3rd place on Cloud Track from SAT Competition 2020 
+https://satcompetition.github.io/2020/index.html.
+
+SLIME SOLVED (Status) UNKNOWN INSTANCES
+https://github.com/maxtuno/SLIME_SOLVED_UNKNOWN_INSTANCES
+
 NOTE: This repository is the development version, for official releases go to https://github.com/maxtuno/slime-sat-solver/releases
 
 SLIME 3.1.1
