@@ -1,4 +1,3 @@
-c                                         
 c   ██████  ██▓     ██▓ ███▄ ▄███▓▓█████  
 c ▒██    ▒ ▓██▒    ▓██▒▓██▒▀█▀ ██▒▓█   ▀  
 c ░ ▓██▄   ▒██░    ▒██▒▓██    ▓██░▒███    
@@ -14,7 +13,7 @@ c
 
 Note:
 
-slime5-w64.exe <- Not tested compiled statically with MinGW-w64
+slime5-w64.exe <- Tested Windows 10, works!
 slime5-linux <- Tested, works!
 slime5-osx <- Tested, not statically compiled with gcc version 9.3.0 (Homebrew GCC 9.3.0_1)
 
