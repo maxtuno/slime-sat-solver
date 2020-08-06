@@ -1,3 +1,4 @@
+c                                         
 c   ██████  ██▓     ██▓ ███▄ ▄███▓▓█████  
 c ▒██    ▒ ▓██▒    ▓██▒▓██▒▀█▀ ██▒▓█   ▀  
 c ░ ▓██▄   ▒██░    ▒██▒▓██    ▓██░▒███    
@@ -11,172 +12,66 @@ c
 c           http://www.peqnp.com          
 c                                         
 
-Note:
-
-slime5-w64.exe <- Tested Windows 10, works!
-slime5-linux <- Tested, works!
-slime5-osx <- Tested, not statically compiled with gcc version 9.3.0 (Homebrew GCC 9.3.0_1)
-
 USAGE: slime5 <cnf> [proof]
+
+LICENCE: slime5 (no parameters output the licence)
 
 BOOST OPTIONS:
 
   -boost, -no-boost                       (default: on)
 
-        Specifies the use BOOST algorithm.
-
-
-  -boost-lim    = <int32>  [   1 .. imax] (default: 1000000)
-
-        Specifies the number of fail cases after which the solver restart the geometrical execution of BOOST algorithm.
-
-
 CORE OPTIONS:
 
   -rnd-init, -no-rnd-init                 (default: off)
 
-        Randomize the initial activity
-
-
   -gc-frac      = <double> (   0 ..  inf) (default: 0.2)
-
-        The fraction of wasted memory allowed before a garbage collection is triggered
-
   -rinc         = <double> (   1 ..  inf) (default: 2)
-
-        Restart interval increase factor
-
+  -step-size    = <double> (   0 ..    1) (default: 0.4)
+  -step-size-dec = <double> (   0 ..    1) (default: 1e-06)
+  -min-step-size = <double> (   0 ..    1) (default: 0.06)
+  -var-decay    = <double> (   0 ..    1) (default: 0.8)
+  -cla-decay    = <double> (   0 ..    1) (default: 0.999)
+  -rnd-freq     = <double> [   0 ..    1] (default: 0)
   -rnd-seed     = <double> (   0 ..  inf) (default: 9.16483e+07)
 
-        Used by the random variable selection
-
-  -rnd-freq     = <double> [   0 ..    1] (default: 0)
-
-        The frequency with which the decision heuristic tries to choose a random variable
-
-  -cla-decay    = <double> (   0 ..    1) (default: 0.999)
-
-        The clause activity decay factor
-
-  -var-decay    = <double> (   0 ..    1) (default: 0.8)
-
-        The variable activity decay factor
-
-  -min-step-size = <double> (   0 ..    1) (default: 0.06)
-
-        Minimal step size
-
-  -step-size-dec = <double> (   0 ..    1) (default: 1e-06)
-
-        Step size decrement
-
-  -step-size    = <double> (   0 ..    1) (default: 0.4)
-
-        Initial step size
-
-
-  -confl-to-chrono = <int32>  [  -1 .. imax] (default: 4000)
-
-        Controls number of conflicts to perform chrono backtrack
-
-  -chrono       = <int32>  [  -1 .. imax] (default: 100)
-
-        Controls if to perform chrono backtrack
-
   -rfirst       = <int32>  [   1 .. imax] (default: 100)
-
-        The base restart interval
-
+  -confl-to-chrono = <int32>  [  -1 .. imax] (default: 4000)
+  -chrono       = <int32>  [  -1 .. imax] (default: 100)
   -phase-saving = <int32>  [   0 ..    2] (default: 2)
-
-        Controls the level of phase saving (0=none, 1=limited, 2=full)
-
   -ccmin-mode   = <int32>  [   0 ..    2] (default: 2)
-
-        Controls conflict clause minimization (0=none, 1=basic, 2=deep)
-
 
 DUP-LEARNTS OPTIONS:
 
   -VSIDS-lim    = <int32>  [   1 .. imax] (default: 30)
-
-        Specifies the number of propagations after which the solver switches between LRB and VSIDS(in millions).
-
   -dupdb-init   = <int32>  [   1 .. imax] (default: 1000000)
-
-        Specifies the initial maximal duplicates DB size.
-
   -min-dup-app  = <int32>  [   2 .. imax] (default: 2)
-
-        Specifies the minimum number of learnts to be included into db.
-
   -lbd-limit    = <int32>  [   0 .. imax] (default: 14)
-
-        Specifies the maximum lbd of learnts to be screened for duplicates.
-
 
 HESS OPTIONS:
 
   -hess, -no-hess                         (default: on)
 
-        Specifies the use HESS algorithm.
-
-
-  -hess-lim     = <int32>  [   1 .. imax] (default: 1000000)
-
-        Specifies the number of equal cases after which the solver call HESS algorithm.
-
-  -hess-order   = <int32>  [   0 ..    2] (default: 1)
-
-        Specifies the order of HESS algorithm (0 for alternate).
-
+  -hess-order   = <int32>  [   1 ..    2] (default: 2)
 
 LSIDS OPTIONS:
 
   -lsids-erase-weight = <double> [   0 ..    5] (default: 2)
 
-        Weight for LSIDS bump.
-
-
 MASSIVE OPTIONS:
 
   -massive, -no-massive                   (default: off)
 
-        Specifies the use for MASSIVE execution.
-
-
 SIMP OPTIONS:
 
-  -rcheck, -no-rcheck                     (default: off)
-
-        Check if a clause is already implied. (costly)
-
   -asymm, -no-asymm                       (default: off)
-
-        Shrink clauses by asymmetric branching.
-
   -elim, -no-elim                         (default: on)
-
-        Perform variable elimination.
-
+  -rcheck, -no-rcheck                     (default: off)
 
   -simp-gc-frac = <double> (   0 ..  inf) (default: 0.5)
 
-        The fraction of wasted memory allowed before a garbage collection is triggered during simplification.
-
-
-  -grow         = <int32>  [imin .. imax] (default: 0)
-
-        Allow a variable elimination step to grow by a number of clauses.
-
-  -cl-lim       = <int32>  [  -1 .. imax] (default: 20)
-
-        Variables are not eliminated if it produces a resolvent with a length above this limit. -1 means no limit
-
   -sub-lim      = <int32>  [  -1 .. imax] (default: 1000)
-
-        Do not check if subsumption against a clause larger than this. -1 means no limit.
-
+  -grow         = <int32>  [imin .. imax] (default: 0)
+  -cl-lim       = <int32>  [  -1 .. imax] (default: 20)
 
 HELP OPTIONS:
 
