@@ -12,6 +12,8 @@ c
 c           http://www.peqnp.com          
 c                                         
 
+Note: Linux and Win64 are compiled statically with GCC and MinGW, and tested, OSX binary compiled with Apple clang version 11.0.3 (clang-1103.0.32.62)
+
 USAGE: slime5 <cnf> [proof]
 
 LICENCE: slime5 (no parameters output the licence)
