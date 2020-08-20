@@ -53,7 +53,7 @@ HESS OPTIONS:
 
   -hess, -no-hess                         (default: on)
 
-  -hess-order   = <int32>  [   1 ..    2] (default: 2)
+  -hess-order   = <int32>  [   1 ..    2] (default: 1)
 
 LSIDS OPTIONS:
 
@@ -79,3 +79,4 @@ HELP OPTIONS:
 
   --help        Print help message.
   --help-verb   Print verbose help message.
+
