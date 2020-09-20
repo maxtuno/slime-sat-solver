@@ -26,32 +26,25 @@ CORE OPTIONS:
 
   -rnd-init, -no-rnd-init                 (default: off)
 
-  -gc-frac      = <double> (   0 ..  inf) (default: 0.2)
   -rinc         = <double> (   1 ..  inf) (default: 2)
-  -step-size    = <double> (   0 ..    1) (default: 0.4)
-  -step-size-dec = <double> (   0 ..    1) (default: 1e-06)
-  -min-step-size = <double> (   0 ..    1) (default: 0.06)
-  -var-decay    = <double> (   0 ..    1) (default: 0.8)
-  -cla-decay    = <double> (   0 ..    1) (default: 0.999)
-  -rnd-freq     = <double> [   0 ..    1] (default: 0)
+  -gc-frac      = <double> (   0 ..  inf) (default: 0.2)
   -rnd-seed     = <double> (   0 ..  inf) (default: 9.16483e+07)
+  -rnd-freq     = <double> [   0 ..    1] (default: 0)
+  -cla-decay    = <double> (   0 ..    1) (default: 0.999)
+  -var-decay    = <double> (   0 ..    1) (default: 0.8)
+  -min-step-size = <double> (   0 ..    1) (default: 0.06)
+  -step-size-dec = <double> (   0 ..    1) (default: 1e-06)
+  -step-size    = <double> (   0 ..    1) (default: 0.4)
 
+  -ccmin-mode   = <int32>  [   0 ..    2] (default: 2)
+  -phase-saving = <int32>  [   0 ..    2] (default: 2)
   -rfirst       = <int32>  [   1 .. imax] (default: 100)
   -confl-to-chrono = <int32>  [  -1 .. imax] (default: 4000)
   -chrono       = <int32>  [  -1 .. imax] (default: 100)
-  -phase-saving = <int32>  [   0 ..    2] (default: 2)
-  -ccmin-mode   = <int32>  [   0 ..    2] (default: 2)
-
-DUP-LEARNTS OPTIONS:
-
-  -VSIDS-lim    = <int32>  [   1 .. imax] (default: 30)
-  -dupdb-init   = <int32>  [   1 .. imax] (default: 1000000)
-  -min-dup-app  = <int32>  [   2 .. imax] (default: 2)
-  -lbd-limit    = <int32>  [   0 .. imax] (default: 14)
 
 HESS OPTIONS:
 
-  -hess, -no-hess                         (default: on)
+  -hess, -no-hess                         (default: off)
 
   -hess-order   = <int32>  [   1 ..    2] (default: 1)
 
@@ -66,17 +59,16 @@ MASSIVE OPTIONS:
 SIMP OPTIONS:
 
   -asymm, -no-asymm                       (default: off)
-  -elim, -no-elim                         (default: on)
   -rcheck, -no-rcheck                     (default: off)
+  -elim, -no-elim                         (default: on)
 
   -simp-gc-frac = <double> (   0 ..  inf) (default: 0.5)
 
+  -cl-lim       = <int32>  [  -1 .. imax] (default: 20)
   -sub-lim      = <int32>  [  -1 .. imax] (default: 1000)
   -grow         = <int32>  [imin .. imax] (default: 0)
-  -cl-lim       = <int32>  [  -1 .. imax] (default: 20)
 
 HELP OPTIONS:
 
   --help        Print help message.
   --help-verb   Print verbose help message.
-
