@@ -1,1 +1,8 @@
 theme: jekyll-theme-leap-day
+
+title : SLIME
+description : A Free World Class High Performance SAT Solver
+logo : https://raw.githubusercontent.com/maxtuno/PEQNP/master/logo.png
+theme: jekyll-theme-leap-day
+google_analytics : UA-146115776-2
+show_downloads : true
