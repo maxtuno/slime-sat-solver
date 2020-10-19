@@ -1,6 +1,6 @@
 This is the current version of SLIME, tested vs Kissat (The Official state of the art 2020)
 
-Results are in the images, and the bad news is that the SLIME binary used on test, is a debug binary... (human error) then the real power of SLIME, is not revelated but the binaris on this folder are optimized.
+Results are in the images, and the bad news is that the SLIME binary used on test, is a debug binary... (human error) then the real power of SLIME, is not revelated but the binaries on this folder are optimized.
 
 See the images, for details.
 
