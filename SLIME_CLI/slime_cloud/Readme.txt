@@ -10,3 +10,10 @@ Note:
 	2 - Change number of process on slime_cloud.sh
 
 Like & Share!
+
+Tip:
+
+!unzip slime_cloud.zip
+cd /content/slime_cloud
+!chmod 777 slime_cloud
+!sh slime_cloud.sh <cnf>
