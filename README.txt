@@ -2,6 +2,9 @@
 "Thank you very much to the SLIME Team and to all who participate in this colossal task of breaking the hand to Intractability."
 "The greatest triumph of the human mind will be when against all theory we lived in a world where all NP-Complete problems can be solved regardless of whether P = NP." - Oscar Riveros
 
+SLIME CLI & SLIME CLOUD 
+Currently the best sat solver, several light years around.
+https://github.com/maxtuno/slime-sat-solver/tree/master/SLIME_CLI/
 
 SLIME 5 Cloud: A Free Massive World Class High Performance SAT Solver.
 https://maxtuno.github.io/slime-sat-solver/
