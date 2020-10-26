@@ -2,7 +2,7 @@ SLIME CLOUD
 
 usage (on cell):
 
-!sh slime_cloud.sh <cnf>
+mpirun -q -np 4 -hostfile hostfile --allow-run-as-root ./slime_cloud <cnf> [proof]
 
 Note: 
 
