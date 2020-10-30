@@ -2,7 +2,9 @@ SLIME CLOUD
 
 usage (on cell):
 
-mpirun -q -np 4 -hostfile hostfile --allow-run-as-root ./slime_cloud <cnf> [proof]
+mpirun -q -np 4 -hostfile hostfile --allow-run-as-root ./slime_cloud_competitive <cnf> [proof]
+
+mpirun -q -np 4 -hostfile hostfile --allow-run-as-root ./slime_cloud_cooperative <cnf> [proof]
 
 Note: 
 
