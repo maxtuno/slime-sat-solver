@@ -12,6 +12,9 @@ c
 c           http://www.peqnp.com          
 c                                         
 
+SLIME CLI & SLIME CLOUD
+Currently the best SAT Solver, several light years around.
+
 w19-49.0.cnf.bz2
 w19-20.1.cnf.bz2
 w19-20.0.cnf.bz2
