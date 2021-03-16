@@ -1,3 +1,6 @@
+SLIME Cloud: A Free Massive World Class High Performance SAT Solver.
+https://github.com/maxtuno/SLIME
+
 "Thanks to the support of www.starexec.org SLIME is today the most advanced SAT Solver on the planet."
 "Thank you very much to the SLIME Team and to all who participate in this colossal task of breaking the hand to Intractability."
 "The greatest triumph of the human mind will be when against all theory we lived in a world where all NP-Complete problems can be solved regardless of whether P = NP." - Oscar Riveros
